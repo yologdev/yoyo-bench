@@ -1,0 +1,169 @@
+name: bench
+
+on:
+  schedule:
+    - cron: '0 6 * * *'  # daily at 6am UTC
+  workflow_dispatch:
+    inputs:
+      model:
+        description: 'Model to benchmark (e.g. anthropic/claude-sonnet-4-6)'
+        required: false
+        default: 'anthropic/claude-sonnet-4-6'
+      parallelism:
+        description: 'Number of parallel tasks'
+        required: false
+        default: '8'
+
+permissions:
+  contents: write
+
+jobs:
+  benchmark:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install Harbor
+        run: pip install harbor-ai
+
+      - name: Configure git
+        run: |
+          git config user.name "yoyo-bench[bot]"
+          git config user.email "yoyo-bench[bot]@users.noreply.github.com"
+
+      - name: Set variables
+        id: vars
+        run: |
+          MODEL="${{ github.event.inputs.model || 'anthropic/claude-sonnet-4-6' }}"
+          PARALLELISM="${{ github.event.inputs.parallelism || '8' }}"
+          DATE="$(date -u +%Y-%m-%d)"
+          PROMPT_HASH="$(md5sum prompts/system_prompt.md | cut -c1-8)"
+          echo "model=$MODEL" >> "$GITHUB_OUTPUT"
+          echo "parallelism=$PARALLELISM" >> "$GITHUB_OUTPUT"
+          echo "date=$DATE" >> "$GITHUB_OUTPUT"
+          echo "prompt_hash=$PROMPT_HASH" >> "$GITHUB_OUTPUT"
+
+      - name: Build yoyo binary
+        run: |
+          curl -fsSL https://sh.rustup.rs | sh -s -- -y --default-toolchain stable --profile minimal
+          source "$HOME/.cargo/env"
+          mkdir -p bin
+          cargo install --git https://github.com/yologdev/yoyo-evolve.git --locked --root .
+          # cargo install puts it in ./bin/yoyo
+
+      - name: Run Terminal-Bench
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          DAYTONA_API_KEY: ${{ secrets.DAYTONA_API_KEY }}
+        run: |
+          mkdir -p analysis/failures
+
+          harbor run \
+            -d terminal-bench/terminal-bench-2 \
+            -m "${{ steps.vars.outputs.model }}" \
+            --agent-import-path agents.yoyo_agent:Yoyo \
+            --env daytona \
+            -n "${{ steps.vars.outputs.parallelism }}" \
+            --output-dir /tmp/bench-results \
+            2>&1 | tee /tmp/bench-log.txt
+
+      - name: Extract scores
+        id: score
+        run: |
+          # Parse Harbor output for scores
+          # Harbor writes results to the output dir as JSON
+          RESULTS_DIR="/tmp/bench-results"
+
+          if [ -d "$RESULTS_DIR" ]; then
+            TOTAL=$(find "$RESULTS_DIR" -name "*.json" | wc -l)
+            PASSED=$(find "$RESULTS_DIR" -name "*.json" -exec grep -l '"passed": true' {} \; | wc -l)
+          else
+            # Fallback: parse from log
+            TOTAL=$(grep -c "Task\|task" /tmp/bench-log.txt || echo "0")
+            PASSED=$(grep -c "PASS\|pass\|passed" /tmp/bench-log.txt || echo "0")
+          fi
+
+          if [ "$TOTAL" -eq 0 ]; then
+            SCORE="0.0"
+          else
+            SCORE=$(python3 -c "print(round($PASSED / $TOTAL, 4))")
+          fi
+
+          echo "total=$TOTAL" >> "$GITHUB_OUTPUT"
+          echo "passed=$PASSED" >> "$GITHUB_OUTPUT"
+          echo "score=$SCORE" >> "$GITHUB_OUTPUT"
+          echo "Score: $PASSED/$TOTAL ($SCORE)"
+
+      - name: Record results
+        run: |
+          echo '{"date":"${{ steps.vars.outputs.date }}","score":${{ steps.score.outputs.score }},"total":${{ steps.score.outputs.total }},"passed":${{ steps.score.outputs.passed }},"prompt_hash":"${{ steps.vars.outputs.prompt_hash }}","model":"${{ steps.vars.outputs.model }}"}' >> analysis/results.jsonl
+
+          # Save failure logs for analysis
+          if [ -d /tmp/bench-results ]; then
+            cp -r /tmp/bench-results analysis/failures/${{ steps.vars.outputs.date }}/ 2>/dev/null || true
+          fi
+          cp /tmp/bench-log.txt analysis/failures/${{ steps.vars.outputs.date }}-log.txt 2>/dev/null || true
+
+      - name: Check for score regression
+        id: regression
+        run: |
+          # Compare to previous best score
+          if [ "$(wc -l < analysis/results.jsonl)" -gt 1 ]; then
+            PREV_BEST=$(head -n -1 analysis/results.jsonl | python3 -c "
+          import sys, json
+          scores = [json.loads(line)['score'] for line in sys.stdin if line.strip()]
+          print(max(scores) if scores else 0)
+          ")
+            CURRENT="${{ steps.score.outputs.score }}"
+
+            echo "Previous best: $PREV_BEST"
+            echo "Current: $CURRENT"
+
+            DROPPED=$(python3 -c "print('true' if $CURRENT < $PREV_BEST - 0.02 else 'false')")
+            echo "dropped=$DROPPED" >> "$GITHUB_OUTPUT"
+
+            if [ "$DROPPED" = "true" ]; then
+              echo "::warning::Score dropped from $PREV_BEST to $CURRENT — will revert last optimization"
+            fi
+          else
+            echo "First run, no comparison"
+            echo "dropped=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Revert on regression
+        if: steps.regression.outputs.dropped == 'true'
+        run: |
+          # Find the last commit that touched prompts/ or skills/
+          LAST_OPT=$(git log --oneline --diff-filter=M -- prompts/ skills/ | head -1 | cut -d' ' -f1)
+          if [ -n "$LAST_OPT" ]; then
+            echo "Reverting optimization commit: $LAST_OPT"
+            git revert --no-edit "$LAST_OPT"
+          fi
+
+      - name: Commit results
+        run: |
+          git add analysis/results.jsonl
+          git add analysis/failures/ 2>/dev/null || true
+          if ! git diff --cached --quiet; then
+            git commit -m "bench: ${{ steps.vars.outputs.date }} — ${{ steps.score.outputs.passed }}/${{ steps.score.outputs.total }} (${{ steps.score.outputs.score }})"
+            git push
+          fi
+
+      - name: Trigger analysis
+        if: steps.regression.outputs.dropped != 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh workflow run analyze.yml \
+            -f date="${{ steps.vars.outputs.date }}" \
+            -f score="${{ steps.score.outputs.score }}" \
+            -f total="${{ steps.score.outputs.total }}" \
+            -f passed="${{ steps.score.outputs.passed }}"

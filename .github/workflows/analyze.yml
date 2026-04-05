@@ -1,0 +1,115 @@
+name: analyze
+
+on:
+  workflow_dispatch:
+    inputs:
+      date:
+        description: 'Bench run date'
+        required: true
+      score:
+        description: 'Score from bench run'
+        required: true
+      total:
+        description: 'Total tasks'
+        required: true
+      passed:
+        description: 'Passed tasks'
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  analyze-and-optimize:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure git
+        run: |
+          git config user.name "yoyo-bench[bot]"
+          git config user.email "yoyo-bench[bot]@users.noreply.github.com"
+
+      - name: Install yoyo
+        run: curl -fsSL https://raw.githubusercontent.com/yologdev/yoyo/main/install.sh | bash
+
+      - name: Analyze failures and optimize
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          FAILURES_DIR="analysis/failures/${{ inputs.date }}"
+          LOG_FILE="analysis/failures/${{ inputs.date }}-log.txt"
+          PROMPT_FILE="prompts/system_prompt.md"
+          RESULTS_FILE="analysis/results.jsonl"
+
+          # Build analysis prompt
+          cat > /tmp/analyze-prompt.txt << 'PROMPT'
+          You are optimizing a coding agent (yoyo) for Terminal-Bench 2.
+
+          Your job: analyze the benchmark results and make targeted improvements
+          to the system prompt and skills so the agent scores higher next run.
+
+          ## Rules
+
+          1. Read the current system prompt from prompts/system_prompt.md
+          2. Read the bench results and failure logs
+          3. Identify the top 2-3 failure patterns
+          4. Make SMALL, targeted edits to prompts/system_prompt.md or files in skills/
+          5. Each change should address a specific failure pattern you observed
+          6. Do NOT rewrite everything — incremental improvements only
+          7. After editing, write a brief summary of what you changed and why
+
+          ## Constraints
+
+          - Do not change agents/yoyo_agent.py
+          - Do not change workflow files
+          - Only modify prompts/ and skills/ directories
+          - Keep the system prompt under 2000 words
+          - Each skill file should stay under 500 words
+          PROMPT
+
+          echo "" >> /tmp/analyze-prompt.txt
+          echo "## Current score: ${{ inputs.passed }}/${{ inputs.total }} (${{ inputs.score }})" >> /tmp/analyze-prompt.txt
+          echo "" >> /tmp/analyze-prompt.txt
+
+          # Append score history
+          echo "## Score history (last 10 runs):" >> /tmp/analyze-prompt.txt
+          tail -10 "$RESULTS_FILE" >> /tmp/analyze-prompt.txt
+          echo "" >> /tmp/analyze-prompt.txt
+
+          # Append failure logs if they exist
+          if [ -f "$LOG_FILE" ]; then
+            echo "## Bench log (last 200 lines):" >> /tmp/analyze-prompt.txt
+            tail -200 "$LOG_FILE" >> /tmp/analyze-prompt.txt
+          fi
+
+          if [ -d "$FAILURES_DIR" ]; then
+            echo "" >> /tmp/analyze-prompt.txt
+            echo "## Failed task details:" >> /tmp/analyze-prompt.txt
+            for f in "$FAILURES_DIR"/*.json; do
+              if [ -f "$f" ] && grep -q '"passed": false' "$f" 2>/dev/null; then
+                echo "--- $(basename "$f") ---" >> /tmp/analyze-prompt.txt
+                head -100 "$f" >> /tmp/analyze-prompt.txt
+                echo "" >> /tmp/analyze-prompt.txt
+              fi
+            done | head -3000  # cap total context
+          fi
+
+          # Run yoyo to analyze and edit
+          export PATH="$HOME/.local/bin:$PATH"
+          yoyo --provider anthropic --model claude-sonnet-4-6 < /tmp/analyze-prompt.txt || {
+            echo "::warning::Analysis failed, skipping optimization"
+            exit 0
+          }
+
+      - name: Commit optimizations
+        run: |
+          git add prompts/ skills/
+          if ! git diff --cached --quiet; then
+            git commit -m "optimize: adjust prompts/skills based on ${{ inputs.date }} bench (${{ inputs.score }})"
+            git push
+          else
+            echo "No changes to commit"
+          fi
