@@ -70,7 +70,7 @@ jobs:
             -d terminal-bench/terminal-bench-2 \
             -m "${{ steps.vars.outputs.model }}" \
             --agent-import-path agents.yoyo_agent:Yoyo \
-            --env daytona \
+            --env docker \
             -n "${{ steps.vars.outputs.parallelism }}" \
             --jobs-dir /tmp/bench-results \
             2>&1 | tee /tmp/bench-log.txt
