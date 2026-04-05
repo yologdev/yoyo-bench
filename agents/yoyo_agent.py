@@ -42,6 +42,7 @@ class Yoyo(BaseInstalledAgent):
             "max_turns",
             cli="--max-turns",
             type="int",
+            default=100,
             env_fallback="YOYO_MAX_TURNS",
         ),
         CliFlag(
@@ -192,8 +193,8 @@ class Yoyo(BaseInstalledAgent):
         await self.exec_as_agent(
             environment,
             command=(
-                f"echo {escaped_instruction} | "
-                f"yoyo {extra_flags}{model_flag}{skills_flag}{prompt_flag}"
+                f"yoyo --yes -p {escaped_instruction} "
+                f"{extra_flags}{model_flag}{skills_flag}{prompt_flag}"
                 f"2>&1 | tee {output_path}"
             ),
             env=env,
