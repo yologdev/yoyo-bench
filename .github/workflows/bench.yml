@@ -72,29 +72,36 @@ jobs:
             --agent-import-path agents.yoyo_agent:Yoyo \
             --env daytona \
             -n "${{ steps.vars.outputs.parallelism }}" \
-            --output-dir /tmp/bench-results \
+            --jobs-dir /tmp/bench-results \
             2>&1 | tee /tmp/bench-log.txt
 
       - name: Extract scores
         id: score
         run: |
-          # Parse Harbor output for scores
-          # Harbor writes results to the output dir as JSON
+          # Parse Harbor result.json from the jobs dir
           RESULTS_DIR="/tmp/bench-results"
+          RESULT_JSON=$(find "$RESULTS_DIR" -maxdepth 2 -name "result.json" -path "*/20*" | sort | tail -1)
 
-          if [ -d "$RESULTS_DIR" ]; then
-            TOTAL=$(find "$RESULTS_DIR" -name "*.json" | wc -l)
-            PASSED=$(find "$RESULTS_DIR" -name "*.json" -exec grep -l '"passed": true' {} \; | wc -l)
+          if [ -n "$RESULT_JSON" ]; then
+            read TOTAL PASSED SCORE <<< $(python3 -c "
+          import json, sys
+          with open('$RESULT_JSON') as f:
+              data = json.load(f)
+          total = data['stats']['n_trials']
+          errors = data['stats']['n_errors']
+          # Count non-zero rewards
+          passed = 0
+          for ev in data['stats']['evals'].values():
+              for reward_val, trials in ev.get('reward_stats', {}).get('reward', {}).items():
+                  if float(reward_val) > 0:
+                      passed += len(trials)
+          score = round(passed / total, 4) if total > 0 else 0.0
+          print(total, passed, score)
+          ")
           else
-            # Fallback: parse from log
-            TOTAL=$(grep -c "Task\|task" /tmp/bench-log.txt || echo "0")
-            PASSED=$(grep -c "PASS\|pass\|passed" /tmp/bench-log.txt || echo "0")
-          fi
-
-          if [ "$TOTAL" -eq 0 ]; then
+            TOTAL=0
+            PASSED=0
             SCORE="0.0"
-          else
-            SCORE=$(python3 -c "print(round($PASSED / $TOTAL, 4))")
           fi
 
           echo "total=$TOTAL" >> "$GITHUB_OUTPUT"
