@@ -58,16 +58,16 @@ class Yoyo(BaseInstalledAgent):
             type="str",
             env_fallback="YOYO_FALLBACK_PROVIDER",
         ),
-    ]
-
-    ENV_VARS = [
-        EnvVar(
+        CliFlag(
             "thinking",
-            env="YOYO_THINKING",
-            type="bool",
+            cli="--thinking",
+            type="str",
+            default="high",
             env_fallback="YOYO_THINKING",
         ),
     ]
+
+    ENV_VARS = []
 
     @staticmethod
     def name() -> str:
