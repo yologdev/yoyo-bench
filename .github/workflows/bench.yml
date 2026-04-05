@@ -31,7 +31,7 @@ jobs:
           python-version: '3.12'
 
       - name: Install Harbor
-        run: pip install harbor-ai
+        run: pip install harbor
 
       - name: Configure git
         run: |
