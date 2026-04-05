@@ -184,7 +184,7 @@ class Yoyo(BaseInstalledAgent):
                 command=f"echo {escaped_content} > /tmp/yoyo-system-prompt.md",
                 env=env,
             )
-            prompt_flag = "--system-prompt /tmp/yoyo-system-prompt.md "
+            prompt_flag = "--system-file /tmp/yoyo-system-prompt.md "
 
         output_path = f"/logs/agent/{self._OUTPUT_FILENAME}"
 
