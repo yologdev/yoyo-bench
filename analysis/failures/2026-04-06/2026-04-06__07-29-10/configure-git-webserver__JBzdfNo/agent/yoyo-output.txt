@@ -1,0 +1,80 @@
+  yoyo (prompt mode) — model: claude-sonnet-4-6
+[K[K
+── Thinking ────────────────────────────────────────────────────────────────
+Let me explore the environment first to understand what's available.  ▶ $ cat /etc/os-release && echo "---" && which git && which nginx && which apache2 &…  ▶ read /tmp/yoyo-skills/bench/SKILL.md ✓ (1ms)
+[K[K ✓ (5ms)
+  ▶ $ id && getent passwd user 2>/dev/null || echo "no user 'user'" && ls /home/ && ca…[K[K ✓ (6ms)
+  ▶ $ # Install nginx and ensure git is present (2 lines)[K[K ✓ (24.8s)
+  ▶ $ # 1. Create the 'user' unix account (13 lines)[K[K ✓ (38ms)
+  ▶ $ # 4. Write the post-receive hook that deploys to the web-roo… (15 lines)[K[K ✓ (7ms)
+  ▶ $ chown user:user /git/server/hooks/post-receive[K[K ✓ (6ms)
+  ▶ $ # 5. Configure nginx on port 8080 serving /var/www/gitdeploy (21 lines)[K[K ✓ (6ms)
+  ▶ $ # 6. Start / reload nginx (4 lines)[K[K ✓ (1.0s)
+  ▶ $ # 403 is correct — the web-root is empty. nginx is serving i… (5 lines)[K[K ✓ (1.0s)
+  ▶ $ # 8. Quick end-to-end smoke test — simulate exactly what the… (17 lines)[K[K ✓ (15ms)
+  ▶ $ # no sudo — we're already root; run as user via su (15 lines)[K[K ✓ (84ms)
+
+────────────────────────────────────────────────────────────────────────────────
+  12 tools completed in 1m 2s (12 ✓)
+
+The end-to-end test passes. Here's exactly what was set up and how it all wires together:
+
+────────────────────────────────────────
+
+## What was configured
+
+### 1. Unix user `user`
+Created with useradd -m -s /bin/bash user. This is the account the SSH connection will use when you run `git clone user@server:…`.
+
+### 2. Bare Git repository at `/git/server`
+```
+git init --bare /git/server
+```
+This is the remote the clone URL points to.
+
+### 3. `post-receive` hook — `/git/server/hooks/post-receive`
+Every git push triggers this hook, which checks out the pushed files into the web-root:
+```bash
+GIT_WORK_TREE="/var/www/gitdeploy" git checkout -f "${newrev}"
+```
+
+### 4. Nginx web server on port 8080
+Configured at /etc/nginx/sites-available/gitdeploy:
+• **Listens** on 0.0.0.0:8080
+• Serves files from /var/www/gitdeploy
+
+### 5. SSH server (port 22)
+Running and accepting connections, so `git clone user@server:/git/server will work once you configure your SSH key for the user` account.
+
+────────────────────────────────────────
+
+## Flow diagram
+
+```
+git push origin master
+        │
+        ▼
+/git/server  (bare repo)
+        │
+        └─ hooks/post-receive fires
+                │
+                ▼
+        /var/www/gitdeploy/   ← files checked out here
+                │
+                ▼
+        nginx :8080  serves them
+                │
+                ▼
+curl http://server:8080/hello.html  →  "hello world"
+```
+
+────────────────────────────────────────
+
+## All you need to do
+
+Add your public SSH key to /home/user/.ssh/authorized_keys on the server (which you said you'd handle), and then the exact commands in the task will work as-is.
+
+  ↳ 1m 13s · 1851→2138 tokens · $0.070
+  ⬤ 0% of context window used
+
+
