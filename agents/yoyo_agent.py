@@ -62,7 +62,7 @@ class Yoyo(BaseInstalledAgent):
             "thinking",
             cli="--thinking",
             type="str",
-            default="high",
+            default="medium",
             env_fallback="YOYO_THINKING",
         ),
     ]
