@@ -1,0 +1,74 @@
+  yoyo (prompt mode) — model: claude-sonnet-4-6
+[K[K
+── Thinking ────────────────────────────────────────────────────────────────
+Let me explore the environment and understand what's available, then compile SQLite with gcov instrumentation.  ▶ $ ls /app/ && ls /app/vendor/ && file /app/vendor/sqlite-fossil-release.tar.gz  ▶ $ which gcc && gcc --version && which gcov && gcov --version[K[K ✓ (8ms)
+[K[K ✓ (13ms)
+  ▶ $ ls /app/vendor/ && cat /app/vendor/sqlite-fossil-release.tar.gz.sha256  ▶ $ apk list --installed 2>/dev/null | grep -E 'gcc|gcov|build' | head -20; which ap…[K[K ✓ (12ms)
+[K[K ✓ (52ms)
+  ▶ $ cat /etc/os-release 2>/dev/null || cat /etc/debian_version 2>/dev/null || uname …  ▶ $ which apt-get && apt-get --version 2>&1 | head -2[K[K ✓ (49ms)
+[K[K ✓ (98ms)
+  ▶ $ apt-get install -y gcc gcov make 2>&1 | tail -5[K[K ✓ (2.3s)
+  ▶ $ apt-get install -y gcc make 2>&1 | tail -5 && which gcc && gcc --version | head …[K[K ✓ (16.6s)
+  ▶ $ which gcov && gcov --version | head -1[K[K ✓ (72ms)
+
+────────────────────────────────────────────────────────────────────────────────
+  9 tools completed in 31.9s (9 ✓)
+
+gcc and gcov are both available. Now let's extract and build SQLite.
+  ╭─ Turn 7 ─────────────────────────────────────────────────────────────╮
+  ▶ $ mkdir -p /app/sqlite && cd /tmp && tar xzf /app/vendor/sqlite-fossil-release.tar…[K[K ✓ (1.4s)
+  ▶ $ ls /tmp/sqlite/[K[K ✓ (4ms)
+  ▶ $ cd /tmp/sqlite && ls autoconf/[K[K ✓ (5ms)
+  3 tools completed in 6.2s (3 ✓)
+
+The autoconf directory doesn't have a configure script pre-generated. Let's use the top-level configure or build manually.
+  ╭─ Turn 10 ────────────────────────────────────────────────────────────╮
+  ▶ $ ls /tmp/sqlite/configure && head -5 /tmp/sqlite/configure[K[K ✓ (3ms)
+  ▶ $ which tclsh 2>/dev/null || apt-get install -y tcl 2>&1 | tail -3[K[K ✓ (6.2s)
+  ▶ $ which tclsh && tclsh --version 2>/dev/null; ls /tmp/sqlite/autoconf/[K[K ✓ (13ms)
+  3 tools completed in 14.1s (3 ✓)
+
+The autoconf/ directory lacks a pre-generated `configure`. Let's use the fossil source's own configure (autosetup-based) or build from the amalgamation in the `src/` tree. The cleanest approach is to use the autoconf distribution layout which needs a configure generated, or just compile the amalgamation directly. Let me check if there's an amalgamation already present or if we need to generate it.
+  ╭─ Turn 13 ────────────────────────────────────────────────────────────╮
+  ▶ $ ls /tmp/sqlite/src/ | head -20 && ls /tmp/sqlite/src/sqlite3.c 2>/dev/null || ec…[K[K ✓ (19ms)
+  ▶ $ # Try using the top-level configure (autosetup-based) (5 lines)[K[K ✓ (3.7s)
+  ▶ $ cd /tmp/sqlite-build && make -j$(nproc) 2>&1 | tail -20[K[K ✓ (43.3s)
+  3 tools completed in 54.0s (3 ✓)
+
+Build succeeded. Now install and add to PATH:
+  ╭─ Turn 16 ────────────────────────────────────────────────────────────╮
+  ▶ $ cd /tmp/sqlite-build && make install 2>&1 | tail -10[K[K ✓ (64ms)
+  ▶ $ ls /app/sqlite/bin/ && /app/sqlite/bin/sqlite3 --version[K[K ✓ (7ms)
+  ▶ $ # Add /app/sqlite/bin to PATH permanently (10 lines)[K[K ✓ (21ms)
+  ▶ $ # Verify gcov instrumentation is present: check for .gcno fi… (6 lines)[K[K ✓ (21ms)
+  ▶ $ # Quick functional + gcov test: run sqlite3, generate some d… (6 lines)[K[K ✓ (15ms)
+  5 tools completed in 16.6s (5 ✓)
+
+Everything is working perfectly. Here's a summary of what was done:
+
+### Summary
+
+1. **Extracted** the pre-vendored SQLite source from `/app/vendor/sqlite-fossil-release.tar.gz into /tmp/sqlite`.
+
+2. Installed required build tools: gcc, make, and tcl (needed by SQLite's autosetup-based configure).
+
+3. Configured SQLite in a separate build directory (/tmp/sqlite-build) with gcov instrumentation flags:
+   • `CFLAGS="-fprofile-arcs -ftest-coverage -O0 -g"` — instruments the source for coverage tracking
+   • LDFLAGS="--coverage" — links the gcov runtime library
+
+4. Built and installed to /app/sqlite (prefix), producing:
+   • `/app/sqlite/bin/sqlite3` — the CLI binary
+   • /app/sqlite/lib/libsqlite3.{a,so} — libraries
+   • `/app/sqlite/include/sqlite3.h` — headers
+
+5. Added to PATH permanently via /etc/profile.d/sqlite.sh so sqlite3 is available in all future sessions.
+
+Verification:
+• sqlite3 --version → **3.50.4** ✓
+• .gcno files present at compile time (static instrumentation) ✓
+• `.gcda files generated after running sqlite3` (runtime coverage data) ✓ — confirming full gcov instrumentation is active
+
+  ↳ 2m 18s · 4660→2530 tokens · $0.122
+  ⬤ 2% of context window used
+
+
