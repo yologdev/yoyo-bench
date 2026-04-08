@@ -1,0 +1,18 @@
+  yoyo (prompt mode) — model: claude-sonnet-4-6
+[K[K
+── Thinking ────────────────────────────────────────────────────────────────
+Let me start by exploring the binary file to understand its structure and what memory values need to be extracted.  ▶ $ ls /app/ && file /app/a.out && wc -c /app/a.out  ▶ read /tmp/yoyo-skills/bench/SKILL.md ✓ (2ms)
+[K[K ✓ (5ms)
+  2 tools completed in 4.6s (2 ✓)
+  ⚡ retrying (attempt 2/4, waiting 1s)...
+[K[K  ⚡ retrying (attempt 3/4, waiting 2s)...
+[K[K  ⚡ retrying (attempt 4/4, waiting 4s)...
+[K[K
+  error: API error: {"type":"error","error":{"details":null,"type":"overloaded_error","message":"Overloaded"},"request_id":"req_011CZquExdJaSmyGZzzfm3Cs"     }
+  (failed after 4 attempts)
+
+  ↳ 27.9s · 497→152 tokens · $0.0045
+  ⬤ <1% of context window used
+
+  API error with no fallback configured. Exiting.
+

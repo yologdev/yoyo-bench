@@ -1,0 +1,22 @@
+  yoyo (prompt mode) — model: claude-sonnet-4-6
+[K[K  ⚡ retrying (attempt 2/4, waiting 1s)...
+[K[K  ⚡ retrying (attempt 3/4, waiting 2s)...
+[K[K
+── Thinking ────────────────────────────────────────────────────────────────
+Let me start by exploring the environment and understanding the opponent warriors, then craft a solution.
+────────────────────────────────────────────────────────────────────────────────
+
+I'll start by exploring the opponent warriors and the environment, then craft a solution.
+  ▶ $ ls warriors/ && echo "---" && which pmars && pmars --help 2>&1 | head -30  ▶ $ cat warriors/stone.red && echo "===" && cat warriors/paper.red && echo "===" && …[K[K ✓ (11ms)
+[K[K ✓ (171ms)
+  2 tools completed in 4.5s (2 ✓)
+  ⚡ retrying (attempt 4/4, waiting 4s)...
+[K[K
+  error: API error: {"type":"error","error":{"details":null,"type":"overloaded_error","message":"Overloaded"},"request_id":"req_011CZquHTo3aKYpcMwjpaKA3"  }
+  (failed after 4 attempts)
+
+  ↳ 29.8s · 321→210 tokens · $0.0083
+  ⬤ 1% of context window used
+
+  API error with no fallback configured. Exiting.
+

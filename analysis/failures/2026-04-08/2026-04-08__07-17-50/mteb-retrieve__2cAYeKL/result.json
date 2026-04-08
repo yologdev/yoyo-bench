@@ -1,0 +1,108 @@
+{
+    "id": "2bc44bb9-eccf-471c-869f-2ed4b9cd7780",
+    "task_name": "terminal-bench/mteb-retrieve",
+    "trial_name": "mteb-retrieve__2cAYeKL",
+    "trial_uri": "file:///tmp/bench-results/2026-04-08__07-17-50/mteb-retrieve__2cAYeKL",
+    "task_id": {
+        "org": "terminal-bench",
+        "name": "mteb-retrieve",
+        "ref": "sha256:5eed6e5ab80a4e7042f77a6cec8c01dd833a2c9c03a8c7ebdbd0b70f447750a5"
+    },
+    "source": "terminal-bench/terminal-bench-2",
+    "task_checksum": "0f4267100a97aceb49dd052bd6c029a5ef55a40af4d15bee48d1af1aba0eb9b8",
+    "config": {
+        "task": {
+            "path": null,
+            "git_url": null,
+            "git_commit_id": null,
+            "name": "terminal-bench/mteb-retrieve",
+            "ref": "sha256:5eed6e5ab80a4e7042f77a6cec8c01dd833a2c9c03a8c7ebdbd0b70f447750a5",
+            "overwrite": false,
+            "download_dir": null,
+            "source": "terminal-bench/terminal-bench-2"
+        },
+        "trial_name": "mteb-retrieve__2cAYeKL",
+        "trials_dir": "/tmp/bench-results/2026-04-08__07-17-50",
+        "timeout_multiplier": 1.0,
+        "agent_timeout_multiplier": null,
+        "verifier_timeout_multiplier": null,
+        "agent_setup_timeout_multiplier": null,
+        "environment_build_timeout_multiplier": null,
+        "agent": {
+            "name": null,
+            "import_path": "agents.yoyo_agent:Yoyo",
+            "model_name": "anthropic/claude-sonnet-4-6",
+            "override_timeout_sec": null,
+            "override_setup_timeout_sec": null,
+            "max_timeout_sec": null,
+            "kwargs": {},
+            "env": {}
+        },
+        "environment": {
+            "type": "docker",
+            "import_path": null,
+            "force_build": false,
+            "delete": true,
+            "override_cpus": null,
+            "override_memory_mb": null,
+            "override_storage_mb": null,
+            "override_gpus": null,
+            "suppress_override_warnings": false,
+            "mounts_json": null,
+            "env": {},
+            "kwargs": {}
+        },
+        "verifier": {
+            "override_timeout_sec": null,
+            "max_timeout_sec": null,
+            "disable": false
+        },
+        "artifacts": [],
+        "job_id": "339f8e18-0189-46a4-bd00-e50ec7e8543f"
+    },
+    "agent_info": {
+        "name": "yoyo",
+        "version": "unknown",
+        "model_info": {
+            "name": "claude-sonnet-4-6",
+            "provider": "anthropic"
+        }
+    },
+    "agent_result": {
+        "n_input_tokens": null,
+        "n_cache_tokens": null,
+        "n_output_tokens": null,
+        "cost_usd": null,
+        "rollout_details": null,
+        "metadata": null
+    },
+    "verifier_result": {
+        "rewards": {
+            "reward": 0.0
+        }
+    },
+    "exception_info": {
+        "exception_type": "NonZeroAgentExitCodeError",
+        "exception_message": "Command failed (exit 1): yoyo --yes -p 'Given the query \"terminal-bench\" retrieve the document with the 5th highest cosine similarity among the texts at /app/data.txt, where each line is a separate document, using the bge-small-zh-v1.5 embedding model at revision 7999e1d3359715c523056ef9478215996d62a620. Write the resulting line to /app/result.txt. You have the mteb package at version 1.36.8 installed.\n' --max-turns 100 --provider anthropic --thinking medium --model claude-sonnet-4-6 --skills /tmp/yoyo-skills --system-file /tmp/yoyo-system-prompt.md 2>&1 | tee /logs/agent/yoyo-output.txt\nstdout: yoyo: /lib/x86_64-linux-gnu/libc.so.6: version `GLIBC_2.39' not found (required by yoyo)\n\nstderr: None",
+        "exception_traceback": "Traceback (most recent call last):\n  File \"/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/harbor/trial/trial.py\", line 538, in run\n    await self._execute_agent()\n  File \"/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/harbor/trial/trial.py\", line 285, in _execute_agent\n    await asyncio.wait_for(\n  File \"/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/asyncio/tasks.py\", line 520, in wait_for\n    return await fut\n           ^^^^^^^^^\n  File \"/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/harbor/agents/installed/base.py\", line 41, in wrapper\n    return await fn(self, instruction, *args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/runner/work/yoyo-bench/yoyo-bench/agents/yoyo_agent.py\", line 193, in run\n    await self.exec_as_agent(\n  File \"/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/harbor/agents/installed/base.py\", line 358, in exec_as_agent\n    return await self._exec(\n           ^^^^^^^^^^^^^^^^^\n  File \"/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/harbor/agents/installed/base.py\", line 321, in _exec\n    raise NonZeroAgentExitCodeError(\nharbor.agents.installed.base.NonZeroAgentExitCodeError: Command failed (exit 1): yoyo --yes -p 'Given the query \"terminal-bench\" retrieve the document with the 5th highest cosine similarity among the texts at /app/data.txt, where each line is a separate document, using the bge-small-zh-v1.5 embedding model at revision 7999e1d3359715c523056ef9478215996d62a620. Write the resulting line to /app/result.txt. You have the mteb package at version 1.36.8 installed.\n' --max-turns 100 --provider anthropic --thinking medium --model claude-sonnet-4-6 --skills /tmp/yoyo-skills --system-file /tmp/yoyo-system-prompt.md 2>&1 | tee /logs/agent/yoyo-output.txt\nstdout: yoyo: /lib/x86_64-linux-gnu/libc.so.6: version `GLIBC_2.39' not found (required by yoyo)\n\nstderr: None\n",
+        "occurred_at": "2026-04-08T07:38:32.796071"
+    },
+    "started_at": "2026-04-08T07:34:51.544288Z",
+    "finished_at": "2026-04-08T07:39:41.563124Z",
+    "environment_setup": {
+        "started_at": "2026-04-08T07:34:51.548950Z",
+        "finished_at": "2026-04-08T07:38:19.760995Z"
+    },
+    "agent_setup": {
+        "started_at": "2026-04-08T07:38:19.761008Z",
+        "finished_at": "2026-04-08T07:38:31.781746Z"
+    },
+    "agent_execution": {
+        "started_at": "2026-04-08T07:38:31.781808Z",
+        "finished_at": "2026-04-08T07:38:32.795257Z"
+    },
+    "verifier": {
+        "started_at": "2026-04-08T07:38:32.799527Z",
+        "finished_at": "2026-04-08T07:39:23.689231Z"
+    }
+}

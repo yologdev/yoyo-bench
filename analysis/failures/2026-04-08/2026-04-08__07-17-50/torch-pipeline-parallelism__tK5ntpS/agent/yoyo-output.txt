@@ -1,0 +1,16 @@
+  yoyo (prompt mode) — model: claude-sonnet-4-6
+[K[K  ⚡ retrying (attempt 2/4, waiting 1s)...
+[K[K  ⚡ retrying (attempt 3/4, waiting 2s)...
+[K[K
+── Thinking ────────────────────────────────────────────────────────────────
+Let me explore the existing codebase to understand the structure before implementing.  ▶ $ find /app -type f | head -50 && echo "---" && ls /app[K[K ✓ (5ms)
+  ⚡ retrying (attempt 4/4, waiting 4s)...
+[K[K
+  error: API error: {"type":"error","error":{"details":null,"type":"overloaded_error","message":"Overloaded"},"request_id":"req_011CZquk8VBpaBYEyCNEF1JQ"      }
+  (failed after 4 attempts)
+
+  ↳ 28.6s · 481→93 tokens · $0.0083
+  ⬤ <1% of context window used
+
+  API error with no fallback configured. Exiting.
+

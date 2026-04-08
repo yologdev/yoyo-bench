@@ -1,0 +1,108 @@
+{
+    "id": "bffa43e0-f98c-4876-8f06-801c3eee7304",
+    "task_name": "terminal-bench/extract-moves-from-video",
+    "trial_name": "extract-moves-from-video__W5XNjGC",
+    "trial_uri": "file:///tmp/bench-results/2026-04-08__07-17-50/extract-moves-from-video__W5XNjGC",
+    "task_id": {
+        "org": "terminal-bench",
+        "name": "extract-moves-from-video",
+        "ref": "sha256:e15a249c82f4068634a136c0641a09feed2c12947e051e6b3c48f21699ed27c5"
+    },
+    "source": "terminal-bench/terminal-bench-2",
+    "task_checksum": "4ce580cd8bb8c7d62760e5980d0b0c2c0e8125e55aecb86169ac23dffd0cc1f8",
+    "config": {
+        "task": {
+            "path": null,
+            "git_url": null,
+            "git_commit_id": null,
+            "name": "terminal-bench/extract-moves-from-video",
+            "ref": "sha256:e15a249c82f4068634a136c0641a09feed2c12947e051e6b3c48f21699ed27c5",
+            "overwrite": false,
+            "download_dir": null,
+            "source": "terminal-bench/terminal-bench-2"
+        },
+        "trial_name": "extract-moves-from-video__W5XNjGC",
+        "trials_dir": "/tmp/bench-results/2026-04-08__07-17-50",
+        "timeout_multiplier": 1.0,
+        "agent_timeout_multiplier": null,
+        "verifier_timeout_multiplier": null,
+        "agent_setup_timeout_multiplier": null,
+        "environment_build_timeout_multiplier": null,
+        "agent": {
+            "name": null,
+            "import_path": "agents.yoyo_agent:Yoyo",
+            "model_name": "anthropic/claude-sonnet-4-6",
+            "override_timeout_sec": null,
+            "override_setup_timeout_sec": null,
+            "max_timeout_sec": null,
+            "kwargs": {},
+            "env": {}
+        },
+        "environment": {
+            "type": "docker",
+            "import_path": null,
+            "force_build": false,
+            "delete": true,
+            "override_cpus": null,
+            "override_memory_mb": null,
+            "override_storage_mb": null,
+            "override_gpus": null,
+            "suppress_override_warnings": false,
+            "mounts_json": null,
+            "env": {},
+            "kwargs": {}
+        },
+        "verifier": {
+            "override_timeout_sec": null,
+            "max_timeout_sec": null,
+            "disable": false
+        },
+        "artifacts": [],
+        "job_id": "339f8e18-0189-46a4-bd00-e50ec7e8543f"
+    },
+    "agent_info": {
+        "name": "yoyo",
+        "version": "0.1.7",
+        "model_info": {
+            "name": "claude-sonnet-4-6",
+            "provider": "anthropic"
+        }
+    },
+    "agent_result": {
+        "n_input_tokens": null,
+        "n_cache_tokens": null,
+        "n_output_tokens": null,
+        "cost_usd": null,
+        "rollout_details": null,
+        "metadata": null
+    },
+    "verifier_result": {
+        "rewards": {
+            "reward": 0.0
+        }
+    },
+    "exception_info": {
+        "exception_type": "NonZeroAgentExitCodeError",
+        "exception_message": "Command failed (exit 1): yoyo --yes -p 'Download this video of someone playing zork. https://www.youtube.com/watch?v=ZCbvyPbhRfA. Then transcribe the entire contents of the text, and create a file /app/solution.txt that has all the moves they input, one per line, in the format '\"'\"'n'\"'\"' or '\"'\"'get bag'\"'\"' etc.\n' --max-turns 100 --provider anthropic --thinking medium --model claude-sonnet-4-6 --skills /tmp/yoyo-skills --system-file /tmp/yoyo-system-prompt.md 2>&1 | tee /logs/agent/yoyo-output.txt\nstdout:   yoyo (prompt mode) — model: claude-sonnet-4-6\n\r\u001b[K\r\u001b[K  ⚡ retrying (attempt 2/4, waiting 1s)...\n\r\u001b[K\r\u001b[K\n── Thinking ────────────────────────────────────────────────────────────────\nLet me start by downloading the video and then transcribing it to extract the moves made in the Zork game.  ▶ $ which yt-dlp youtube-dl 2>/dev/null; pip show yt-dlp 2>/dev/null | head -3  ▶ $ ls /app/ 2>/dev/null && echo \"app exists\"\r\u001b[K\r\u001b[K ✓ (31ms)\n\r\u001b[K\r\u001b[K ✓ (33ms)\n  2 tools completed in 4.4s (2 ✓)\n  ⚡ retrying (attempt 3/4, waiting 2s)...\n\r\u001b[K\r\u001b[K  ⚡ retrying (attempt 4/4, waiting 4s)...\n\r\u001b[K\r\u001b[K\n  error: API error: {\"type\":\"error\",\"error\":{\"details\":null,\"type\":\"overloaded_error\",\"message\":\"Overloaded\"},\"request_id\":\"req_011CZquV87CSQfHzi8rY3U67\"               }\n  (failed after 4 attempts)\n\n  ↳ 34.4s · 96→165 tokens · $0.0050\n  ⬤ <1% of context window used\n\u0007\n  API error with no fallback configured. Exiting.\n\u0007\nstderr: None",
+        "exception_traceback": "Traceback (most recent call last):\n  File \"/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/harbor/trial/trial.py\", line 538, in run\n    await self._execute_agent()\n  File \"/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/harbor/trial/trial.py\", line 285, in _execute_agent\n    await asyncio.wait_for(\n  File \"/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/asyncio/tasks.py\", line 520, in wait_for\n    return await fut\n           ^^^^^^^^^\n  File \"/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/harbor/agents/installed/base.py\", line 41, in wrapper\n    return await fn(self, instruction, *args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/runner/work/yoyo-bench/yoyo-bench/agents/yoyo_agent.py\", line 193, in run\n    await self.exec_as_agent(\n  File \"/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/harbor/agents/installed/base.py\", line 358, in exec_as_agent\n    return await self._exec(\n           ^^^^^^^^^^^^^^^^^\n  File \"/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/harbor/agents/installed/base.py\", line 321, in _exec\n    raise NonZeroAgentExitCodeError(\nharbor.agents.installed.base.NonZeroAgentExitCodeError: Command failed (exit 1): yoyo --yes -p 'Download this video of someone playing zork. https://www.youtube.com/watch?v=ZCbvyPbhRfA. Then transcribe the entire contents of the text, and create a file /app/solution.txt that has all the moves they input, one per line, in the format '\"'\"'n'\"'\"' or '\"'\"'get bag'\"'\"' etc.\n' --max-turns 100 --provider anthropic --thinking medium --model claude-sonnet-4-6 --skills /tmp/yoyo-skills --system-file /tmp/yoyo-system-prompt.md 2>&1 | tee /logs/agent/yoyo-output.txt\nstdout:   yoyo (prompt mode) — model: claude-sonnet-4-6\n\r\u001b[K\r\u001b[K  ⚡ retrying (attempt 2/4, waiting 1s)...\n\r\u001b[K\r\u001b[K\n── Thinking ────────────────────────────────────────────────────────────────\nLet me start by downloading the video and then transcribing it to extract the moves made in the Zork game.  ▶ $ which yt-dlp youtube-dl 2>/dev/null; pip show yt-dlp 2>/dev/null | head -3  ▶ $ ls /app/ 2>/dev/null && echo \"app exists\"\r\u001b[K\r\u001b[K ✓ (31ms)\n\r\u001b[K\r\u001b[K ✓ (33ms)\n  2 tools completed in 4.4s (2 ✓)\n  ⚡ retrying (attempt 3/4, waiting 2s)...\n\r\u001b[K\r\u001b[K  ⚡ retrying (attempt 4/4, waiting 4s)...\n\r\u001b[K\r\u001b[K\n  error: API error: {\"type\":\"error\",\"error\":{\"details\":null,\"type\":\"overloaded_error\",\"message\":\"Overloaded\"},\"request_id\":\"req_011CZquV87CSQfHzi8rY3U67\"               }\n  (failed after 4 attempts)\n\n  ↳ 34.4s · 96→165 tokens · $0.0050\n  ⬤ <1% of context window used\n\u0007\n  API error with no fallback configured. Exiting.\n\u0007\nstderr: None\n",
+        "occurred_at": "2026-04-08T07:25:31.315134"
+    },
+    "started_at": "2026-04-08T07:24:21.675909Z",
+    "finished_at": "2026-04-08T07:26:00.557859Z",
+    "environment_setup": {
+        "started_at": "2026-04-08T07:24:21.677539Z",
+        "finished_at": "2026-04-08T07:24:24.622976Z"
+    },
+    "agent_setup": {
+        "started_at": "2026-04-08T07:24:24.622991Z",
+        "finished_at": "2026-04-08T07:24:55.723275Z"
+    },
+    "agent_execution": {
+        "started_at": "2026-04-08T07:24:55.723345Z",
+        "finished_at": "2026-04-08T07:25:31.314263Z"
+    },
+    "verifier": {
+        "started_at": "2026-04-08T07:25:31.325594Z",
+        "finished_at": "2026-04-08T07:25:48.367527Z"
+    }
+}

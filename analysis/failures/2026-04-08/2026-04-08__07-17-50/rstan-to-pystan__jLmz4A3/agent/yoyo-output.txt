@@ -1,0 +1,22 @@
+  yoyo (prompt mode) — model: claude-sonnet-4-6
+  ⠋ thinking...[K[K[K  ⚡ retrying (attempt 2/4, waiting 1s)...
+  ⠋ thinking...[K[K  ⚡ retrying (attempt 3/4, waiting 2s)...
+[K[K  ⚡ retrying (attempt 4/4, waiting 4s)...
+[K[K
+── Thinking ────────────────────────────────────────────────────────────────
+Let me start by exploring the environment and reading the relevant files.
+────────────────────────────────────────────────────────────────────────────────
+
+I'll tackle this step by step. Let me start by exploring the files and reading the R script.
+  ▶ $ ls /app/ && echo "---" && cat /app/gp_rstan.R  ▶ $ head -5 /app/train_X.csv && echo "---" && head -5 /app/train_y.csv && echo "---"…[K[K ✓ (6ms)
+[K[K ✓ (36ms)
+  2 tools completed in 3.7s (2 ✓)
+
+  error: API error: {"type":"error","error":{"details":null,"type":"overloaded_error","message":"Overloaded"},"request_id":"req_011CZquAyZVrMjwp9xaHWq56"        }
+  (failed after 4 attempts)
+
+  ↳ 28.4s · 519→210 tokens · $0.012
+  ⬤ 1% of context window used
+
+  API error with no fallback configured. Exiting.
+

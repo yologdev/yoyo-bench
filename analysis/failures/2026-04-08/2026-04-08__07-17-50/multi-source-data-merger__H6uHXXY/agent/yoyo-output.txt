@@ -1,0 +1,11 @@
+  yoyo (prompt mode) — model: claude-sonnet-4-6
+[K[K  ⚡ retrying (attempt 2/4, waiting 1s)...
+[K[K  ⚡ retrying (attempt 3/4, waiting 2s)...
+[K[K  ⚡ retrying (attempt 4/4, waiting 4s)...
+[K[K
+  error: API error: {"type":"error","error":{"details":null,"type":"overloaded_error","message":"Overloaded"},"request_id":"req_011CZquZ4V2h2LpMGCa3DN4V"   }
+  (failed after 4 attempts)
+  ⬤ <1% of context window used
+
+  API error with no fallback configured. Exiting.
+
