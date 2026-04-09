@@ -1,0 +1,26 @@
+  yoyo (prompt mode) — model: claude-sonnet-4-6
+[K[K
+── Thinking ────────────────────────────────────────────────────────────────
+Let me start by reading the sequences.fasta file and understanding the task, then design primers for Golden Gate assembly.  ▶ $ cat /tmp/yoyo-skills/bench/SKILL.md 2>/dev/null | head -50; ls; cat sequences.fa…[K[K ✓ (17ms)
+  ▶ $ which oligotm || find / -name oligotm 2>/dev/null | head -5; which primer3_core …[K[K ✓ (166ms)
+  ▶ $ apt-get install -y primer3 2>/dev/null | tail -3; which oligotm[K[K ✓ (4.0s)
+
+────────────────────────────────────────────────────────────────────────────────
+  3 tools completed in 12.2s (3 ✓)
+
+Good, oligotm is installed. Now let me understand the Golden Gate assembly task in detail.
+  ╭─ Turn 4 ─────────────────────────────────────────────────────────────╮
+  ▶ $ # BsaI recognition site: GGTCTC(N)1 - cuts 1nt downstream on… (39 lines)[K[K ✓ (2ms)
+  ▶ $ which python || which python2; apt-get install -y python3 2>/dev/null | tail -2;…[K[K ✓ (13.0s)
+  ▶ $ python3 << 'EOF' (62 lines)[K[K ✓ (78ms)
+  ▶ $ python3 << 'EOF' (47 lines)[K[K ✓ (54ms)
+  ▶ $ python3 << 'EOF' (54 lines)[K[K ✓ (66ms)
+  ▶ $ python3 << 'EOF' (99 lines)[K[K ✓ (59ms)
+  ▶ $ python3 << 'EOF' (48 lines)[K[K ✓ (68ms)
+  ▶ $ python3 << 'EOF' (72 lines)[K[K ✓ (20ms)
+  8 tools completed in 10m 4s (8 ✓)
+
+  ↳ 11m 24s · 9457→36069 tokens · $0.768
+  ⬤ 10% of context window used
+
+

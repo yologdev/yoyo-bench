@@ -1,0 +1,108 @@
+{
+    "id": "0051b1af-3acd-40aa-87d9-ad17922b62a8",
+    "task_name": "terminal-bench/extract-moves-from-video",
+    "trial_name": "extract-moves-from-video__2pSTc9y",
+    "trial_uri": "file:///tmp/bench-results/2026-04-09__07-21-15/extract-moves-from-video__2pSTc9y",
+    "task_id": {
+        "org": "terminal-bench",
+        "name": "extract-moves-from-video",
+        "ref": "sha256:e15a249c82f4068634a136c0641a09feed2c12947e051e6b3c48f21699ed27c5"
+    },
+    "source": "terminal-bench/terminal-bench-2",
+    "task_checksum": "4ce580cd8bb8c7d62760e5980d0b0c2c0e8125e55aecb86169ac23dffd0cc1f8",
+    "config": {
+        "task": {
+            "path": null,
+            "git_url": null,
+            "git_commit_id": null,
+            "name": "terminal-bench/extract-moves-from-video",
+            "ref": "sha256:e15a249c82f4068634a136c0641a09feed2c12947e051e6b3c48f21699ed27c5",
+            "overwrite": false,
+            "download_dir": null,
+            "source": "terminal-bench/terminal-bench-2"
+        },
+        "trial_name": "extract-moves-from-video__2pSTc9y",
+        "trials_dir": "/tmp/bench-results/2026-04-09__07-21-15",
+        "timeout_multiplier": 1.0,
+        "agent_timeout_multiplier": null,
+        "verifier_timeout_multiplier": null,
+        "agent_setup_timeout_multiplier": null,
+        "environment_build_timeout_multiplier": null,
+        "agent": {
+            "name": null,
+            "import_path": "agents.yoyo_agent:Yoyo",
+            "model_name": "anthropic/claude-sonnet-4-6",
+            "override_timeout_sec": null,
+            "override_setup_timeout_sec": null,
+            "max_timeout_sec": null,
+            "kwargs": {},
+            "env": {}
+        },
+        "environment": {
+            "type": "docker",
+            "import_path": null,
+            "force_build": false,
+            "delete": true,
+            "override_cpus": null,
+            "override_memory_mb": null,
+            "override_storage_mb": null,
+            "override_gpus": null,
+            "suppress_override_warnings": false,
+            "mounts_json": null,
+            "env": {},
+            "kwargs": {}
+        },
+        "verifier": {
+            "override_timeout_sec": null,
+            "max_timeout_sec": null,
+            "disable": false
+        },
+        "artifacts": [],
+        "job_id": "5dd07fbb-1406-473e-8b77-36b91e4fcf71"
+    },
+    "agent_info": {
+        "name": "yoyo",
+        "version": "0.1.7",
+        "model_info": {
+            "name": "claude-sonnet-4-6",
+            "provider": "anthropic"
+        }
+    },
+    "agent_result": {
+        "n_input_tokens": null,
+        "n_cache_tokens": null,
+        "n_output_tokens": null,
+        "cost_usd": null,
+        "rollout_details": null,
+        "metadata": null
+    },
+    "verifier_result": {
+        "rewards": {
+            "reward": 0.0
+        }
+    },
+    "exception_info": {
+        "exception_type": "NonZeroAgentExitCodeError",
+        "exception_message": "Command failed (exit 1): yoyo --yes -p 'Download this video of someone playing zork. https://www.youtube.com/watch?v=ZCbvyPbhRfA. Then transcribe the entire contents of the text, and create a file /app/solution.txt that has all the moves they input, one per line, in the format '\"'\"'n'\"'\"' or '\"'\"'get bag'\"'\"' etc.\n' --max-turns 100 --provider anthropic --thinking medium --model claude-sonnet-4-6 --skills /tmp/yoyo-skills --system-file /tmp/yoyo-system-prompt.md 2>&1 | tee /logs/agent/yoyo-output.txt\nstdout:   yoyo (prompt mode) — model: claude-sonnet-4-6\n\r\u001b[K\r\u001b[K\n── Thinking ────────────────────────────────────────────────────────────────\nLet me start by exploring the environment and then download the YouTube video, transcribe it, and extract the moves from the Zork gameplay.  ▶ $ which yt-dlp youtube-dl ffmpeg python3 2>/dev/null; ls /app/ 2>/dev/null\r\u001b[K\r\u001b[K ✓ (14ms)\n  ▶ $ which yt-dlp || pip install yt-dlp -q; which ffmpeg || apt-get install -y ffmpeg…\r\u001b[K\r\u001b[K ✓ (1m 3s)\n  ▶ $ which ffmpeg; pip3 install yt-dlp -q 2>&1 | tail -3; which yt-dlp\r\u001b[K\r\u001b[K ✓ (370ms)\n  ▶ $ python3 -m pip install yt-dlp 2>&1 | tail -5\r\u001b[K\r\u001b[K ✓ (105ms)\n  ▶ $ apt-get install -y python3-pip 2>&1 | tail -3; pip3 install yt-dlp 2>&1 | tail -…\r\u001b[K\r\u001b[K ✓ (24.3s)\n  ▶ $ pip3 install yt-dlp --break-system-packages 2>&1 | tail -5\r\u001b[K\r\u001b[K ✓ (4.4s)\n  ▶ $ mkdir -p /app && cd /app && yt-dlp -o zork_video.%(ext)s \"https://www.youtube.co…\r\u001b[K\r\u001b[K ✓ (1ms)\n  ▶ $ mkdir -p /app && cd /app && yt-dlp -o \"zork_video\" \"https://www.yout ... [truncated]\nstderr: None",
+        "exception_traceback": "Traceback (most recent call last):\n  File \"/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/harbor/trial/trial.py\", line 538, in run\n    await self._execute_agent()\n  File \"/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/harbor/trial/trial.py\", line 285, in _execute_agent\n    await asyncio.wait_for(\n  File \"/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/asyncio/tasks.py\", line 520, in wait_for\n    return await fut\n           ^^^^^^^^^\n  File \"/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/harbor/agents/installed/base.py\", line 41, in wrapper\n    return await fn(self, instruction, *args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/runner/work/yoyo-bench/yoyo-bench/agents/yoyo_agent.py\", line 193, in run\n    await self.exec_as_agent(\n  File \"/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/harbor/agents/installed/base.py\", line 358, in exec_as_agent\n    return await self._exec(\n           ^^^^^^^^^^^^^^^^^\n  File \"/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/harbor/agents/installed/base.py\", line 321, in _exec\n    raise NonZeroAgentExitCodeError(\nharbor.agents.installed.base.NonZeroAgentExitCodeError: Command failed (exit 1): yoyo --yes -p 'Download this video of someone playing zork. https://www.youtube.com/watch?v=ZCbvyPbhRfA. Then transcribe the entire contents of the text, and create a file /app/solution.txt that has all the moves they input, one per line, in the format '\"'\"'n'\"'\"' or '\"'\"'get bag'\"'\"' etc.\n' --max-turns 100 --provider anthropic --thinking medium --model claude-sonnet-4-6 --skills /tmp/yoyo-skills --system-file /tmp/yoyo-system-prompt.md 2>&1 | tee /logs/agent/yoyo-output.txt\nstdout:   yoyo (prompt mode) — model: claude-sonnet-4-6\n\r\u001b[K\r\u001b[K\n── Thinking ────────────────────────────────────────────────────────────────\nLet me start by exploring the environment and then download the YouTube video, transcribe it, and extract the moves from the Zork gameplay.  ▶ $ which yt-dlp youtube-dl ffmpeg python3 2>/dev/null; ls /app/ 2>/dev/null\r\u001b[K\r\u001b[K ✓ (14ms)\n  ▶ $ which yt-dlp || pip install yt-dlp -q; which ffmpeg || apt-get install -y ffmpeg…\r\u001b[K\r\u001b[K ✓ (1m 3s)\n  ▶ $ which ffmpeg; pip3 install yt-dlp -q 2>&1 | tail -3; which yt-dlp\r\u001b[K\r\u001b[K ✓ (370ms)\n  ▶ $ python3 -m pip install yt-dlp 2>&1 | tail -5\r\u001b[K\r\u001b[K ✓ (105ms)\n  ▶ $ apt-get install -y python3-pip 2>&1 | tail -3; pip3 install yt-dlp 2>&1 | tail -…\r\u001b[K\r\u001b[K ✓ (24.3s)\n  ▶ $ pip3 install yt-dlp --break-system-packages 2>&1 | tail -5\r\u001b[K\r\u001b[K ✓ (4.4s)\n  ▶ $ mkdir -p /app && cd /app && yt-dlp -o zork_video.%(ext)s \"https://www.youtube.co…\r\u001b[K\r\u001b[K ✓ (1ms)\n  ▶ $ mkdir -p /app && cd /app && yt-dlp -o \"zork_video\" \"https://www.yout ... [truncated]\nstderr: None\n",
+        "occurred_at": "2026-04-09T07:59:30.214882"
+    },
+    "started_at": "2026-04-09T07:46:44.688627Z",
+    "finished_at": "2026-04-09T08:00:07.129696Z",
+    "environment_setup": {
+        "started_at": "2026-04-09T07:46:44.690882Z",
+        "finished_at": "2026-04-09T07:46:47.942652Z"
+    },
+    "agent_setup": {
+        "started_at": "2026-04-09T07:46:47.942665Z",
+        "finished_at": "2026-04-09T07:47:12.698990Z"
+    },
+    "agent_execution": {
+        "started_at": "2026-04-09T07:47:12.699063Z",
+        "finished_at": "2026-04-09T07:59:30.214049Z"
+    },
+    "verifier": {
+        "started_at": "2026-04-09T07:59:30.219897Z",
+        "finished_at": "2026-04-09T07:59:44.019182Z"
+    }
+}

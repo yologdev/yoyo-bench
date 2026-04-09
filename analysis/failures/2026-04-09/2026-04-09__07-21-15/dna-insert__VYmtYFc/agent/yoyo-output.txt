@@ -1,0 +1,57 @@
+  yoyo (prompt mode) — model: claude-sonnet-4-6
+[K[K
+── Thinking ────────────────────────────────────────────────────────────────
+Let me start by reading the sequences.fasta file to understand what we're working with, then figure out what changes need to be made to convert the input plasmid to the output plasmid.  ▶ $ cat /tmp/yoyo-skills/bench/SKILL.md 2>/dev/null | head -50; ls; cat sequences.fa…[K[K ✓ (11ms)
+  ▶ $ # Find the differences between input and output sequences (18 lines)[K[K ✓ (7ms)
+  ▶ $ which python python3 py; ls /usr/bin/python*[K[K ✓ (7ms)
+  ▶ $ which python3 || which python || which perl || which ruby || apk add --no-cache …[K[K ✓ (11ms)
+  ▶ $ apt-get install -y python3 python3-pip 2>&1 | tail -5[K[K ✓ (34.2s)
+  ▶ $ python3 << 'EOF' (11 lines)[K[K ✓ (31ms)
+  ▶ $ python3 << 'EOF' (34 lines)[K[K ✓ (35ms)
+  ▶ $ python3 << 'EOF' (74 lines)[K[K ✓ (23ms)
+  ▶ $ python3 << 'EOF' (62 lines)[K[K ✓ (27ms)
+  ▶ $ # Install primer3 and oligotm tool (3 lines)[K[K ✓ (5.0s)
+  ▶ $ # Test oligotm (4 lines)[K[K ✓ (7ms)
+  ▶ $ python3 << 'EOF' (59 lines)[K[K ✓ (233ms)
+  ▶ $ python3 << 'EOF' (68 lines)[K[K ✓ (930ms)
+  ▶ $ python3 << 'EOF' (93 lines)[K[K ✓ (122ms)
+  ▶ $ python3 << 'EOF' (76 lines)[K[K ✓ (426ms)
+  ▶ $ python3 << 'EOF' (63 lines)[K[K ✓ (164ms)
+  ▶ $ # Let me verify:  (75 lines)[K[K ✓ (137ms)
+
+────────────────────────────────────────────────────────────────────────────────
+  17 tools completed in 3m 44s (17 ✓)
+
+The primers are correct. Let me verify the final output:
+  ╭─ Turn 18 ────────────────────────────────────────────────────────────╮
+  ▶ $ cat primers.fasta (32 lines)[K[K ✓ (123ms)
+
+All constraints are satisfied. Here's a summary of what was done:
+
+## Summary
+
+**Analysis of the sequences:**
+• The input and output plasmids differ by a single **insertion** of 39 nucleotides (TAGATTAGAAGAAGAATTAAGAAGAAGATTAACAGAAAG) at position 215 of the input plasmid, between ...TACATATGAG and `CAAGGGCGAGG...`.
+
+**Primer design for NEB Q5 Site-Directed Mutagenesis:**
+
+Using Q5 SDM for an insertion, the primers are designed back-to-back, pointing away from each other:
+• Forward primer: The inserted sequence as a 5' tail + annealing sequence starting just after the insertion point
+• Reverse primer: Reverse complement of the sequence ending just before the insertion point
+
+primers.fasta contains 1 primer pair:
+
+| Primer | Sequence | Annealing length | Annealing Tm |
+|--------|----------|-----------------|--------------|
+| Forward | TAGATTAGAAGAAGAATTAAGAAGAAGATTAACAGAAAGCAAGGGCGAGGAGCT | 15 nt | 59.54°C |
+| Reverse | CTCATATGTATATCTCCTTCTTAAAGTT | 28 nt | 58.04°C |
+
+• Tm difference: 1.49°C (≤ 5°C ✓)
+• Both annealing lengths are within 15–45 nt ✓
+• Both Tm values are within 58–72°C ✓
+• 1 primer pair — the minimum needed for one insertion mutation
+
+  ↳ 4m 2s · 17771→14851 tokens · $0.613
+  ⬤ 8% of context window used
+
+
