@@ -1,0 +1,58 @@
+  yoyo (prompt mode) — model: claude-sonnet-4-6
+[K[K
+── Thinking ────────────────────────────────────────────────────────────────
+Let me start by exploring the environment and understanding the opponents before writing my warrior.  ▶ $ ls warriors/ && cat warriors/stone.red warriors/paper.red warriors/vampire.red w…  ▶ $ which pmars && pmars --help 2>&1 | head -30[K[K ✓ (6ms)
+[K[K ✓ (511ms)
+  ▶ $ # Write a first version of a warrior - a fast replicator wit… (22 lines)[K[K ✓ (165ms)
+  ▶ $ # Let me study what works well. Let me try a known good warr… (28 lines)[K[K ✓ (748ms)
+  ▶ $ # Paper-like replicators lose to stone. Need a different app… (37 lines)[K[K ✓ (72ms)
+  ▶ $ pmars -b -r 100 my_warrior.red warriors/stone.red 2>&1 | head -20[K[K ✓ (21ms)
+  ▶ $ cat > my_warrior.red << 'EOF' (28 lines)[K[K ✓ (263ms)
+  ▶ $ # Check what's wrong with the warrior (2 lines)[K[K ✓ (113ms)
+  ▶ $ # The djn was removed but the loop is infinite now - bptr ke… (3 lines)[K[K ✓ (7ms)
+  ▶ $ # The loop never terminates (no djn back to bomb) - the add … (60 lines)[K[K ✓ (307ms)
+  ▶ $ pmars -b -r 100 -f my_warrior.red warriors/snake.red 2>&1 | … (2 lines)[K[K ✓ (348ms)
+  ▶ $ # Getting some wins against stone/paper/vampire but need 75+… (54 lines)[K[K ✓ (1.9s)
+  ▶ $ # Pure replicator is terrible against stone and g2-clear. (56 lines)[K[K ✓ (1.4s)
+  ▶ $ # Better but still not enough. The problem is stone is very … (61 lines)[K[K ✓ (54ms)
+  ▶ $ pmars -b my_warrior.red warriors/stone.red 2>&1 | head -20[K[K ✓ (103ms)
+  ▶ $ # "dat" is a reserved word as label! Need to rename it. (39 lines)[K[K ✓ (1.4s)
+  ▶ $ # Good progress! vs stone: 40 wins (need 75), vs vampire: 95… (64 lines)[K[K ✓ (2.2s)
+  ▶ $ # Back to the drawing board. The challenge is clear: (68 lines)[K[K ✓ (2.2s)
+  ▶ $ # The problem with the replicator is it's not fast enough. (72 lines)[K[K ✓ (1.4s)
+  ▶ $ # 4 bombers is better! stone: 46, vampire: 95, g2-clear: 21 (69 lines)[K[K ✓ (369ms)
+  ▶ $ pmars -b -r 100 -f my_warrior.red warriors/snake.red 2>&1 | … (2 lines)[K[K ✓ (674ms)
+  ▶ $ # Great improvement! stone: 62, paper: 85, vampire: 95 (67 lines)[K[K ✓ (1.1s)
+  ▶ $ # Great improvement! stone: 91, vampire: 97, paper: 66 (need… (114 lines)[K[K ✓ (1.7s)
+  ▶ $ # The flood approach doesn't work well - SPL flooding create… (69 lines)[K[K ✓ (1.2s)
+  ▶ $ # Interesting! paper: 78 (need 75!), vampire: 91 (52 lines)[K[K ✓ (1.0s)
+  ▶ $ # paper: 83, vampire: 99 - excellent! (66 lines)[K[K ✓ (1.4s)
+  ▶ $ # Hmm, different results each run. Let me think about what d… (16 lines)[K  ⠋ bash ⏱ 2s (3 lines)[K  ⠙ bash ⏱ 2s (3 lines)[K  ⠹ bash ⏱ 3s (4 lines)[K  ⠸ bash ⏱ 3s (4 lines)[K[K ✓ (6.0s)
+  ▶ $ # The results are fairly consistent. Let me run 300 rounds e… (5 lines)[K[K ✓ (1.6s)
+  ▶ $ # Over 300 rounds: (58 lines)[K[K ✓ (2.4s)
+  ▶ $ pmars -b -r 300 -f my_warrior.red warriors/stone.red 2>&1 | … (3 lines)[K[K ✓ (1.4s)
+  ▶ $ # This combination is worse for both stone and paper than th… (44 lines)[K[K ✓ (2.4s)
+  ▶ $ # Hmm, this is only showing 2 results. Let me try without th… (2 lines)[K[K ✓ (130ms)
+  ▶ $ pmars -b -r 300 -f my_warrior.red warriors/paper.red 2>&1 | … (4 lines)[K  ⠋ bash ⏱ 2s (11 lines)[K[K ✓ (3.2s)
+  ▶ $ # Interesting! Wait - earlier I saw 91 wins vs stone with th… (59 lines)[K[K ✓ (529ms)
+  ▶ $ # Original was 91 vs stone - I'm not recreating it correctly… (65 lines)[K[K ✓ (1.5s)
+  ▶ $ # Over 200 rounds: (64 lines)[K[K ✓ (2.4s)
+  ▶ $ # Interesting! stone: 50% (exactly tied!), paper: 55/200=27.… (90 lines)[K[K ✓ (3.1s)
+  ▶ $ # The replication is hurting performance since it splits foc… (90 lines)[K[K ✓ (1.4s)
+  ▶ $ # Excellent progress! (126 lines)[K[K ✓ (1.7s)
+  ▶ $ # Ugh - 5 bombers is hurting stone performance (83 wins but … (55 lines)[K[K ✓ (2.2s)
+  ▶ $ # Much worse. The SPL/JMP mix is confusing. Let me be more s… (105 lines)[K[K ✓ (832ms)
+  ▶ $ # Adding "add #0, p" breaks timing - stone now wins badly ag… (100 lines)[K[K ✓ (1.9s)
+  ▶ $ # The SPL trick is hurting because processes pile up on the … (141 lines)[K[K ✓ (1.1s)
+  ▶ $ # Stone: 51%, paper: 82%, vampire: 92%, snake: 0%, g2-clear:… (37 lines)[K[K ✓ (1.2s)
+  ▶ $ # Great results for 3 that need 75%: (41 lines)[K[K ✓ (384ms)
+  ▶ $ # Around 63-66% - need 75%. Let me try different approaches … (32 lines)[K[K ✓ (175ms)
+  ▶ $ # Adding a backward step-4 bomber boosts stone wins to 86-89… (42 lines)[K[K ✓ (1.2s)
+  ▶ $ # stone: 85.5%, paper: 67.5%, vampire: 94.5%, snake: 0%, g2-… (58 lines)[K[K ✓ (1.6s)
+  ▶ $ # stone: 34.5% - terrible! Sub backward from 7950 is going w… (34 lines)[K[K ✓ (124ms)
+  49 tools completed in 9m 56s (49 ✓)
+
+  ↳ 10m 1s · 6938→30763 tokens · $0.901
+  ⬤ 13% of context window used
+
+
