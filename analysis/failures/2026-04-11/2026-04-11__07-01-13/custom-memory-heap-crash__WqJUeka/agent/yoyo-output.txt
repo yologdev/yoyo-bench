@@ -1,0 +1,70 @@
+  yoyo (prompt mode) — model: claude-sonnet-4-6
+[K[K
+── Thinking ────────────────────────────────────────────────────────────────
+Let me start by exploring the /app/ directory to understand the program structure.  ▶ $ find /app -type f | sort && echo "---" && cat /app/main.cpp && echo "---" && cat…[K[K ✓ (102ms)
+  ▶ $ cat /app/user.h[K[K ✓ (11ms)
+  ▶ $ # First compile both versions to see what happens (5 lines)[K  ⠋ bash ⏱ 2s (1 line)[K[K ✓ (4.8s)
+  ▶ $ /app/debug 2>&1 (5 lines)[K[K ✓ (1.0s)
+  ▶ $ # The crash happens AFTER the output is complete. Let's debu… (5 lines)[K[K ✓ (5.7s)
+  ▶ $ # The crash is in _Fac_tidy_reg_t destructor - this is a loc… (12 lines)[K[K ✓ (844ms)
+  ▶ $ sed -n '310,340p' /build/gcc-13.2.0/libstdc++-v3/src/c++98/locale_init.cc[K[K ✓ (15ms)
+  ▶ $ # Now I understand the issue! (14 lines)[K[K ✓ (36ms)
+  ▶ $ sed -n '260,400p' /build/gcc-13.2.0/libstdc++-v3/src/c++98/locale_init.cc[K[K ✓ (17ms)
+
+────────────────────────────────────────────────────────────────────────────────
+  9 tools completed in 39.1s (9 ✓)
+
+Now I understand the full picture. Let me analyze the problem:
+  ╭─ Turn 10 ────────────────────────────────────────────────────────────╮
+  ▶ $ # The flow in RELEASE mode: (36 lines)[K[K ✓ (96ms)
+  ▶ $ grep -n "user_init\|g_custom_heap = new\|heap_memory" /app/main.cpp | tail -20[K[K ✓ (16ms)
+  ▶ $ # Perfect! In Application::init(): (50 lines)[K[K ✓ (72ms)
+  ▶ $ # Build and test (5 lines)[K  ⠋ bash ⏱ 2s (1 line)[K[K ✓ (6.8s)
+  ▶ $ /app/debug 2>&1 (5 lines)[K[K ✓ (1.3s)
+  ▶ $ # Still crashing. Let me check if _Facets_registered is bein… (5 lines)[K[K ✓ (9ms)
+  ▶ $ # Let me check where _Facet_Register_impl is called from (2 lines)[K[K ✓ (7ms)
+  ▶ $ # _Facet_Register_impl is not being called from within local… (3 lines)[K[K ✓ (249ms)
+  ▶ $ # Check the header files for the call (2 lines)[K[K ✓ (288ms)
+  ▶ $ sed -n '85,115p' /build/gcc-13.2.0/libstdc++-v3/include/bits/locale_classes.tcc[K[K ✓ (17ms)
+  ▶ $ # So _Facet_Register_impl() is called from __try_use_facet()… (11 lines)[K[K ✓ (42ms)
+  ▶ $ # Let me check when __try_use_facet is actually called durin… (43 lines)[K[K ✓ (3.4s)
+  ▶ $ # Release works now! Verify debug still works (4 lines)[K  ⠋ bash ⏱ 2s (1 line)[K[K ✓ (4.7s)
+  ▶ $ # Now check for memory leaks with Valgrind (2 lines)[K[K ✓ (2.1s)
+  ▶ $ valgrind --leak-check=full --error-exitcode=1 /app/debug 2>&1 | tail -20[K[K ✓ (16.2s)
+  15 tools completed in 1m 44s (15 ✓)
+
+Both debug and release build cleanly with zero memory leaks. Here's a summary of what was happening and how it was fixed:
+
+────────────────────────────────────────
+
+## Root Cause
+
+The custom `libstdc++ at /build/` contains a modified locale_init.cc that mimics an MSVC-style "facet registration" system. When __try_use_facet() is first called (which happens on any formatted I/O operation like `std::cout << ...), it calls _Facet_Register_impl()`, which allocates a linked list of _Fac_node objects using `::operator new` (in `NDEBUG`/release mode).
+
+The crash sequence in RELEASE mode was:
+
+1. Application::init() calls user_init() *(nothing happens)*, then **activates `g_custom_heap`**.
+2. Application::run() uses std::cout → triggers __try_use_facet() → _Facet_Register_impl() runs → _Fac_node objects are allocated via ::operator new → **routed to the custom arena heap** (because g_custom_heap != nullptr).
+3. `Application::shutdown()` destroys the arena: wipes the 10 MB block with 0xEF, then calls std::free on it. g_custom_heap is set to nullptr.
+4. Static destructors run → `_Fac_tidy_reg_t::~_Fac_tidy_reg_t() calls ::operator delete(nodeptr) on each _Fac_node. Now g_custom_heap is null`, so it falls through to std::free() — but that memory belongs to the already-freed arena → SIGSEGV.
+
+In DEBUG mode it used std::malloc/std::free directly (bypassing the overloaded `operator new/delete`), so no crash.
+
+## Fix (`/app/user.cpp`)
+
+Force `_Facet_Register_impl() to run **inside user_init()`**, which is called before g_custom_heap is set up in Application::init():
+
+```cpp
+void user_init() {
+    std::ostringstream oss;
+    oss << 0;   // triggers __try_use_facet → _Facet_Register_impl()
+    (void)oss.str();
+}
+```
+
+This ensures the _Fac_node objects are allocated when g_custom_heap is still nullptr, so plain std::malloc is used. The subsequent std::free calls in the static destructor succeed correctly, and the `_Facets_registered` flag prevents any re-allocation once the custom heap becomes active.
+
+  ↳ 2m 52s · 9360→5778 tokens · $0.247
+  ⬤ 5% of context window used
+
+
