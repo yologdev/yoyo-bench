@@ -1,0 +1,104 @@
+{
+    "results": {
+        "tool": {
+            "name": "pytest",
+            "version": "8.4.1"
+        },
+        "summary": {
+            "tests": 7,
+            "passed": 0,
+            "failed": 7,
+            "skipped": 0,
+            "pending": 0,
+            "other": 0,
+            "start": 1775978818.707372,
+            "stop": 1775978819.1191893
+        },
+        "tests": [
+            {
+                "name": "test_outputs.py::test_import",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 0.0011516189999838389,
+                "start": 1775978819.0351784,
+                "stop": 1775978819.076791,
+                "retries": 0,
+                "file_path": "test_outputs.py",
+                "trace": "def test_import():\n        \"\"\"Test that the headless terminal can be imported.\"\"\"\n>       from headless_terminal import HeadlessTerminal  # noqa: F401\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nE       ModuleNotFoundError: No module named 'headless_terminal'\n\n/tests/test_outputs.py:13: ModuleNotFoundError",
+                "message": "The test failed in the call phase"
+            },
+            {
+                "name": "test_outputs.py::test_send_non_interactive_command",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 0.0008778449998771976,
+                "start": 1775978819.0771534,
+                "stop": 1775978819.0812867,
+                "retries": 0,
+                "file_path": "test_outputs.py",
+                "trace": "def test_send_non_interactive_command():\n        \"\"\"Test that the headless terminal can send a non-interactive command.\"\"\"\n>       from headless_terminal import HeadlessTerminal\nE       ModuleNotFoundError: No module named 'headless_terminal'\n\n/tests/test_outputs.py:18: ModuleNotFoundError",
+                "message": "The test failed in the call phase"
+            },
+            {
+                "name": "test_outputs.py::test_send_interactive_command",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 0.0007919679999304208,
+                "start": 1775978819.081541,
+                "stop": 1775978819.0855122,
+                "retries": 0,
+                "file_path": "test_outputs.py",
+                "trace": "def test_send_interactive_command():\n        \"\"\"Test that the headless terminal can interact with interactive programs.\"\"\"\n>       from headless_terminal import HeadlessTerminal\nE       ModuleNotFoundError: No module named 'headless_terminal'\n\n/tests/test_outputs.py:32: ModuleNotFoundError",
+                "message": "The test failed in the call phase"
+            },
+            {
+                "name": "test_outputs.py::test_cancel_command",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 0.0007585700000163342,
+                "start": 1775978819.085749,
+                "stop": 1775978819.0894368,
+                "retries": 0,
+                "file_path": "test_outputs.py",
+                "trace": "def test_cancel_command():\n        \"\"\"Test that the headless terminal can cancel a command using a modifier key.\"\"\"\n>       from headless_terminal import HeadlessTerminal\nE       ModuleNotFoundError: No module named 'headless_terminal'\n\n/tests/test_outputs.py:57: ModuleNotFoundError",
+                "message": "The test failed in the call phase"
+            },
+            {
+                "name": "test_outputs.py::test_startup_files",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 0.0032608229998913885,
+                "start": 1775978819.0896769,
+                "stop": 1775978819.099331,
+                "retries": 0,
+                "file_path": "test_outputs.py",
+                "trace": "def test_startup_files():\n        \"\"\"\n        Test that the headless terminal uses an interactive bash shell and executes startup\n        files.\n        \"\"\"\n        subprocess.run(\n            [\n                f\"echo {shlex.quote('export SPECIAL_FILE=/app/special_file.txt')} >> $HOME/.bashrc\"\n            ],\n            check=True,\n            shell=True,\n        )\n    \n>       from headless_terminal import HeadlessTerminal\nE       ModuleNotFoundError: No module named 'headless_terminal'\n\n/tests/test_outputs.py:84: ModuleNotFoundError",
+                "message": "The test failed in the call phase"
+            },
+            {
+                "name": "test_outputs.py::test_shell_state_persists_between_commands",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 0.000760092000291479,
+                "start": 1775978819.0995688,
+                "stop": 1775978819.1057673,
+                "retries": 0,
+                "file_path": "test_outputs.py",
+                "trace": "def test_shell_state_persists_between_commands():\n        \"\"\"Test that the shell state persists between commands.\"\"\"\n>       from headless_terminal import HeadlessTerminal\nE       ModuleNotFoundError: No module named 'headless_terminal'\n\n/tests/test_outputs.py:99: ModuleNotFoundError",
+                "message": "The test failed in the call phase"
+            },
+            {
+                "name": "test_outputs.py::test_background_commands",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 0.0065365399998427165,
+                "start": 1775978819.1060317,
+                "stop": 1775978819.1189063,
+                "retries": 0,
+                "file_path": "test_outputs.py",
+                "trace": "def test_background_commands():\n        \"\"\"Test that the headless terminal can run background commands.\"\"\"\n        subprocess.run([\"mkdir\", \"/server\"], check=True)\n        subprocess.run(\"echo 'Hello, world!' > /server/index.html\", check=True, shell=True)\n    \n>       from headless_terminal import HeadlessTerminal\nE       ModuleNotFoundError: No module named 'headless_terminal'\n\n/tests/test_outputs.py:120: ModuleNotFoundError",
+                "message": "The test failed in the call phase"
+            }
+        ]
+    }
+}

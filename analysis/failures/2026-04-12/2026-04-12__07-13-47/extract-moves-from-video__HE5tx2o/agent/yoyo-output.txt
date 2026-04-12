@@ -1,0 +1,56 @@
+  yoyo (prompt mode) — model: claude-sonnet-4-6
+[K[K
+── Thinking ────────────────────────────────────────────────────────────────
+Let me start by downloading the YouTube video and then transcribing the text from it to extract the Zork moves.  ▶ $ which yt-dlp youtube-dl ffmpeg 2>/dev/null; pip show yt-dlp 2>/dev/null | head -…[K[K ✓ (7ms)
+  ▶ $ pip install yt-dlp -q && which ffmpeg || apt-get install -y ffmpeg -q[K  ⠋ bash ⏱ 2s (65 lines)[K  ⠙ bash ⏱ 2s (114 lines)[K  ⠹ bash ⏱ 3s (114 lines)[K  ⠸ bash ⏱ 3s (114 lines)[K  ⠼ bash ⏱ 4s (134 lines)[K  ⠴ bash ⏱ 4s (135 lines)[K  ⠦ bash ⏱ 5s (138 lines)[K  ⠧ bash ⏱ 5s (158 lines)[K  ⠇ bash ⏱ 6s (172 lines)[K  ⠏ bash ⏱ 6s (192 lines)[K  ⠋ bash ⏱ 7s (212 lines)[K  ⠙ bash ⏱ 7s (212 lines)[K  ⠹ bash ⏱ 8s (232 lines)[K  ⠸ bash ⏱ 8s (232 lines)[K  ⠼ bash ⏱ 9s (232 lines)[K  ⠴ bash ⏱ 9s (235 lines)[K  ⠦ bash ⏱ 10s (251 lines)[K  ⠧ bash ⏱ 10s (264 lines)[K  ⠇ bash ⏱ 11s (284 lines)[K  ⠏ bash ⏱ 11s (299 lines)[K  ⠋ bash ⏱ 12s (319 lines)[K  ⠙ bash ⏱ 12s (319 lines)[K  ⠹ bash ⏱ 13s (335 lines)[K  ⠸ bash ⏱ 13s (336 lines)[K  ⠼ bash ⏱ 14s (342 lines)[K  ⠴ bash ⏱ 14s (342 lines)[K  ⠦ bash ⏱ 15s (348 lines)[K  ⠧ bash ⏱ 15s (360 lines)[K  ⠇ bash ⏱ 16s (380 lines)[K  ⠏ bash ⏱ 16s (400 lines)[K  ⠋ bash ⏱ 17s (400 lines)[K  ⠙ bash ⏱ 17s (413 lines)[K  ⠹ bash ⏱ 18s (422 lines)[K  ⠸ bash ⏱ 18s (422 lines)[K  ⠼ bash ⏱ 19s (422 lines)[K  ⠴ bash ⏱ 19s (434 lines)[K  ⠦ bash ⏱ 20s (454 lines)[K  ⠧ bash ⏱ 20s (454 lines)[K  ⠇ bash ⏱ 21s (467 lines)[K  ⠏ bash ⏱ 21s (487 lines)[K  ⠋ bash ⏱ 22s (507 lines)[K  ⠙ bash ⏱ 22s (544 lines)[K  ⠹ bash ⏱ 23s (584 lines)[K  ⠸ bash ⏱ 23s (604 lines)[K  ⠼ bash ⏱ 24s (639 lines)[K  ⠴ bash ⏱ 24s (679 lines)[K  ⠦ bash ⏱ 25s (699 lines)[K  ⠧ bash ⏱ 25s (699 lines)[K  ⠇ bash ⏱ 26s (699 lines)[K  ⠏ bash ⏱ 26s (699 lines)[K  ⠋ bash ⏱ 27s (715 lines)[K  ⠙ bash ⏱ 27s (715 lines)[K  ⠹ bash ⏱ 28s (718 lines)[K  ⠸ bash ⏱ 28s (733 lines)[K  ⠼ bash ⏱ 29s (773 lines)[K  ⠴ bash ⏱ 29s (813 lines)[K  ⠦ bash ⏱ 30s (829 lines)[K  ⠧ bash ⏱ 30s (849 lines)[K  ⠇ bash ⏱ 31s (869 lines)[K  ⠏ bash ⏱ 31s (889 lines)[K  ⠋ bash ⏱ 32s (929 lines)[K  ⠙ bash ⏱ 32s (949 lines)[K  ⠹ bash ⏱ 33s (989 lines)[K  ⠸ bash ⏱ 33s (1029 lines)[K  ⠼ bash ⏱ 34s (1069 lines)[K  ⠴ bash ⏱ 34s (1089 lines)[K  ⠦ bash ⏱ 35s (1129 lines)[K  ⠧ bash ⏱ 35s (1129 lines)[K  ⠇ bash ⏱ 36s (1144 lines)[K  ⠏ bash ⏱ 36s (1144 lines)[K  ⠋ bash ⏱ 37s (1156 lines)[K  ⠙ bash ⏱ 37s (1196 lines)[K  ⠹ bash ⏱ 38s (1216 lines)[K  ⠸ bash ⏱ 38s (1255 lines)[K  ⠼ bash ⏱ 39s (1275 lines)[K  ⠴ bash ⏱ 39s (1275 lines)[K  ⠦ bash ⏱ 40s (1291 lines)[K  ⠧ bash ⏱ 40s (1351 lines)[K  ⠇ bash ⏱ 41s (1411 lines)[K  ⠏ bash ⏱ 41s (1471 lines)[K  ⠋ bash ⏱ 42s (1511 lines)[K  ⠙ bash ⏱ 42s (1511 lines)[K  ⠹ bash ⏱ 43s (1511 lines)[K  ⠸ bash ⏱ 43s (1535 lines)[K  ⠼ bash ⏱ 44s (1555 lines)[K  ⠴ bash ⏱ 44s (1555 lines)[K  ⠦ bash ⏱ 45s (1555 lines)[K  ⠧ bash ⏱ 45s (1555 lines)[K  ⠇ bash ⏱ 46s (1560 lines)[K  ⠏ bash ⏱ 46s (1560 lines)[K  ⠋ bash ⏱ 47s (1564 lines)[K  ⠙ bash ⏱ 47s (1584 lines)[K  ⠹ bash ⏱ 48s (1598 lines)[K  ⠸ bash ⏱ 48s (1618 lines)[K[K ✓ (50.8s)
+  ▶ $ pip3 install yt-dlp -q 2>/dev/null || pip install yt-dlp -q 2>/dev/null || apt-g…[K  ⠋ bash ⏱ 2s (19 lines)[K  ⠙ bash ⏱ 2s (29 lines)[K  ⠹ bash ⏱ 3s (49 lines)[K  ⠸ bash ⏱ 3s (65 lines)[K  ⠼ bash ⏱ 4s (65 lines)[K  ⠴ bash ⏱ 4s (67 lines)[K  ⠦ bash ⏱ 5s (67 lines)[K  ⠧ bash ⏱ 5s (69 lines)[K  ⠇ bash ⏱ 6s (72 lines)[K  ⠏ bash ⏱ 6s (74 lines)[K  ⠋ bash ⏱ 7s (74 lines)[K  ⠙ bash ⏱ 7s (74 lines)[K  ⠹ bash ⏱ 8s (74 lines)[K  ⠸ bash ⏱ 8s (74 lines)[K  ⠼ bash ⏱ 9s (74 lines)[K  ⠴ bash ⏱ 9s (74 lines)[K[K ✓ (11.3s)
+  ▶ $ mkdir -p /app && cd /app && yt-dlp -f "best[height<=480]" --write-auto-sub --sub…[K[K ✓ (1.7s)
+  ▶ $ yt-dlp --version && yt-dlp -U 2>&1 | head -5[K[K ✓ (1.5s)
+  ▶ $ curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -o /usr…[K[K ✓ (1.7s)
+  ▶ $ cd /app && /usr/local/bin/yt-dlp -f "best[height<=480]" "https://www.youtube.com…[K[K ✓ (2.8s)
+  ▶ $ # Try installing deno for JS runtime support (5 lines)[K[K ✓ (1.6s)
+  ▶ $ apt-get install -y unzip -q && curl -fsSL https://deno.land/install.sh | sh 2>&1…[K  ⠋ bash ⏱ 2s (4 lines)[K  ⠙ bash ⏱ 2s (12 lines)[K  ⠹ bash ⏱ 3s (12 lines)[K  ⠸ bash ⏱ 3s (12 lines)[K  ⠼ bash ⏱ 4s (12 lines)[K  ⠴ bash ⏱ 4s (12 lines)[K[K ✓ (6.3s)
+  ▶ $ export PATH="/root/.deno/bin:$PATH" && cd /app && /usr/local/bin/yt-dlp --js-run…[K[K ✓ (2.6s)
+  ▶ $ # Try with po_token workaround or alternative approach (3 lines)[K[K ✓ (3.0s)
+  ▶ $ export PATH="/root/.deno/bin:$PATH" (2 lines)[K[K ✓ (2.6s)
+  ▶ $ # Try with cookies workaround - use a fake cookie or try dif… (4 lines)[K[K ✓ (2.7s)
+  ▶ $ # Try using gallery-dl or other tools (4 lines)[K[K ✓ (1.2s)
+  ▶ $ # Try downloading via yt-dlp using different options/agents (8 lines)[K[K ✓ (3.2s)
+  ▶ $ # Try getting just subtitles/transcript from YouTube without… (3 lines)[K[K ✓ (5ms)
+  ▶ $ python3 -m pip install youtube_transcript_api 2>&1 | tail -5[K[K ✓ (64ms)
+  ▶ $ curl -sS https://bootstrap.pypa.io/get-pip.py | python3 && python3 -m pip instal…[K[K ✓ (3.3s)
+  ▶ $ python3 -m pip install youtube_transcript_api --break-system-packages 2>&1 | tai…[K[K ✓ (40ms)
+  ▶ $ curl -sS https://bootstrap.pypa.io/get-pip.py | python3 - --break-system-package…[K[K ✓ (5.6s)
+  ▶ $ python3 -c " (6 lines)[K[K ✓ (323ms)
+  ▶ $ python3 -c " (7 lines)[K[K ✓ (1.3s)
+  ▶ $ # Try using a proxy to bypass IP block (14 lines) ✗ (2m 0s)
+    │ Command timed out after 120s
+  ▶ $ # Try using a SOCKS proxy or Tor - or use yt-dlp with differ… (3 lines)[K[K ✓ (525ms)
+  ▶ $ curl -s --max-time 15 "https://pipedapi.kavin.rocks/streams/ZCbvyPbhRfA" 2>&1 | …[K[K ✓ (211ms)
+  ▶ $ # Try using yt-dlp with a Tor/proxy approach or see if we ha… (5 lines)[K[K ✓ (645ms)
+  ▶ $ curl -s --max-time 15 -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/…[K[K ✓ (784ms)
+  ▶ $ # Try to use yt-dlp to just get subtitles without downloadin… (11 lines)[K[K ✓ (2.7s)
+  ▶ $ # Try with a po_token bypass - generate a visitor_data and p… (7 lines)[K[K ✓ (532ms)
+  ▶ $ # We have visitorData! Let's use it with yt-dlp (9 lines)[K[K ✓ (2.9s)
+  ▶ $ # Let's try to use the YouTube inner tube API directly (13 lines)[K[K ✓ (903ms)
+  ▶ $ # Try InnerTube API directly to get video info (14 lines)[K[K ✓ (159ms)
+  ▶ $ # Try WEB_EMBEDDED_PLAYER client (23 lines)[K[K ✓ (266ms)
+  ▶ $ # Try different clients (9 lines)[K[K ✓ (819ms)
+  ▶ $ # Try with correct Android client params (31 lines)[K[K ✓ (133ms)
+  ▶ $ # Let me try getting the video with a working approach - use… (3 lines)[K[K ✓ (725ms)
+  ▶ $ # The page loads but bot detection kicks in for video downlo… (14 lines)[K[K ✓ (3.1s)
+  ▶ $ # Let me try getting a po_token using a headless approach (4 lines)[K[K ✓ (5ms)
+  ▶ $ # Install node.js (3 lines)[K[K ✓ (1m 10s)
+  ▶ $ # Install puppeteer or use youtube-dl-exec  (5 lines)[K  ⠋ bash ⏱ 2s[K  ⠙ bash ⏱ 2s[K[K ✓ (5.8s)
+  ▶ $ cd /app && cat > get_youtube.mjs << 'EOF' (29 lines)[K[K ✓ (202ms)
+  ▶ $ # Need newer node.js (4 lines)[K  ⠋ bash ⏱ 2s (1 line)[K  ⠙ bash ⏱ 2s (1 line)[K  ⠹ bash ⏱ 3s (1 line)[K  ⠸ bash ⏱ 3s (1 line)[K  ⠼ bash ⏱ 4s (1 line)[K  ⠴ bash ⏱ 4s (1 line)[K  ⠦ bash ⏱ 5s (1 line)[K  ⠧ bash ⏱ 5s (1 line)[K  ⠇ bash ⏱ 6s (1 line)[K  ⠏ bash ⏱ 6s (1 line)[K  ⠋ bash ⏱ 7s (1 line)[K  ⠙ bash ⏱ 7s (1 line)[K  ⠹ bash ⏱ 8s (1 line)[K  ⠸ bash ⏱ 8s (1 line)[K  ⠼ bash ⏱ 9s (1 line)[K  ⠴ bash ⏱ 9s (1 line)[K  ⠦ bash ⏱ 10s (1 line)[K  ⠧ bash ⏱ 10s (1 line)[K  ⠇ bash ⏱ 11s (1 line)[K  ⠏ bash ⏱ 11s (1 line)[K  ⠋ bash ⏱ 12s (1 line)[K  ⠙ bash ⏱ 12s (1 line)[K  ⠹ bash ⏱ 13s (1 line)[K  ⠸ bash ⏱ 13s (1 line)[K  ⠼ bash ⏱ 14s (1 line)[K  ⠴ bash ⏱ 14s (1 line)[K  ⠦ bash ⏱ 15s (1 line)[K  ⠧ bash ⏱ 15s (1 line)[K  ⠇ bash ⏱ 16s (1 line)[K  ⠏ bash ⏱ 16s (1 line)[K  ⠋ bash ⏱ 17s (1 line)[K  ⠙ bash ⏱ 17s (1 line)[K[K ✓ (27.3s)
+  ▶ $ cd /app && npm install youtubei.js 2>&1 | tail -3 && node get_youtube.mjs 2>&1 |…[K[K ✓ (2.9s)
+  ▶ $ cd /app && cat > get_youtube2.mjs << 'EOF' (27 lines)[K[K ✓ (5.8s)
+  ▶ $ cd /app && cat > get_youtube3.mjs << 'EOF' (23 lines)[K[K ✓ (6.6s)
+  ▶ $ # The video has like_count: 88, so we can access basic info! (10 lines)[K[K ✓ (817ms)
+  46 tools completed in 9m 57s (45 ✓, 1 ✗)
+
+  ↳ 10m 0s · 15416→8670 tokens · $0.486
+  ⬤ 7% of context window used
+
+
