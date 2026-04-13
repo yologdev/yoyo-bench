@@ -1,0 +1,103 @@
+{
+    "id": "e0a24eba-9cf9-4f90-ae4a-a1fe9eab27bc",
+    "task_name": "terminal-bench/fix-ocaml-gc",
+    "trial_name": "fix-ocaml-gc__8XQSzmw",
+    "trial_uri": "file:///tmp/bench-results/2026-04-13__08-02-20/fix-ocaml-gc__8XQSzmw",
+    "task_id": {
+        "org": "terminal-bench",
+        "name": "fix-ocaml-gc",
+        "ref": "sha256:23621755f7f4ea84bfc67a18ac20f8e9ae05a057212a1dec1a1da6ffa7586e6a"
+    },
+    "source": "terminal-bench/terminal-bench-2",
+    "task_checksum": "199aace6c2963a958b2bd8c14ef4325e64c01d8500387fa7c6fa561329627c7e",
+    "config": {
+        "task": {
+            "path": null,
+            "git_url": null,
+            "git_commit_id": null,
+            "name": "terminal-bench/fix-ocaml-gc",
+            "ref": "sha256:23621755f7f4ea84bfc67a18ac20f8e9ae05a057212a1dec1a1da6ffa7586e6a",
+            "overwrite": false,
+            "download_dir": null,
+            "source": "terminal-bench/terminal-bench-2"
+        },
+        "trial_name": "fix-ocaml-gc__8XQSzmw",
+        "trials_dir": "/tmp/bench-results/2026-04-13__08-02-20",
+        "timeout_multiplier": 1.0,
+        "agent_timeout_multiplier": null,
+        "verifier_timeout_multiplier": null,
+        "agent_setup_timeout_multiplier": null,
+        "environment_build_timeout_multiplier": null,
+        "agent": {
+            "name": null,
+            "import_path": "agents.yoyo_agent:Yoyo",
+            "model_name": "anthropic/claude-sonnet-4-6",
+            "override_timeout_sec": null,
+            "override_setup_timeout_sec": null,
+            "max_timeout_sec": null,
+            "kwargs": {},
+            "env": {}
+        },
+        "environment": {
+            "type": "docker",
+            "import_path": null,
+            "force_build": false,
+            "delete": true,
+            "override_cpus": null,
+            "override_memory_mb": null,
+            "override_storage_mb": null,
+            "override_gpus": null,
+            "suppress_override_warnings": false,
+            "mounts_json": null,
+            "env": {},
+            "kwargs": {}
+        },
+        "verifier": {
+            "override_timeout_sec": null,
+            "max_timeout_sec": null,
+            "disable": false
+        },
+        "artifacts": [],
+        "job_id": "814427aa-ae18-4c2b-a935-b5adca0a7f42"
+    },
+    "agent_info": {
+        "name": "yoyo",
+        "version": "0.1.7",
+        "model_info": {
+            "name": "claude-sonnet-4-6",
+            "provider": "anthropic"
+        }
+    },
+    "agent_result": {
+        "n_input_tokens": null,
+        "n_cache_tokens": null,
+        "n_output_tokens": null,
+        "cost_usd": null,
+        "rollout_details": null,
+        "metadata": null
+    },
+    "verifier_result": {
+        "rewards": {
+            "reward": 1.0
+        }
+    },
+    "exception_info": null,
+    "started_at": "2026-04-13T08:42:22.341175Z",
+    "finished_at": "2026-04-13T09:15:44.393789Z",
+    "environment_setup": {
+        "started_at": "2026-04-13T08:42:22.349327Z",
+        "finished_at": "2026-04-13T08:42:48.343661Z"
+    },
+    "agent_setup": {
+        "started_at": "2026-04-13T08:42:48.343673Z",
+        "finished_at": "2026-04-13T08:42:59.249020Z"
+    },
+    "agent_execution": {
+        "started_at": "2026-04-13T08:42:59.249085Z",
+        "finished_at": "2026-04-13T08:58:37.063150Z"
+    },
+    "verifier": {
+        "started_at": "2026-04-13T08:58:37.063475Z",
+        "finished_at": "2026-04-13T09:15:32.697781Z"
+    }
+}
