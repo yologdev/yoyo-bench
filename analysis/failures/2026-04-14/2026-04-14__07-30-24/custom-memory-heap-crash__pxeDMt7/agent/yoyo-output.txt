@@ -1,0 +1,58 @@
+  yoyo (prompt mode) — model: claude-sonnet-4-6
+[K[K
+── Thinking ────────────────────────────────────────────────────────────────
+Let me explore the app directory to understand the program structure.  ▶ $ cat /app/main.cpp && echo "---" && cat /app/user.cpp  ▶ ls /app ✓ (7ms)
+[K[K ✓ (8ms)
+  ▶ $ cat /app/user.h[K[K ✓ (7ms)
+  ▶ $  (6 lines)[K[K ✓ (3.6s)
+  ▶ $  (5 lines)[K[K ✓ (1.6s)
+  ▶ $  (64 lines)[K[K ✓ (12.7s)
+  ▶ $  (11 lines)[K[K ✓ (187ms)
+  ▶ $  (4 lines)[K[K ✓ (1.1s)
+  ▶ $  (7 lines)[K[K ✓ (11ms)
+  ▶ $ ls /build/patches/[K[K ✓ (5ms)
+  ▶ $ cat /build/patches/locale_classes.tcc.patch && echo "---" && cat /build/patches/…[K[K ✓ (5ms)
+  ▶ $  (53 lines)[K[K ✓ (8ms)
+  ▶ $ cat /build/patches/locale_classes.tcc.patch[K[K ✓ (4ms)
+  ▶ $  (3 lines)[K[K ✓ (5ms)
+  ▶ $ grep -n "NDEBUG\|_Fac_node\|_Facptr\|operator new\|operator delete\|_S_initializ…[K[K ✓ (17ms)
+  ▶ $ grep -n "_Facet_Register_impl\|atexit\|__cxa_atexit\|_S_initialize" /build/gcc-1…[K[K ✓ (70ms)
+  ▶ $ sed -n '355,385p' /build/gcc-13.2.0/libstdc++-v3/src/c++98/locale_init.cc[K[K ✓ (31ms)
+  ▶ $  (24 lines)[K[K ✓ (6ms)
+  ▶ $ sed -n '305,355p' /build/gcc-13.2.0/libstdc++-v3/src/c++98/locale_init.cc[K[K ✓ (25ms)
+  ▶ $  (57 lines)[K[K ✓ (9ms)
+  ▶ $  (10 lines)[K  ⠋ bash: 
+# Build and test
+g++ -std=c++17 -o /app… ⏱ 2s (1 line)[K  ⠙ bash: 
+# Build and test
+g++ -std=c++17 -o /app… ⏱ 2s (1 line)[K  ⠹ bash: 
+# Build and test
+g++ -std=c++17 -o /app… ⏱ 3s (22 lines)[K[K ✓ (5.6s)
+  ▶ $  (6 lines)[K[K ✓ (14.4s)
+
+────────────────────────────────────────────────────────────────────────────────
+  22 tools completed in 2m 27s (22 ✓)
+
+Both builds run cleanly with zero errors and zero memory leaks. Here's what the root cause was and how the fix works:
+
+## Root Cause Analysis
+
+The custom in-house libstdc++ has an intentional (buggy) modification in locale_init.cc that mimics MSVC-style facet registration. When compiled with -DNDEBUG (RELEASE mode), it:
+
+1. Allocates _Fac_node objects (and their 256-byte _Facptr buffers) using ::operator new when locale facets are **first used** at runtime (_Facet_Register_impl).
+2. Frees them using ::operator delete in the destructor of a static _Fac_tidy_guard object, which runs after `main()` exits.
+
+The crash sequence was:
+1. init() creates g_custom_heap (the arena allocator)
+2. `std::cout << "=== Monte Carlo..."` — first use of cout triggers locale facet lookup → _Facet_Register_impl() runs → `_Fac_node objects allocated via ::operator new` → **routed into the arena heap**
+3. ~Application() → shutdown() → destroys g_custom_heap, sets it to `nullptr`
+4. After main() returns, _Fac_tidy_guard::~_Fac_tidy_guard() calls ::operator delete on the `_Fac_node pointers → g_custom_heap is nullptr → falls through to std::free()` on **arena memory → SEGFAULT**
+
+## The Fix (`user.cpp`)
+
+user_init() is called before g_custom_heap is set up. By forcing locale facet initialization there (via std::use_facet<std::ctype<char>> and std::ostringstream), _Facet_Register_impl() runs while g_custom_heap == nullptr. This means the _Fac_node allocations go through std::malloc, and the corresponding std::free calls at cleanup are perfectly safe.
+
+  ↳ 2m 38s · 6992→5870 tokens · $0.233
+  ⬤ 4% of context window used
+
+

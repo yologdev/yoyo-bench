@@ -1,0 +1,108 @@
+{
+    "id": "5ac5bad2-21bb-4dbb-b2ae-37cd41d14416",
+    "task_name": "terminal-bench/sqlite-db-truncate",
+    "trial_name": "sqlite-db-truncate__sdDN6Jm",
+    "trial_uri": "file:///tmp/bench-results/2026-04-14__07-30-24/sqlite-db-truncate__sdDN6Jm",
+    "task_id": {
+        "org": "terminal-bench",
+        "name": "sqlite-db-truncate",
+        "ref": "sha256:35f3ced08035d07527d186bdcfd668bb36fbd8996acf02457e08bfa2e0ce40b6"
+    },
+    "source": "terminal-bench/terminal-bench-2",
+    "task_checksum": "37c4af7bad7a988b4060314d37b015e11c2582c5cb23a8fc120f646537c50a46",
+    "config": {
+        "task": {
+            "path": null,
+            "git_url": null,
+            "git_commit_id": null,
+            "name": "terminal-bench/sqlite-db-truncate",
+            "ref": "sha256:35f3ced08035d07527d186bdcfd668bb36fbd8996acf02457e08bfa2e0ce40b6",
+            "overwrite": false,
+            "download_dir": null,
+            "source": "terminal-bench/terminal-bench-2"
+        },
+        "trial_name": "sqlite-db-truncate__sdDN6Jm",
+        "trials_dir": "/tmp/bench-results/2026-04-14__07-30-24",
+        "timeout_multiplier": 1.0,
+        "agent_timeout_multiplier": null,
+        "verifier_timeout_multiplier": null,
+        "agent_setup_timeout_multiplier": null,
+        "environment_build_timeout_multiplier": null,
+        "agent": {
+            "name": null,
+            "import_path": "agents.yoyo_agent:Yoyo",
+            "model_name": "anthropic/claude-sonnet-4-6",
+            "override_timeout_sec": null,
+            "override_setup_timeout_sec": null,
+            "max_timeout_sec": null,
+            "kwargs": {},
+            "env": {}
+        },
+        "environment": {
+            "type": "docker",
+            "import_path": null,
+            "force_build": false,
+            "delete": true,
+            "override_cpus": null,
+            "override_memory_mb": null,
+            "override_storage_mb": null,
+            "override_gpus": null,
+            "suppress_override_warnings": false,
+            "mounts_json": null,
+            "env": {},
+            "kwargs": {}
+        },
+        "verifier": {
+            "override_timeout_sec": null,
+            "max_timeout_sec": null,
+            "disable": false
+        },
+        "artifacts": [],
+        "job_id": "bb1fb467-fff4-42b7-ac47-5cf81cad7d0a"
+    },
+    "agent_info": {
+        "name": "yoyo",
+        "version": "unknown",
+        "model_info": {
+            "name": "claude-sonnet-4-6",
+            "provider": "anthropic"
+        }
+    },
+    "agent_result": {
+        "n_input_tokens": null,
+        "n_cache_tokens": null,
+        "n_output_tokens": null,
+        "cost_usd": null,
+        "rollout_details": null,
+        "metadata": null
+    },
+    "verifier_result": {
+        "rewards": {
+            "reward": 0.0
+        }
+    },
+    "exception_info": {
+        "exception_type": "NonZeroAgentExitCodeError",
+        "exception_message": "Command failed (exit 1): yoyo --yes -p 'I have a sqlite database in /app/trunc.db that was corrupted through binary truncation. Recover as many of the rows as possible, and create a JSON file in /app/recover.json. The output should have the format [{\"word\": \"testwordXY\", \"value\": M}, {\"word\": \"testwordZZ\",\"value\": N}, ...]\n' --max-turns 100 --provider anthropic --thinking medium --model claude-sonnet-4-6 --skills /tmp/yoyo-skills --system-file /tmp/yoyo-system-prompt.md 2>&1 | tee /logs/agent/yoyo-output.txt\nstdout: yoyo: /lib/x86_64-linux-gnu/libc.so.6: version `GLIBC_2.39' not found (required by yoyo)\n\nstderr: None",
+        "exception_traceback": "Traceback (most recent call last):\n  File \"/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/harbor/trial/trial.py\", line 538, in run\n    await self._execute_agent()\n  File \"/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/harbor/trial/trial.py\", line 285, in _execute_agent\n    await asyncio.wait_for(\n  File \"/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/asyncio/tasks.py\", line 520, in wait_for\n    return await fut\n           ^^^^^^^^^\n  File \"/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/harbor/agents/installed/base.py\", line 41, in wrapper\n    return await fn(self, instruction, *args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/runner/work/yoyo-bench/yoyo-bench/agents/yoyo_agent.py\", line 193, in run\n    await self.exec_as_agent(\n  File \"/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/harbor/agents/installed/base.py\", line 358, in exec_as_agent\n    return await self._exec(\n           ^^^^^^^^^^^^^^^^^\n  File \"/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/harbor/agents/installed/base.py\", line 321, in _exec\n    raise NonZeroAgentExitCodeError(\nharbor.agents.installed.base.NonZeroAgentExitCodeError: Command failed (exit 1): yoyo --yes -p 'I have a sqlite database in /app/trunc.db that was corrupted through binary truncation. Recover as many of the rows as possible, and create a JSON file in /app/recover.json. The output should have the format [{\"word\": \"testwordXY\", \"value\": M}, {\"word\": \"testwordZZ\",\"value\": N}, ...]\n' --max-turns 100 --provider anthropic --thinking medium --model claude-sonnet-4-6 --skills /tmp/yoyo-skills --system-file /tmp/yoyo-system-prompt.md 2>&1 | tee /logs/agent/yoyo-output.txt\nstdout: yoyo: /lib/x86_64-linux-gnu/libc.so.6: version `GLIBC_2.39' not found (required by yoyo)\n\nstderr: None\n",
+        "occurred_at": "2026-04-14T08:14:33.114068"
+    },
+    "started_at": "2026-04-14T08:14:04.688678Z",
+    "finished_at": "2026-04-14T08:14:54.561959Z",
+    "environment_setup": {
+        "started_at": "2026-04-14T08:14:04.690894Z",
+        "finished_at": "2026-04-14T08:14:14.195226Z"
+    },
+    "agent_setup": {
+        "started_at": "2026-04-14T08:14:14.195241Z",
+        "finished_at": "2026-04-14T08:14:32.251511Z"
+    },
+    "agent_execution": {
+        "started_at": "2026-04-14T08:14:32.251571Z",
+        "finished_at": "2026-04-14T08:14:33.113159Z"
+    },
+    "verifier": {
+        "started_at": "2026-04-14T08:14:33.115376Z",
+        "finished_at": "2026-04-14T08:14:42.202179Z"
+    }
+}

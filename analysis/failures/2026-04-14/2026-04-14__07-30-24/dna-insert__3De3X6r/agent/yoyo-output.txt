@@ -1,0 +1,60 @@
+  yoyo (prompt mode) — model: claude-sonnet-4-6
+[K[K
+── Thinking ────────────────────────────────────────────────────────────────
+Let me start by reading the sequences.fasta file to understand what we're working with, then figure out what changes need to be made between the input and output plasmids.  ▶ $ cat /tmp/yoyo-skills/bench/SKILL.md 2>/dev/null | head -50; echo "---"; ls; cat …  ▶ $ which oligotm; oligotm --help 2>&1 | head -20[K[K ✓ (9ms)
+[K[K ✓ (10ms)
+  ▶ $ which primer3_core; apt-cache search primer3 2>/dev/null | head -5; find / -name…  ▶ $ # Let's diff the two sequences to find differences (18 lines)[K[K ✓ (6ms)
+[K[K ✓ (3.8s)
+  ▶ $ apt-get install -y primer3 python3 2>/dev/null | tail -5[K[K ✓ (12.9s)
+  ▶ $ which oligotm; which primer3_core; ls /usr/bin/oligotm 2>/dev/null; find /usr -n…[K[K ✓ (122ms)
+  ▶ $ oligotm --help 2>&1; echo "---"; oligotm -tp 1 -sc 1 -mv 50 -dv 2 -n 0.8 -d 500 …[K[K ✓ (9ms)
+  ▶ $ python3 << 'EOF' (31 lines)[K[K ✓ (170ms)
+  ▶ $ python3 << 'EOF' (82 lines)[K[K ✓ (20ms)
+  ▶ $ python3 << 'EOF' (121 lines)[K[K ✓ (58ms)
+  ▶ $ python3 << 'EOF' (166 lines)[K[K ✓ (20ms)
+  ▶ $ python3 << 'EOF' (49 lines)[K[K ✓ (399ms)
+  ▶ $ python3 << 'EOF' (66 lines)[K[K ✓ (689ms)
+
+────────────────────────────────────────────────────────────────────────────────
+  13 tools completed in 3m 46s (13 ✓)
+
+Now I have all the information I need. I can see that we need exactly one primer pair (since there's only one mutation). Let me select the best primers - the shortest ones that meet all criteria, and verify everything:
+  ╭─ Turn 12 ────────────────────────────────────────────────────────────╮
+  ▶ $ python3 << 'EOF' (74 lines)[K[K ✓ (55ms)
+  ▶ $ python3 << 'EOF' (34 lines)[K[K ✓ (34ms)
+  2 tools completed in 8.0s (2 ✓)
+
+The simulation confirms our primers are correct. Now let me write the output file:
+  ╭─ Turn 14 ────────────────────────────────────────────────────────────╮
+  ▶ $ cat << 'EOF' > primers.fasta (8 lines)[K[K ✓ (5ms)
+  ▶ $ # Final verification of all constraints (50 lines)[K[K ✓ (102ms)
+  2 tools completed in 15.3s (2 ✓)
+
+All constraints are satisfied. Here's a complete explanation of the solution:
+
+## Solution Summary
+
+### Mutation Analysis
+Comparing the input and output plasmids reveals exactly one change: at position 215 of the input plasmid, a single C is replaced by `TAGATTAGAAGAAGAATTAAGAAGAAGATTAACAGAAAGC` (40 nt), resulting in a net +39 bp insertion. This requires one primer pair (minimum).
+
+### NEB Q5 SDM Design Logic
+Q5 SDM uses inverse PCR where the two primers point away from each other, amplifying the entire plasmid. For this insertion:
+• Forward primer: 5' overhang = the 40 nt inserted sequence (not in template) + 3' annealing portion starting downstream of the insertion site (template position 216+)
+• Reverse primer: anneals to the template **upstream** of the insertion site (ending at position 215), on the opposite strand
+
+### Final Primers (`primers.fasta`)
+
+| Primer | Sequence | Annealing region | Tm |
+|--------|----------|------------------|----|
+| Forward | TAGATTAGAAGAAGAATTAAGAAGAAGATTAACAGAAAGCAAGGGCGAGGAGCTG | AAGGGCGAGGAGCTG (15 nt) | 59.54°C |
+| Reverse | CTCATATGTATATCTCCTTCTTAAAGTTAAAC | full primer (32 nt) | 59.84°C |
+
+• ✅ Annealing lengths: 15 nt (fwd) and 32 nt (rev) — both within 15–45 nt
+• ✅ Melting temperatures: 59.54°C and 59.84°C — both within 58–72°C  
+• ✅ Tm difference: 0.30°C — well within the 5°C limit
+• ✅ 1 primer pair (minimum needed for 1 mutation)
+
+  ↳ 4m 34s · 10533→19989 tokens · $0.555
+  ⬤ 9% of context window used
+
+
