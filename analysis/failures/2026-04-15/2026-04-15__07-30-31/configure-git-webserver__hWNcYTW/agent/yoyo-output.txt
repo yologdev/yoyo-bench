@@ -1,0 +1,88 @@
+  yoyo (prompt mode) — model: claude-sonnet-4-6
+[K[K
+── Thinking ────────────────────────────────────────────────────────────────
+Let me explore the environment first to understand what's available.  ▶ $ cat /etc/os-release; whoami; ls /; which git nginx apache2 python3 2>/dev/null; …[K[K ✓ (15ms)
+  ▶ $ id; ls /home; cat /etc/passwd | grep -E 'git|user'; ls /git 2>/dev/null || echo …[K[K ✓ (20ms)
+
+────────────────────────────────────────────────────────────────────────────────
+  2 tools completed in 3.8s (2 ✓)
+
+Now I have a clear picture. I'll:
+1. Create a git user for SSH access
+2. Set up a bare repo at /git/server
+3. Install nginx on port 8080
+4. Wire a post-receive hook to deploy pushed files to nginx's web root
+  ╭─ Turn 3 ─────────────────────────────────────────────────────────────╮
+  ▶ $ # Install nginx (2 lines)[K[K ✓ (8.5s)
+  ▶ $ # Create git user for SSH access (12 lines)[K[K ✓ (47ms)
+  ▶ $ # Set up the web root that nginx will serve (19 lines)[K[K ✓ (13ms)
+  ▶ $ # Configure nginx to serve on port 8080 (20 lines)[K[K ✓ (12ms)
+  ▶ $ # Start nginx (4 lines)[K[K ✓ (1.0s)
+  ▶ $ # Also allow the git user to write to the deploy dir via the… (18 lines)[K[K ✓ (37ms)
+  ▶ $ git config --global --add safe.directory /git/server (3 lines)[K[K ✓ (40ms)
+  ▶ $ curl http://localhost:8080/hello.html[K[K ✓ (14ms)
+  8 tools completed in 34.9s (8 ✓)
+
+The end-to-end test works perfectly. Let me verify the SSH setup is also clean for the git user:
+  ╭─ Turn 11 ────────────────────────────────────────────────────────────╮
+  ▶ $ # Confirm git-shell is valid for the git user (6 lines)[K[K ✓ (7ms)
+  ▶ $ which sshd; sshd -t 2>&1 || true; pgrep -a sshd || (sshd && echo "sshd started")[K[K ✓ (18ms)
+  ▶ $ apt-get install -y openssh-server 2>&1 | tail -5[K[K ✓ (19.1s)
+  ▶ $ mkdir -p /var/run/sshd (5 lines)[K[K ✓ (1.0s)
+  ▶ $ # Final summary of the whole setup (21 lines)[K[K ✓ (18ms)
+  5 tools completed in 32.2s (5 ✓)
+
+Everything is running. Here's a summary of what was configured:
+
+────────────────────────────────────────
+
+## What was set up
+
+### 1. `git` user (for SSH access)
+• User: git with shell /usr/bin/git-shell (safe, git-only shell)
+• Authorized keys file ready at /home/git/.ssh/authorized_keys — add your public key there to enable login
+
+### 2. Bare Git repository at `/git/server`
+• Initialized with git init --bare /git/server
+• Owned by the git user
+
+### 3. `post-receive` hook — the magic glue
+At /git/server/hooks/post-receive:
+```bash
+git --work-tree="/var/www/gitdeploy" --git-dir="/git/server" checkout -f
+```
+Every git push automatically deploys files to the nginx web root.
+
+### 4. nginx on port 8080
+• Serves files from /var/www/gitdeploy
+• Config at /etc/nginx/sites-enabled/gitdeploy
+
+### 5. SSH server running (`sshd`)
+
+────────────────────────────────────────
+
+## To complete setup on your side
+
+Add your public key to the server:
+```bash
+ssh-copy-id -i ~/.ssh/id_rsa.pub git@server
+```
+Or manually append your ~/.ssh/id_rsa.pub to `/home/git/.ssh/authorized_keys` on the server.
+
+Then the full workflow works exactly as you specified:
+```bash
+git clone git@server:/git/server
+echo "hello world" > hello.html
+git add hello.html
+git commit -m "add hello.html"
+git push origin master
+# → triggers post-receive hook → deploys to nginx
+
+curl http://server:8080/hello.html
+# → hello world
+```
+
+  ↳ 1m 29s · 2644→2533 tokens · $0.088
+  ⬤ 1% of context window used
+
+

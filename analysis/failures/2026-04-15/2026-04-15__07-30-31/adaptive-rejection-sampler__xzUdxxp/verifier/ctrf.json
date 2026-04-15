@@ -1,0 +1,104 @@
+{
+    "results": {
+        "tool": {
+            "name": "pytest",
+            "version": "8.4.1"
+        },
+        "summary": {
+            "tests": 9,
+            "passed": 8,
+            "failed": 1,
+            "skipped": 0,
+            "pending": 0,
+            "other": 0,
+            "start": 1776241122.5502164,
+            "stop": 1776241129.6422315
+        },
+        "tests": [
+            {
+                "name": "test_outputs.py::test_ars_function_exists",
+                "status": "passed",
+                "duration": 0.0008480890001010266,
+                "start": 1776241123.2161365,
+                "stop": 1776241123.2172627,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::test_can_generate_standard_distribution_samples",
+                "status": "passed",
+                "duration": 0.855464366999513,
+                "start": 1776241123.2174582,
+                "stop": 1776241124.0732143,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::test_has_test_function",
+                "status": "passed",
+                "duration": 0.0009899789993141894,
+                "start": 1776241124.0734806,
+                "stop": 1776241124.0746226,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::test_formal_testing_with_known_truth",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 4.194277339999644,
+                "start": 1776241124.0748103,
+                "stop": 1776241128.3832533,
+                "retries": 0,
+                "file_path": "test_outputs.py",
+                "trace": "def test_formal_testing_with_known_truth():\n        \"\"\"Test that formal testing outputs correct format as specified.\"\"\"\n        app_dir = Path(\"/app\")\n    \n        # Run the test function and check output format\n        test_code = \"\"\"\n    source(\"ars.R\")\n    # Run the test function if it exists\n    if (exists(\"test\")) {\n        test()\n    } else {\n        cat(\"ERROR: test function not found\\n\")\n    }\n    \"\"\"\n    \n        test_file = app_dir / \"run_test.R\"\n        test_file.write_text(test_code)\n        try:\n            result = subprocess.run(\n                [\"Rscript\", str(test_file)],\n                capture_output=True,\n                text=True,\n                cwd=str(app_dir),\n                timeout=60,\n            )\n            output = result.stdout + result.stderr\n    \n            # Check for required output format: \"TEST_NAME: PASS\" or \"TEST_NAME: FAIL\"\n>           assert \": PASS\" in output or \": FAIL\" in output, (\n                \"Test function must output results in format \"\n                \"'TEST_NAME: PASS' or 'TEST_NAME: FAIL'\"\n            )\nE           AssertionError: Test function must output results in format 'TEST_NAME: PASS' or 'TEST_NAME: FAIL'\nE           assert (': PASS' in '============================================================\\n Adaptive Rejection Sampler -- Formal Test Suite\\n Refe...==\\n SUMMARY: 30 / 30 tests passed\\n All tests PASSED.\\n============================================================\\n' or ': FAIL' in '============================================================\\n Adaptive Rejection Sampler -- Formal Test Suite\\n Refe...==\\n SUMMARY: 30 / 30 tests passed\\n All tests PASSED.\\n============================================================\\n')\n\n/tests/test_outputs.py:141: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_outputs.py::test_sample_files_generated",
+                "status": "passed",
+                "duration": 0.013316111000222008,
+                "start": 1776241128.383514,
+                "stop": 1776241128.397004,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::test_implementation_is_modular",
+                "status": "passed",
+                "duration": 0.003959856999699696,
+                "start": 1776241128.3972213,
+                "stop": 1776241128.4013355,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::test_implementation_handles_errors",
+                "status": "passed",
+                "duration": 0.0006753019997631782,
+                "start": 1776241128.401515,
+                "stop": 1776241128.4023168,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::test_input_validation_functionality",
+                "status": "passed",
+                "duration": 0.5264797760000874,
+                "start": 1776241128.4024718,
+                "stop": 1776241128.9292312,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::test_log_concavity_functionality",
+                "status": "passed",
+                "duration": 0.7122592700002315,
+                "start": 1776241128.9294891,
+                "stop": 1776241129.641983,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            }
+        ]
+    }
+}

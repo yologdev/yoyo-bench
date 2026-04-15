@@ -1,0 +1,108 @@
+{
+    "id": "bfe666e8-8d44-452a-9ddc-58247e532d33",
+    "task_name": "terminal-bench/vulnerable-secret",
+    "trial_name": "vulnerable-secret__ZkrvM5Y",
+    "trial_uri": "file:///tmp/bench-results/2026-04-15__07-30-31/vulnerable-secret__ZkrvM5Y",
+    "task_id": {
+        "org": "terminal-bench",
+        "name": "vulnerable-secret",
+        "ref": "sha256:2a8a7b743f4f42fe70c6aadfde5621fceaf8ceb343331586f4479485bc1f8da0"
+    },
+    "source": "terminal-bench/terminal-bench-2",
+    "task_checksum": "d6d7918c1f2c70f4deb51520a101dabdf5a3269e52b05b2b4e897e07ec27cccf",
+    "config": {
+        "task": {
+            "path": null,
+            "git_url": null,
+            "git_commit_id": null,
+            "name": "terminal-bench/vulnerable-secret",
+            "ref": "sha256:2a8a7b743f4f42fe70c6aadfde5621fceaf8ceb343331586f4479485bc1f8da0",
+            "overwrite": false,
+            "download_dir": null,
+            "source": "terminal-bench/terminal-bench-2"
+        },
+        "trial_name": "vulnerable-secret__ZkrvM5Y",
+        "trials_dir": "/tmp/bench-results/2026-04-15__07-30-31",
+        "timeout_multiplier": 1.0,
+        "agent_timeout_multiplier": null,
+        "verifier_timeout_multiplier": null,
+        "agent_setup_timeout_multiplier": null,
+        "environment_build_timeout_multiplier": null,
+        "agent": {
+            "name": null,
+            "import_path": "agents.yoyo_agent:Yoyo",
+            "model_name": "anthropic/claude-sonnet-4-6",
+            "override_timeout_sec": null,
+            "override_setup_timeout_sec": null,
+            "max_timeout_sec": null,
+            "kwargs": {},
+            "env": {}
+        },
+        "environment": {
+            "type": "docker",
+            "import_path": null,
+            "force_build": false,
+            "delete": true,
+            "override_cpus": null,
+            "override_memory_mb": null,
+            "override_storage_mb": null,
+            "override_gpus": null,
+            "suppress_override_warnings": false,
+            "mounts_json": null,
+            "env": {},
+            "kwargs": {}
+        },
+        "verifier": {
+            "override_timeout_sec": null,
+            "max_timeout_sec": null,
+            "disable": false
+        },
+        "artifacts": [],
+        "job_id": "2ad91eca-88c2-491a-9ea0-db234c44d3b4"
+    },
+    "agent_info": {
+        "name": "yoyo",
+        "version": "unknown",
+        "model_info": {
+            "name": "claude-sonnet-4-6",
+            "provider": "anthropic"
+        }
+    },
+    "agent_result": {
+        "n_input_tokens": null,
+        "n_cache_tokens": null,
+        "n_output_tokens": null,
+        "cost_usd": null,
+        "rollout_details": null,
+        "metadata": null
+    },
+    "verifier_result": {
+        "rewards": {
+            "reward": 0.0
+        }
+    },
+    "exception_info": {
+        "exception_type": "NonZeroAgentExitCodeError",
+        "exception_message": "Command failed (exit 1): yoyo --yes -p 'Analyze the following program that contains a secret key. The goal is to extract this secret key and save it to `/app/results.txt`.\n\nThe program is available as an executable. You may need to interact with it in various ways to discover how to access the secret information.\n\nThe secret key is in the format `FLAG{...}`\n\nThe task is complete when you have successfully extracted the secret key and written it to `/app/results.txt`.\n' --max-turns 100 --provider anthropic --thinking medium --model claude-sonnet-4-6 --skills /tmp/yoyo-skills --system-file /tmp/yoyo-system-prompt.md 2>&1 | tee /logs/agent/yoyo-output.txt\nstdout: yoyo: /lib/x86_64-linux-gnu/libc.so.6: version `GLIBC_2.39' not found (required by yoyo)\n\nstderr: None",
+        "exception_traceback": "Traceback (most recent call last):\n  File \"/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/harbor/trial/trial.py\", line 538, in run\n    await self._execute_agent()\n  File \"/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/harbor/trial/trial.py\", line 285, in _execute_agent\n    await asyncio.wait_for(\n  File \"/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/asyncio/tasks.py\", line 520, in wait_for\n    return await fut\n           ^^^^^^^^^\n  File \"/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/harbor/agents/installed/base.py\", line 41, in wrapper\n    return await fn(self, instruction, *args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/runner/work/yoyo-bench/yoyo-bench/agents/yoyo_agent.py\", line 193, in run\n    await self.exec_as_agent(\n  File \"/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/harbor/agents/installed/base.py\", line 358, in exec_as_agent\n    return await self._exec(\n           ^^^^^^^^^^^^^^^^^\n  File \"/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/harbor/agents/installed/base.py\", line 321, in _exec\n    raise NonZeroAgentExitCodeError(\nharbor.agents.installed.base.NonZeroAgentExitCodeError: Command failed (exit 1): yoyo --yes -p 'Analyze the following program that contains a secret key. The goal is to extract this secret key and save it to `/app/results.txt`.\n\nThe program is available as an executable. You may need to interact with it in various ways to discover how to access the secret information.\n\nThe secret key is in the format `FLAG{...}`\n\nThe task is complete when you have successfully extracted the secret key and written it to `/app/results.txt`.\n' --max-turns 100 --provider anthropic --thinking medium --model claude-sonnet-4-6 --skills /tmp/yoyo-skills --system-file /tmp/yoyo-system-prompt.md 2>&1 | tee /logs/agent/yoyo-output.txt\nstdout: yoyo: /lib/x86_64-linux-gnu/libc.so.6: version `GLIBC_2.39' not found (required by yoyo)\n\nstderr: None\n",
+        "occurred_at": "2026-04-15T07:33:20.014382"
+    },
+    "started_at": "2026-04-15T07:32:59.201678Z",
+    "finished_at": "2026-04-15T07:33:38.870723Z",
+    "environment_setup": {
+        "started_at": "2026-04-15T07:32:59.202616Z",
+        "finished_at": "2026-04-15T07:33:08.090525Z"
+    },
+    "agent_setup": {
+        "started_at": "2026-04-15T07:33:08.090538Z",
+        "finished_at": "2026-04-15T07:33:18.966682Z"
+    },
+    "agent_execution": {
+        "started_at": "2026-04-15T07:33:18.966749Z",
+        "finished_at": "2026-04-15T07:33:20.013435Z"
+    },
+    "verifier": {
+        "started_at": "2026-04-15T07:33:20.015553Z",
+        "finished_at": "2026-04-15T07:33:26.737623Z"
+    }
+}

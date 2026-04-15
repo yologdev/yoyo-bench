@@ -1,0 +1,545 @@
+  yoyo (prompt mode) — model: claude-sonnet-4-6
+[K[K
+── Thinking ────────────────────────────────────────────────────────────────
+Let me start by exploring the repository structure to understand what we're working with, then read the HACKING.adoc to understand how to build the compiler.  ▶ $ ls /root && cat /tmp/yoyo-skills/bench/SKILL.md 2>/dev/null | head -50  ▶ $ find / -name "HACKING.adoc" 2>/dev/null | head -5[K[K ✓ (7ms)
+[K[K ✓ (362ms)
+  ▶ $ find / -name "HACKING.adoc" -not -path "*/ocaml/*" 2>/dev/null | head -5; ls /ap…[K[K ✓ (333ms)
+  ▶ $ ls /app/ocaml/ && find /app/ocaml -maxdepth 1 -name "HACKING*" 2>/dev/null[K[K ✓ (7ms)
+  ▶ $ cat /app/ocaml/HACKING.adoc[K[K ✓ (9ms)
+  ▶ $ cd /app/ocaml && git log --oneline -20  ▶ $ cd /app/ocaml && git diff HEAD~1 HEAD --stat 2>/dev/null || git log --oneline -5[K[K ✓ (5ms)
+[K[K ✓ (9ms)
+  ▶ $ ls /app/ocaml/runtime/ | head -30  ▶ $ ls /app/ocaml/runtime/*.c | xargs grep -l "sweep\|free_list\|compress\|run.lengt…[K[K ✓ (15ms)
+[K[K ✓ (168ms)
+  ▶ $ grep -n "sweep\|compress\|run.length\|rle\|free_list\|freelist" /app/ocaml/runti…  ▶ $ grep -n "sweep\|compress\|run.length\|rle\|free_list\|freelist" /app/ocaml/runti…[K[K ✓ (6ms)
+[K[K ✓ (9ms)
+  ▶ $ cat /app/ocaml/runtime/shared_heap.c | head -200[K[K ✓ (0ms)
+  ▶ $ sed -n '300,700p' /app/ocaml/runtime/shared_heap.c[K[K ✓ (40ms)
+
+────────────────────────────────────────────────────────────────────────────────
+  13 tools completed in 23.4s (13 ✓)
+
+Now let me look at the key area - the pool sweeping and allocation logic, particularly the new RLE-compressed freelist that was added. Let me check for issues:
+  ╭─ Turn 10 ────────────────────────────────────────────────────────────╮
+  ▶ $ sed -n '200,340p' /app/ocaml/runtime/shared_heap.c[K[K ✓ (2ms)
+
+Now I see the new format. The freelist is RLE-compressed: a free block's header's wosize field encodes how many additional contiguous free blocks follow it. Let me look at pool_allocate more carefully and check for bugs:
+  ╭─ Turn 11 ────────────────────────────────────────────────────────────╮
+  ▶ $ sed -n '455,550p' /app/ocaml/runtime/shared_heap.c[K[K ✓ (4ms)
+
+Now let me understand the key issue. When pool_allocate takes the first free block and there are more contiguous free blocks after it (`Wosize_hp(p) > 0`), it:
+1. Points next to the adjacent block
+2. Sets `*next = POOL_FREE_HEADER(Wosize_hp(p) - 1)` 
+3. Copies p[1] to next[1]
+
+But wait - in the DEBUG check after adoption, it's checking `POOL_BLOCK_FREE_HP(next_obj) by following next_obj[1]` as a linked list. But with the new RLE format, the second field is only valid for the first block in a run. Let me look at the pool_sweep code more carefully to understand the format:
+  ╭─ Turn 12 ────────────────────────────────────────────────────────────╮
+  ▶ $ sed -n '553,680p' /app/ocaml/runtime/shared_heap.c[K[K ✓ (2ms)
+
+Now I see the RLE format. Let me understand it:
+
+• A free block's header has: tag = No_scan_tag, `color = NOT_MARKABLE, wosize = N` where N is the number of additional contiguous free blocks that follow.
+• p[1] (first field of block) = pointer to the next FREE BLOCK (after the contiguous run)
+• The algorithm in pool_sweep skips N blocks with `p += wh * Wosize_hd(hd) and then does p += Whsize_hd(hd) (which is p += wh * (N+1)` total).
+
+Wait, let me re-read the loop. After handling a free block:
+```c
+p += wh * Wosize_hd(hd);  // skip N additional blocks
+```
+then falls through to:
+```c
+p += Whsize_hd(hd);  // p += wh * (N+1)?? No, Whsize_hd(hd) = Wosize_hd(hd) + 1 = N+1
+```
+
+Wait, but `Whsize_hd(hd) = Wosize_hd(hd) + 1. So for a free block with wosize = N`:
+• p += wh * N (skip additional blocks)
+• `p += N + 1` (???)
+
+That doesn't seem right! Let me check the macros:
+  ╭─ Turn 13 ────────────────────────────────────────────────────────────╮
+  ▶ $ grep -n "Whsize_hd\|Wosize_hd\|Whsize_wosize\|Wosize_whsize" /app/ocaml/runtime/…[K[K ✓ (11ms)
+
+So Whsize_hd(hd) = Wosize_hd(hd) + 1. In the sweep loop:
+
+```c
+p += wh * Wosize_hd(hd);  // skip N blocks (without their headers? No - wh includes the header already)
+```
+
+Wait, let me look at how wh is defined. It's `wsize_sizeclass[sz]` which is the total size (including header) in words per object slot.
+
+So p is a pointer to the header of a block. p + wh points to the next slot. So to skip N additional slots after the current one:
+• p += wh * N skips N slots
+• p += Whsize_hd(hd) = p += N + 1... 
+
+Wait, that would mean `p += wh*N + (N+1)` which seems wrong! Let me think again.
+
+Actually wait - p iterates through slots at the granularity `wh. But p += Whsize_hd(hd) adds N+1 words, not wh*(N+1)` words. So the loop increment is:
+
+```c
+p += wh * Wosize_hd(hd);  // += wh * N words
+// ... then unconditionally:
+p += Whsize_hd(hd);        // += N+1 words (NOT wh*(N+1))
+```
+
+That can't be right. Whsize_hd(hd) is N+1 words, not N+1 slots. So the total advance would be wh*N + N+1 words. This seems completely wrong for the new format!
+
+Wait wait. Let me look at the old behavior. In the OLD code (without RLE), a free block would have wosize = 0, so:
+• p += wh * 0 = 0
+• `p += Whsize_hd(0) = 1` ... that's also wrong!
+
+Hmm, let me re-examine. Actually wait - what if the loop was just p += wh for each step? Let me look at the ORIGINAL loop structure more carefully. Before the new code, how did it work?
+
+Let me look at git history or compare with a known-good version:
+  ╭─ Turn 14 ────────────────────────────────────────────────────────────╮
+  ▶ $ cd /app/ocaml && ls -la && cat VERSION[K[K ✓ (21ms)
+  ▶ $ cd /app/ocaml && ls Makefile.config 2>/dev/null && head -5 Makefile.config[K[K ✓ (6ms)
+  2 tools completed in 3.4s (2 ✓)
+
+The build hasn't been configured yet. Let me first try to understand the bug better, then build and test.
+
+Let me re-read the sweep loop very carefully:
+
+```c
+p += wh * Wosize_hd(hd);  // skip contiguous free blocks
+// ...
+p += Whsize_hd(hd);        // p += Wosize_hd(hd) + 1
+```
+
+Wait - if p is incremented by wh * Wosize_hd(hd) and then by Whsize_hd(hd):
+• wh * N + (N+1) where wh is the slot size in words
+
+That makes no sense dimensionally unless wh = 1. Let me look at this from the perspective of what SHOULD happen.
+
+After we process a run of free blocks starting at p:
+• The run contains `1 + Wosize_hd(hd)` slots (1 for the current, N for the contiguous following)
+• Each slot is wh words
+• So we want to advance p by wh * (1 + N) words = wh * Whsize_hd(hd) ... no
+
+Actually, Whsize_hd(hd) = Wosize_hd(hd) + 1, which is just N+1. But a slot is wh words, not 1 word. So we should advance by wh * (N+1), not `wh*N + (N+1)`.
+
+Let me look at whether Whsize_hd(hd) is used for the wrong purpose here. Actually, wait - before the RLE, what was `p += wh * Wosize_hd(hd)` for? 
+
+Let me check if this code existed before the RLE changes by looking at calc_pool_stats which also has this pattern:
+
+```c
+if (!POOL_BLOCK_FREE_HD(hd)) {
+  // live block
+} else {
+  p += wh * Wosize_hd(hd); /* skip contiguous free blocks */
+}
+
+p += wh;
+```
+
+So calc_pool_stats does `p += wh * Wosize_hd(hd) then p += wh. That means it skips wh * (N+1)` total.
+
+But in `pool_sweep, it does p += wh * Wosize_hd(hd) then p += Whsize_hd(hd) which is p += N+1`. That's wrong compared to calc_pool_stats!
+
+The bug is in `pool_sweep`: it should be `p += wh * Whsize_hd(hd) (i.e., p += wh * (N+1)`) but instead it does p += wh * N then p += N+1 (treating it like the old non-RLE format).
+
+Wait, let me re-read the full loop structure:
+
+```c
+do {
+  header_t hd = ...;
+  ...
+  if (POOL_BLOCK_FREE_HD(hd)) {
+    ...
+    p += wh * Wosize_hd(hd);  // skip N additional contiguous free blocks
+  } else {
+    release_to_global_pool = 0;
+  }
+  p += Whsize_hd(hd);   // <-- this is the common increment
+} while (p + wh <= end);
+```
+
+Hmm, so after the if branch for free blocks:
+• `p += wh * N` (from the if branch)
+• p += N + 1 (from the common increment)
+
+This seems like the common increment was designed for the non-RLE case where Wosize_hd(hd) = 0, so `p += 1` (just the header of an empty/unused slot? But wh is the slot size!).
+
+Wait, I think I'm confusing myself. Let me re-examine what p represents and how the loop advances it.
+
+In the OLD format (no RLE), a free block had wosize = 0 in its header. The loop:
+```c
+p += wh * Wosize_hd(hd);  // 0
+p += Whsize_hd(hd);       // 1  (= 0 + 1)
+```
+
+That means p only advances by 1 word per iteration for free blocks! But that can't be right because wh is the slot width.
+
+Unless... the old code just had p += wh as the loop increment? Let me look at the ACTUAL loop:
+  ╭─ Turn 16 ────────────────────────────────────────────────────────────╮
+  ▶ $ sed -n '640,680p' /app/ocaml/runtime/shared_heap.c[K[K ✓ (3ms)
+
+So after the if block, `p += Whsize_hd(hd) = p += N+1. But that's not p += wh`. Unless in the old code this was p += wh and now it's `p += Whsize_hd(hd)`.
+
+Wait! I think the key insight is: Whsize_hd(hd) in a LIVE block is correct (it's the header + data, in words). But for a free block with the new RLE encoding, Wosize_hd(hd) = N (number of additional slots), so Whsize_hd(hd) = N+1. But we're NOT advancing by slots, we're advancing by actual words.
+
+OH WAIT. Let me reconsider. I think the p += Whsize_hd(hd) was the original loop increment for live blocks (which is correct: move past the header + words of the live object). For free blocks in the old format (wosize=0, so just a header word with the next pointer), Whsize_hd(hd) = 1 is correct to just advance by wh in the old... no, 1 != wh.
+
+Actually wait - in the OLD format without RLE, was a free block ALWAYS exactly wh words? Yes! So the increment should just be p += wh in all cases. But for live blocks, Whsize_hd(hd) = wosize + 1, and wosize + 1 = wh since the live block fills exactly a size-class slot.
+
+So in the old format, Whsize_hd(hd) = wh for both live blocks and free blocks (which had wosize = wh - 1). No wait - free blocks had wosize = 0? That would give Whsize_hd = 1.
+
+Let me look at what `POOL_FREE_HEADER` produces:
+```c
+#define POOL_FREE_HEADER(wosize) Make_header(wosize, No_scan_tag, NOT_MARKABLE)
+```
+
+And in pool_initialize:
+```c
+p[0] = POOL_FREE_HEADER(pool_blocks-1);
+```
+
+So the initial free block has wosize = pool_blocks - 1 where `pool_blocks = (end - p) / wh`. That encodes ALL free blocks in the pool as one RLE entry.
+
+And when sweeping creates new free blocks from garbage, it does:
+```c
+*p = POOL_FREE_HEADER(0);
+```
+
+So newly freed blocks have wosize = 0 (no additional contiguous free blocks yet).
+
+So in the NEW RLE scheme:
+• A free block at position p represents 1 + Wosize_hd(hd) free slots
+• `p[1]` points to the next free block (beyond the contiguous run)
+• Total words to skip = wh * (1 + N) where N = `Wosize_hd(hd)`
+
+In the sweep loop:
+```c
+p += wh * Wosize_hd(hd);  // skip N additional slots = N*wh words
+p += Whsize_hd(hd);       // += N+1 words
+```
+
+Total: `whN + N+1 = N(wh+1) + 1` words.
+
+For that to equal wh*(N+1) = wh*N + wh, we'd need N+1 = wh, i.e., `N = wh-1`.
+
+That's NOT generally true! So this is indeed wrong.
+
+The correct code should be:
+```c
+p += wh * Wosize_hd(hd);  // skip N additional slots
+p += wh;                   // skip the current slot (like the old code)
+```
+
+OR equivalently:
+```c
+p += wh * (1 + Wosize_hd(hd));  // skip all N+1 slots
+```
+
+But the current code does p += wh * N + (N+1) which is wrong.
+
+Now, in `calc_pool_stats` (which I saw earlier), the same pattern exists:
+```c
+p += wh * Wosize_hd(hd); /* skip contiguous free blocks */
+// then falls through to:
+p += wh;
+```
+
+So calc_pool_stats is correct - it does `wh*N + wh = wh*(N+1)`.
+
+But pool_sweep does wh*N + (N+1) which is wrong when wh != 1.
+
+Let me verify this analysis by checking calc_pool_stats again:
+  ╭─ Turn 17 ────────────────────────────────────────────────────────────╮
+  ▶ $ sed -n '280,315p' /app/ocaml/runtime/shared_heap.c[K[K ✓ (1ms)
+
+Yes! In calc_pool_stats:
+• Live block: p += wh (no extra skipping)
+• Free block: p += wh * Wosize_hd(hd) then p += wh = `p += wh * (N+1)` ✓
+
+And in pool_sweep:
+• Live block: p += Whsize_hd(hd) = p += N+1... but for live blocks, `Whsize_hd(hd) = wosize+1 <= wh`. Hmm...
+
+Wait, actually for a live block, Wosize_hd(hd) is the live object's word size, and Whsize_hd(hd) = wosize + 1. Is `wosize + 1 == wh always? No - wh = wsize_sizeclass[sz]` and wosize <= wh-1 (since whsize = wosize+1 <= wh, there can be fragmentation).
+
+So `p += Whsize_hd(hd) for a live block would advance by wosize+1 words, not wh` words. That's ALSO wrong for live blocks in pool_sweep!
+
+But wait - it must have worked before for live blocks. Let me look at the original code. Maybe I'm wrong about what `p += Whsize_hd(hd)` means in context.
+
+Actually, I just realized: for a LIVE block, `CAMLassert(Whsize_hd(hd) <= wh) is true, but the loop might have been p += wh` always before. Let me look at whether there was a different original form.
+
+Actually let me think about this differently. Let me look at what the live block handling does - there's no p += wh in the else branch, so the only increment is the common `p += Whsize_hd(hd) at the end. For a live block, Whsize_hd(hd) = wosize + 1`. But that's NOT equal to wh generally.
+
+OK wait - maybe the pool is organized such that `wosize = wh - 1 for live blocks always? Let me check... in caml_shared_try_alloc`:
+
+```c
+sizeclass sz = sizeclass_wsize[whsize];
+CAMLassert(wsize_sizeclass[sz] >= whsize);
+p = pool_allocate(local, sz);
+...
+Hd_hp(p) = Make_header_with_reserved(wosize, tag, colour, reserved);
+```
+
+So the header stores the actual wosize of the allocation, which may be less than wh - 1. So Whsize_hd(hd) <= wh, with potential fragmentation.
+
+This means p += Whsize_hd(hd) for a live block would skip only `wosize+1 words, not wh words, leaving p` pointing partway through the slot. That would be wrong.
+
+UNLESS... hmm, wait. Let me re-examine. Maybe I'm wrong about the slot layout. Let me look at the assert in pool_sweep:
+
+```c
+CAMLassert(p == end);
+```
+
+Let me try to build the code to see what actually crashes:
+  ╭─ Turn 18 ────────────────────────────────────────────────────────────╮
+  ▶ $ cd /app/ocaml && ls Makefile.config* && ls *.config 2>/dev/null || echo "Not con…[K[K ✓ (50ms)
+  ▶ $ cd /app/ocaml && ./configure 2>&1 | tail -20[K[K ✓ (11.5s)
+  ▶ $ cd /app/ocaml && make -j$(nproc) 2>&1 | tail -50[K[K ✓ (17.1s)
+  3 tools completed in 35.4s (3 ✓)
+
+The crash happens during the stdlib build. The stdlib build uses `boot/ocamlrun` (the bootstrapped runtime). Let me now try to reproduce the crash and get more info:
+  ╭─ Turn 21 ────────────────────────────────────────────────────────────╮
+  ▶ $ cd /app/ocaml && boot/ocamlrun 2>&1 | head -5[K[K ✓ (18ms)
+  ▶ $ cd /app/ocaml && boot/ocamlrun boot/ocamlc 2>&1 | head -10[K[K ✓ (23ms)
+  ▶ $ cd /app/ocaml && echo 'let () = print_endline "hello"' > /tmp/test.ml && boot/oc…[K[K ✓ (24ms)
+  ▶ $ cd /app/ocaml && OCAMLRUN='$(ROOTDIR)/boot/ocamlrun' make -C stdlib USE_BOOT_OCA…[K[K ✓ (356ms)
+  ▶ $ cd /app/ocaml && boot/ocamlrun boot/ocamlc -I boot stdlib/camlinternalFormatBasi…[K[K ✓ (217ms)
+  ▶ $ cd /app/ocaml && boot/ocamlrun boot/ocamlc -nostdlib stdlib/camlinternalFormatBa…[K[K ✓ (33ms)
+  ▶ $ cd /app/ocaml && cat stdlib/Makefile | grep "camlinternalFormatBasics" | head -5[K[K ✓ (9ms)
+  ▶ $ cd /app/ocaml && head -30 stdlib/Makefile[K[K ✓ (5ms)
+  ▶ $ cd /app/ocaml && grep -n "camlinternalFormatBasics.cmi\|NOSTDLIB\|nostdlib" stdl…[K[K ✓ (3ms)
+  ▶ $ cd /app/ocaml && sed -n '140,160p' stdlib/Makefile[K[K ✓ (2ms)
+  ▶ $ cd /app/ocaml && grep "CAMLC\s*=" stdlib/Makefile | head -5[K[K ✓ (8ms)
+  ▶ $ cd /app/ocaml && grep "BOOT_OCAMLC\s*=" Makefile.common | head -5[K[K ✓ (3ms)
+  ▶ $ ls /app/ocaml/boot/[K[K ✓ (3ms)
+  13 tools completed in 30.6s (13 ✓)
+
+So boot/ocamlrun is the runtime that crashes. Now let me understand: `boot/ocamlrun` is a binary that was pre-built. It IS the new code we need to fix... or is the new code in `runtime/`?
+
+Wait - the task says the OCaml compiler crashes while bootstrapping itself. The boot/ocamlrun is the OLD bootstrapped runtime used to compile the NEW sources. The new code we're fixing is in runtime/*.c. Let me check if boot/ocamlrun was rebuilt during make:
+  ╭─ Turn 34 ────────────────────────────────────────────────────────────╮
+  ▶ $ ls -la /app/ocaml/boot/ocamlrun && file /app/ocaml/boot/ocamlrun[K[K ✓ (6ms)
+  ▶ $ ls -la /app/ocaml/runtime/ocamlrun 2>/dev/null && md5sum /app/ocaml/boot/ocamlru…[K[K ✓ (12ms)
+  2 tools completed in 3.5s (2 ✓)
+
+The `boot/ocamlrun and runtime/ocamlrun` are identical! And they were both built from the runtime sources. So the bug IS in the runtime source files. The `make step built the new runtime and copied it to boot/ocamlrun`.
+
+Looking at the Makefile output:
+```
+CC runtime/zstd.b.o
+MKLIB runtime/libcamlrun.a
+MKEXE runtime/ocamlrun
+cp runtime/ocamlrun boot/ocamlrun
+```
+
+So make first builds runtime/ocamlrun, copies it to boot/, then uses boot/ocamlrun to compile the stdlib. And it crashes there.
+
+Now I need to find the bug in the runtime. Let me analyze it more carefully. Let me look at the pool_allocate function again:
+
+The key issue I identified:
+1. In `pool_sweep, after the loop, when last_free_block` is non-null, it sets last_free_block[1] = 0. But the loop already handles setting last_free_block[1] when a non-free block follows or when merging... let me trace through this more carefully.
+
+Actually, let me think about pool_allocate more carefully:
+
+```c
+if( Wosize_hp(p) > 0 ) {
+    next = (value*)(p + wsize_sizeclass[sz]);
+    *next = POOL_FREE_HEADER(Wosize_hp(p) - 1);
+    next[1] = p[1];
+} else {
+    next = (value*)p[1];
+}
+```
+
+When Wosize_hp(p) = N > 0:
+• next = next slot after the current one
+• *next = POOL_FREE_HEADER(N-1) - sets the next slot as free with N-1 additional following slots
+• next[1] = p[1] - the next pointer of this run continues where p's next was
+
+This seems correct for the RLE scheme.
+
+When Wosize_hp(p) = 0:
+• next = p[1] - the next free block (no contiguous ones)
+
+This also seems correct.
+
+Then `r->next_obj = next` - update the pool's free list head.
+
+Let me look at the sweep loop again very carefully:
+
+```c
+do {
+  header_t hd = ...;
+  
+  // If garbage, free it (sets hd = POOL_FREE_HEADER(0))
+  
+  if (POOL_BLOCK_FREE_HD(hd)) {
+    if (last_free_block) {
+      if (last_free_block + (1 + Wosize_hp(last_free_block)) * wh == p) {
+        // Merge: increment wosize of last_free_block
+        *last_free_block = POOL_FREE_HEADER(Wosize_hp(last_free_block) + Wosize_hd(hd) + 1);
+      } else {
+        // Don't merge: update next pointer
+        last_free_block[1] = (value)p;
+        last_free_block = p;
+      }
+    } else {
+      a->next_obj = (value*)p;
+      last_free_block = p;
+    }
+    
+    p += wh * Wosize_hd(hd);  // skip N additional blocks
+  } else {
+    release_to_global_pool = 0;
+  }
+  p += Whsize_hd(hd);  // BUG HERE
+} while (p + wh <= end);
+```
+
+For a live block:
+• `Whsize_hd(hd) = wosize + 1`
+• Advance by wosize + 1 words
+
+But a live block occupies wh words in the pool! So if wosize + 1 < wh (fragmentation), we'd miss some words.
+
+For a free block (new format with RLE):
+• Wosize_hd(hd) = N (additional contiguous free blocks)
+• `p += wh * N` in the if branch
+• p += Whsize_hd(hd) = N + 1 in the common increment
+
+Total: wh*N + N + 1 words. But correct should be `wh*(N+1) = wh*N + wh`.
+
+So the common increment should be p += wh, not `p += Whsize_hd(hd)`.
+
+But wait, p += Whsize_hd(hd) for a live block would give `wosize+1 which can be less than wh`! Unless... ah, in a pool, is the wosize always wh - 1? Let me check:
+
+In pool_sweep, when a GARBAGE block is processed:
+• `CAMLassert(Whsize_hd(hd) <= wh)` - so whsize <= wh, meaning wosize <= wh-1
+• It's set to POOL_FREE_HEADER(0) which has wosize=0
+
+For a live block, the assertion Whsize_hd(hd) <= wh must hold. But does `Whsize_hd(hd) = wh` always? Not necessarily - there can be internal fragmentation where wosize < wh - 1.
+
+Hmm, so actually p += Whsize_hd(hd) for live blocks is WRONG.
+
+BUT - wait. Before the RLE changes, what was the sweep loop? Let me check if there's another version online... Actually let me think about what version the old code was.
+
+In the old code WITHOUT RLE:
+• Free blocks had `POOL_FREE_HEADER(0)` always (wosize=0)
+• The loop just had p += wh as the step
+
+The new code changed the step to `p += Whsize_hd(hd) which is wrong. It should be p += wh`.
+
+Let me verify by looking at `calc_pool_stats - it uses p += wh` consistently and handles the RLE skip with p += wh * Wosize_hd(hd) before that.
+
+And the do-while loop in pool_sweep should use p += wh as the constant step. The `p += wh * Wosize_hd(hd)` in the free-block branch handles the extra slots in the RLE run.
+
+So the fix is: change p += Whsize_hd(hd) to p += wh in pool_sweep.
+
+But wait, why did p += Whsize_hd(hd) work before the RLE changes? Before: free blocks had wosize=0, so Whsize_hd(hd) = 1. But wh >= 2 (minimum size class is 2 words: 1 header + 1 field). So p += 1 would be wrong even in the old code!
+
+Unless the old code had p += wh and the RLE change introduced `p += Whsize_hd(hd)`. That's likely the introduced bug.
+
+Let me verify by looking at the full sweep loop one more time and checking if there's another issue:
+
+Actually wait - actually for a LIVE block, `p += Whsize_hd(hd) = p += (wosize+1)` could still work IF the GC requires that live objects be aligned to wh boundaries (i.e., padding). But the assertion CAMLassert(Whsize_hd(hd) <= wh) only tells us it's at most wh, not exactly wh.
+
+Let me check if objects are aligned. In pool_initialize:
+```c
+uintnat pool_blocks = (end - p) / wsize_sizeclass[sz];
+p[0] = POOL_FREE_HEADER(pool_blocks-1);
+```
+
+So the pool is divided into fixed-size blocks of wh = wsize_sizeclass[sz] words. Allocations always take exactly one block. So a live object in the pool ALWAYS occupies exactly wh words of space, even if its `wosize < wh-1`.
+
+Therefore, for a live block, p += Whsize_hd(hd) = p += wosize+1 is WRONG because `wosize+1 < wh` is possible.
+
+The fix should be: change p += Whsize_hd(hd) to p += wh in the pool_sweep loop.
+
+Let me look at the actual line number to make the fix:
+  ╭─ Turn 36 ────────────────────────────────────────────────────────────╮
+  ▶ $ grep -n "p += Whsize_hd(hd)" /app/ocaml/runtime/shared_heap.c[K[K ✓ (6ms)
+  ▶ $ sed -n '645,660p' /app/ocaml/runtime/shared_heap.c[K[K ✓ (5ms)
+  2 tools completed in 3.9s (2 ✓)
+
+Now let me also check the pool_allocate for any issues. Particularly the CAMLassert for `POOL_BLOCK_FREE_HP`:
+
+```c
+next[1] = p[1];
+```
+
+When we split a run: next gets the remainder of the run. But next[1] (the next pointer stored in the field) should be valid. In the new scheme, only the FIRST block in a run has a valid next pointer. So after splitting, the new first block of the remainder run will correctly have next[1] = p[1] (pointing to the next disjoint free block).
+
+Wait, but what if the new block at `next` is now the head of a run of 0 blocks (i.e., Wosize_hp(p) - 1 = 0)? Then `next[1]` correctly points to the next free block. OK.
+
+What about the DEBUG check in `pool_global_adopt`:
+```c
+value* next_obj = r->next_obj;
+while( next_obj ) {
+  CAMLassert(POOL_BLOCK_FREE_HP(next_obj));
+  next_obj = (value*)next_obj[1];
+}
+```
+
+This traverses the free list by following [1] pointers. In the new RLE scheme, each "node" in the list is the first block of a run. The check POOL_BLOCK_FREE_HP(next_obj) should pass. Then next_obj = next_obj[1] should give the next non-contiguous free block. This seems correct.
+
+OK, so I think the main bug is the p += Whsize_hd(hd) in pool_sweep. But wait, let me think again...
+
+The sweep loop's p represents the position within the pool. It visits each slot. In the old code, each slot was wh words, so p += wh was the step. After introducing RLE, a free block can represent multiple consecutive slots. So the loop visits the FIRST block of each run. For a free run, we skip the additional blocks with p += wh * N, then advance past the first block with p += wh.
+
+The current code uses p += Whsize_hd(hd) instead of p += wh. Let me check for LIVE blocks - for a live block (header + data), Whsize_hd(hd) = wosize + 1. This should equal wh - frag_words. So p += wosize + 1 moves to some position within the next slot, not to the start of it. 
+
+This is clearly wrong. The fix is p += wh.
+
+But why does the garbage block set wosize = 0? After the GC reclaims a garbage block, it sets:
+```c
+*p = POOL_FREE_HEADER(0);
+```
+
+So the free block has wosize = 0, meaning 0 additional contiguous free blocks (just this one). Then Whsize_hd = 1. So p += 1 would only move 1 word. That's WRONG.
+
+Unless the merge step compensates? But the merge step with `last_free_block updates the previous free block's header, not p itself. So p` still incorrectly points to position 1 word into the current slot.
+
+Actually wait - let me re-examine. After the garbage block is processed:
+```c
+*p = POOL_FREE_HEADER(0);  // wosize=0
+hd = POOL_FREE_HEADER(0);
+```
+
+Now we enter the free block handling:
+```c
+if (POOL_BLOCK_FREE_HD(hd)) {
+  ...
+  p += wh * Wosize_hd(hd);  // p += wh * 0 = 0
+}
+p += Whsize_hd(hd);  // p += 0 + 1 = 1
+```
+
+So p advances by 1. Next iteration, p points to the SECOND WORD of the current slot. This will read wrong data, and the loop will go haywire.
+
+The fix:
+
+```c
+p += wh;   // instead of p += Whsize_hd(hd)
+```
+
+For live block: p += wh ✓ (moves to next slot)
+For free block: `p += wh  N + wh = wh  (N+1)` ✓ (skips all slots in the run)
+
+Let me make this fix:
+  ╭─ Turn 38 ────────────────────────────────────────────────────────────╮
+  ▶ edit /app/ocaml/runtime/shared_heap.c (2 → 2 lines)
+  -       p += Whsize_hd(hd);
+  -     } while (p + wh <= end);
+  +       p += wh;
+  +     } while (p + wh <= end);
+ ✓ (0ms)
+
+Now let me also look at the p == end assertion. With `wh*(N+1) advance per free run and wh` advance per live block, the total should always equal the pool size in words, which is `POOL_WSIZE - POOL_SLAB_WOFFSET. The while loop condition p + wh <= end` ensures we stop correctly.
+
+But wait, I need to check the last iteration. After the last block (which could be mid-run):
+
+Actually, `p += wh  N` (in the free branch) + `p += wh` (common) = `wh(N+1)`. But is it possible that the last slot is in the middle of a run?
+
+No - when the pool was set up, the blocks are all aligned to wh boundaries. A run cannot extend beyond the pool end. So p == end after the last iteration.
+
+Let me now rebuild:
+  ╭─ Turn 39 ────────────────────────────────────────────────────────────╮
+  ▶ $ cd /app/ocaml && make -j$(nproc) 2>&1 | tail -30[K[K ✓ (9m 45s)
+
+  ↳ 14m 1s · 18796→11366 tokens · $0.632
+  ⬤ 10% of context window used
+
+
