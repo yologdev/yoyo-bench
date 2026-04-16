@@ -1,0 +1,867 @@
+  yoyo (prompt mode) — model: claude-sonnet-4-6
+[K[K
+── Thinking ────────────────────────────────────────────────────────────────
+Let me explore the environment first to understand what we're working with.  ▶ $ cat /etc/os-release && whoami && hostname && ls /  ▶ $ which git nginx apache2 python3 && id[K[K ✓ (1ms)
+[K[K ✓ (5ms)
+  ▶ $ apt-get install -y nginx git 2>&1 | tail -5 ✗ (2m 0s)
+    │ Command timed out after 120s
+  ▶ $ which nginx || dpkg -l nginx 2>/dev/null | tail -3  ▶ $ id git 2>/dev/null; ls /home/[K[K ✓ (3ms)
+[K[K ✓ (6ms)
+  ▶ $ dpkg -l nginx 2>/dev/null; nginx -v 2>&1; ls /etc/nginx/ 2>/dev/null  ▶ $ git --version && python3 --version[K[K ✓ (3ms)
+[K[K ✓ (14ms)
+
+────────────────────────────────────────────────────────────────────────────────
+  7 tools completed in 2m 8s (6 ✓, 1 ✗)
+
+Nginx and git are already installed. Now let me set everything up:
+  ╭─ Turn 5 ─────────────────────────────────────────────────────────────╮
+  ▶ $ # 1. Create the 'user' Unix account that will be used for gi… (8 lines)[K[K ✓ (30ms)
+  ▶ $ # 3. Make 'user' the owner of the repo so they can push (7 lines)[K[K ✓ (6ms)
+  ▶ write /git/server/hooks/post-receive (6 lines) ✓ (1ms)
+  ▶ $ chmod +x /git/server/hooks/post-receive (3 lines)[K[K ✓ (7ms)
+  ▶ write /etc/nginx/sites-available/gitdeploy (11 lines) ✓ (1ms)
+  ▶ $ # Enable the site, disable default if it conflicts on 8080 (8 lines)[K[K ✓ (7ms)
+  ▶ $ nginx -s reload 2>/dev/null || nginx (4 lines)[K[K ✓ (1.0s)
+  7 tools completed in 20.2s (7 ✓)
+
+Nginx is listening on port 8080. Now let me make sure the git-shell is allowed and SSH is configured properly for the user account:
+  ╭─ Turn 12 ────────────────────────────────────────────────────────────╮
+  ▶ $ # Ensure git-shell is in /etc/shells (required for login) (14 lines)[K[K ✓ (13ms)
+  ▶ $ # Verify SSH daemon is running (3 lines)[K  ⠋ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 2s (41 lines)[K  ⠙ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 2s (41 lines)[K  ⠹ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 3s (52 lines)[K  ⠸ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 3s (52 lines)[K  ⠼ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 4s (52 lines)[K  ⠴ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 4s (56 lines)[K  ⠦ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 5s (56 lines)[K  ⠧ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 5s (56 lines)[K  ⠇ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 6s (56 lines)[K  ⠏ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 6s (56 lines)[K  ⠋ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 7s (56 lines)[K  ⠙ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 7s (56 lines)[K  ⠹ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 8s (56 lines)[K  ⠸ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 8s (56 lines)[K  ⠼ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 9s (56 lines)[K  ⠴ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 9s (56 lines)[K  ⠦ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 10s (56 lines)[K  ⠧ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 10s (56 lines)[K  ⠇ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 11s (56 lines)[K  ⠏ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 11s (56 lines)[K  ⠋ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 12s (56 lines)[K  ⠙ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 12s (56 lines)[K  ⠹ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 13s (56 lines)[K  ⠸ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 13s (56 lines)[K  ⠼ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 14s (56 lines)[K  ⠴ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 14s (56 lines)[K  ⠦ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 15s (56 lines)[K  ⠧ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 15s (56 lines)[K  ⠇ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 16s (56 lines)[K  ⠏ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 16s (56 lines)[K  ⠋ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 17s (56 lines)[K  ⠙ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 17s (56 lines)[K  ⠹ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 18s (57 lines)[K  ⠸ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 18s (57 lines)[K  ⠼ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 19s (57 lines)[K  ⠴ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 19s (57 lines)[K  ⠦ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 20s (57 lines)[K  ⠧ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 20s (57 lines)[K  ⠇ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 21s (57 lines)[K  ⠏ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 21s (57 lines)[K  ⠋ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 22s (57 lines)[K  ⠙ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 22s (57 lines)[K  ⠹ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 23s (57 lines)[K  ⠸ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 23s (57 lines)[K  ⠼ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 24s (57 lines)[K  ⠴ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 24s (57 lines)[K  ⠦ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 25s (57 lines)[K  ⠧ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 25s (57 lines)[K  ⠇ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 26s (57 lines)[K  ⠏ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 26s (58 lines)[K  ⠋ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 27s (58 lines)[K  ⠙ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 27s (58 lines)[K  ⠹ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 28s (58 lines)[K  ⠸ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 28s (58 lines)[K  ⠼ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 29s (58 lines)[K  ⠴ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 29s (58 lines)[K  ⠦ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 30s (58 lines)[K  ⠧ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 30s (58 lines)[K  ⠇ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 31s (58 lines)[K  ⠏ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 31s (58 lines)[K  ⠋ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 32s (58 lines)[K  ⠙ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 32s (58 lines)[K  ⠹ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 33s (58 lines)[K  ⠸ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 33s (58 lines)[K  ⠼ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 34s (58 lines)[K  ⠴ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 34s (58 lines)[K  ⠦ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 35s (58 lines)[K  ⠧ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 35s (58 lines)[K  ⠇ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 36s (58 lines)[K  ⠏ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 36s (58 lines)[K  ⠋ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 37s (58 lines)[K  ⠙ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 37s (58 lines)[K  ⠹ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 38s (58 lines)[K  ⠸ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 38s (58 lines)[K  ⠼ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 39s (58 lines)[K  ⠴ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 39s (58 lines)[K  ⠦ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 40s (58 lines)[K  ⠧ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 40s (58 lines)[K  ⠇ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 41s (58 lines)[K  ⠏ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 41s (58 lines)[K  ⠋ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 42s (59 lines)[K  ⠙ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 42s (59 lines)[K  ⠹ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 43s (59 lines)[K  ⠸ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 43s (59 lines)[K  ⠼ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 44s (59 lines)[K  ⠴ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 44s (59 lines)[K  ⠦ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 45s (59 lines)[K  ⠧ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 45s (59 lines)[K  ⠇ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 46s (59 lines)[K  ⠏ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 46s (59 lines)[K  ⠋ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 47s (59 lines)[K  ⠙ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 47s (59 lines)[K  ⠹ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 48s (60 lines)[K  ⠸ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 48s (60 lines)[K  ⠼ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 49s (60 lines)[K  ⠴ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 49s (60 lines)[K  ⠦ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 50s (60 lines)[K  ⠧ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 50s (60 lines)[K  ⠇ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 51s (60 lines)[K  ⠏ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 51s (60 lines)[K  ⠋ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 52s (60 lines)[K  ⠙ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 52s (60 lines)[K  ⠹ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 53s (60 lines)[K  ⠸ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 53s (60 lines)[K  ⠼ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 54s (60 lines)[K  ⠴ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 54s (60 lines)[K  ⠦ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 55s (60 lines)[K  ⠧ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 55s (60 lines)[K  ⠇ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 56s (60 lines)[K  ⠏ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 56s (60 lines)[K  ⠋ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 57s (60 lines)[K  ⠙ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 57s (60 lines)[K  ⠹ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 58s (60 lines)[K  ⠸ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 58s (60 lines)[K  ⠼ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 59s (60 lines)[K  ⠴ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 59s (60 lines)[K  ⠦ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m (60 lines)[K  ⠧ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m (60 lines)[K  ⠇ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 1s (60 lines)[K  ⠏ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 1s (60 lines)[K  ⠋ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 2s (60 lines)[K  ⠙ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 2s (60 lines)[K  ⠹ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 3s (60 lines)[K  ⠸ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 3s (60 lines)[K  ⠼ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 4s (60 lines)[K  ⠴ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 4s (60 lines)[K  ⠦ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 5s (60 lines)[K  ⠧ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 5s (60 lines)[K  ⠇ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 6s (60 lines)[K  ⠏ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 6s (60 lines)[K  ⠋ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 7s (60 lines)[K  ⠙ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 7s (60 lines)[K  ⠹ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 8s (60 lines)[K  ⠸ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 8s (60 lines)[K  ⠼ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 9s (60 lines)[K  ⠴ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 9s (60 lines)[K  ⠦ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 10s (60 lines)[K  ⠧ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 10s (60 lines)[K  ⠇ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 11s (60 lines)[K  ⠏ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 11s (60 lines)[K  ⠋ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 12s (60 lines)[K  ⠙ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 12s (60 lines)[K  ⠹ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 13s (60 lines)[K  ⠸ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 13s (60 lines)[K  ⠼ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 14s (60 lines)[K  ⠴ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 14s (60 lines)[K  ⠦ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 15s (60 lines)[K  ⠧ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 15s (60 lines)[K  ⠇ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 16s (60 lines)[K  ⠏ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 16s (60 lines)[K  ⠋ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 17s (60 lines)[K  ⠙ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 17s (60 lines)[K  ⠹ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 18s (60 lines)[K  ⠸ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 18s (60 lines)[K  ⠼ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 19s (60 lines)[K  ⠴ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 19s (60 lines)[K  ⠦ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 20s (60 lines)[K  ⠧ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 20s (60 lines)[K  ⠇ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 21s (60 lines)[K  ⠏ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 21s (60 lines)[K  ⠋ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 22s (60 lines)[K  ⠙ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 22s (60 lines)[K  ⠹ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 23s (60 lines)[K  ⠸ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 23s (60 lines)[K  ⠼ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 24s (60 lines)[K  ⠴ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 24s (60 lines)[K  ⠦ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 25s (60 lines)[K  ⠧ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 25s (60 lines)[K  ⠇ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 26s (60 lines)[K  ⠏ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 26s (60 lines)[K  ⠋ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 27s (60 lines)[K  ⠙ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 27s (60 lines)[K  ⠹ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 28s (61 lines)[K  ⠸ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 28s (61 lines)[K  ⠼ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 29s (61 lines)[K  ⠴ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 29s (61 lines)[K  ⠦ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 30s (61 lines)[K  ⠧ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 30s (61 lines)[K  ⠇ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 31s (62 lines)[K  ⠏ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 31s (62 lines)[K  ⠋ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 32s (62 lines)[K  ⠙ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 32s (62 lines)[K  ⠹ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 33s (62 lines)[K  ⠸ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 33s (62 lines)[K  ⠼ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 34s (63 lines)[K  ⠴ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 34s (63 lines)[K  ⠦ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 35s (63 lines)[K  ⠧ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 35s (63 lines)[K  ⠇ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 36s (63 lines)[K  ⠏ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 36s (63 lines)[K  ⠋ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 37s (63 lines)[K  ⠙ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 37s (63 lines)[K  ⠹ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 38s (63 lines)[K  ⠸ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 38s (63 lines)[K  ⠼ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 39s (63 lines)[K  ⠴ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 39s (64 lines)[K  ⠦ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 40s (64 lines)[K  ⠧ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 40s (64 lines)[K  ⠇ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 41s (64 lines)[K  ⠏ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 41s (64 lines)[K  ⠋ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 42s (64 lines)[K  ⠙ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 42s (65 lines)[K  ⠹ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 43s (65 lines)[K  ⠸ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 43s (65 lines)[K  ⠼ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 44s (65 lines)[K  ⠴ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 44s (65 lines)[K  ⠦ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 45s (65 lines)[K  ⠧ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 45s (65 lines)[K  ⠇ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 46s (66 lines)[K  ⠏ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 46s (66 lines)[K  ⠋ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 47s (66 lines)[K  ⠙ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 47s (66 lines)[K  ⠹ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 48s (66 lines)[K  ⠸ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 48s (66 lines)[K  ⠼ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 49s (66 lines)[K  ⠴ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 49s (66 lines)[K  ⠦ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 50s (66 lines)[K  ⠧ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 50s (66 lines)[K  ⠇ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 51s (66 lines)[K  ⠏ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 51s (66 lines)[K  ⠋ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 52s (66 lines)[K  ⠙ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 52s (66 lines)[K  ⠹ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 53s (66 lines)[K  ⠸ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 53s (66 lines)[K  ⠼ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 54s (66 lines)[K  ⠴ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 54s (66 lines)[K  ⠦ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 55s (66 lines)[K  ⠧ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 55s (66 lines)[K  ⠇ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 56s (66 lines)[K  ⠏ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 56s (66 lines)[K  ⠋ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 57s (66 lines)[K  ⠙ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 57s (66 lines)[K  ⠹ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 58s (66 lines)[K  ⠸ bash: # Verify SSH daemon is running
+ss -tlnp … ⏱ 1m 58s (66 lines)[K[K ✗ (2m 0s)
+    │ Command timed out after 120s
+  ▶ $ ss -tlnp | grep ':22'[K[K ✓ (11ms)
+  ▶ $ ls /usr/sbin/sshd 2>/dev/null && echo exists || echo missing (2 lines)[K[K ✓ (11ms)
+  ▶ $ # Wait for the background apt install to finish (4 lines)[K[K ✓ (3.0s)
+  ▶ $ ps aux | grep apt | grep -v grep[K[K ✓ (5ms)
+  ▶ $ # Wait more patiently for apt to finish (10 lines)[K  ⠋ bash: # Wait more patiently for apt to finish
+… ⏱ 2s (1 line)[K  ⠙ bash: # Wait more patiently for apt to finish
+… ⏱ 2s (1 line)[K  ⠹ bash: # Wait more patiently for apt to finish
+… ⏱ 3s (1 line)[K  ⠸ bash: # Wait more patiently for apt to finish
+… ⏱ 3s (1 line)[K  ⠼ bash: # Wait more patiently for apt to finish
+… ⏱ 4s (1 line)[K  ⠴ bash: # Wait more patiently for apt to finish
+… ⏱ 4s (1 line)[K  ⠦ bash: # Wait more patiently for apt to finish
+… ⏱ 5s (1 line)[K  ⠧ bash: # Wait more patiently for apt to finish
+… ⏱ 5s (2 lines)[K  ⠇ bash: # Wait more patiently for apt to finish
+… ⏱ 6s (2 lines)[K  ⠏ bash: # Wait more patiently for apt to finish
+… ⏱ 6s (2 lines)[K  ⠋ bash: # Wait more patiently for apt to finish
+… ⏱ 7s (2 lines)[K  ⠙ bash: # Wait more patiently for apt to finish
+… ⏱ 7s (2 lines)[K  ⠹ bash: # Wait more patiently for apt to finish
+… ⏱ 8s (2 lines)[K  ⠸ bash: # Wait more patiently for apt to finish
+… ⏱ 8s (2 lines)[K  ⠼ bash: # Wait more patiently for apt to finish
+… ⏱ 9s (2 lines)[K  ⠴ bash: # Wait more patiently for apt to finish
+… ⏱ 9s (2 lines)[K  ⠦ bash: # Wait more patiently for apt to finish
+… ⏱ 10s (3 lines)[K  ⠧ bash: # Wait more patiently for apt to finish
+… ⏱ 10s (3 lines)[K  ⠇ bash: # Wait more patiently for apt to finish
+… ⏱ 11s (3 lines)[K  ⠏ bash: # Wait more patiently for apt to finish
+… ⏱ 11s (3 lines)[K  ⠋ bash: # Wait more patiently for apt to finish
+… ⏱ 12s (3 lines)[K  ⠙ bash: # Wait more patiently for apt to finish
+… ⏱ 12s (3 lines)[K  ⠹ bash: # Wait more patiently for apt to finish
+… ⏱ 13s (3 lines)[K  ⠸ bash: # Wait more patiently for apt to finish
+… ⏱ 13s (3 lines)[K  ⠼ bash: # Wait more patiently for apt to finish
+… ⏱ 14s (3 lines)[K  ⠴ bash: # Wait more patiently for apt to finish
+… ⏱ 14s (3 lines)[K  ⠦ bash: # Wait more patiently for apt to finish
+… ⏱ 15s (4 lines)[K  ⠧ bash: # Wait more patiently for apt to finish
+… ⏱ 15s (4 lines)[K  ⠇ bash: # Wait more patiently for apt to finish
+… ⏱ 16s (4 lines)[K  ⠏ bash: # Wait more patiently for apt to finish
+… ⏱ 16s (4 lines)[K  ⠋ bash: # Wait more patiently for apt to finish
+… ⏱ 17s (4 lines)[K  ⠙ bash: # Wait more patiently for apt to finish
+… ⏱ 17s (4 lines)[K  ⠹ bash: # Wait more patiently for apt to finish
+… ⏱ 18s (4 lines)[K  ⠸ bash: # Wait more patiently for apt to finish
+… ⏱ 18s (4 lines)[K  ⠼ bash: # Wait more patiently for apt to finish
+… ⏱ 19s (4 lines)[K  ⠴ bash: # Wait more patiently for apt to finish
+… ⏱ 19s (4 lines)[K  ⠦ bash: # Wait more patiently for apt to finish
+… ⏱ 20s (5 lines)[K  ⠧ bash: # Wait more patiently for apt to finish
+… ⏱ 20s (5 lines)[K  ⠇ bash: # Wait more patiently for apt to finish
+… ⏱ 21s (5 lines)[K  ⠏ bash: # Wait more patiently for apt to finish
+… ⏱ 21s (5 lines)[K  ⠋ bash: # Wait more patiently for apt to finish
+… ⏱ 22s (5 lines)[K  ⠙ bash: # Wait more patiently for apt to finish
+… ⏱ 22s (5 lines)[K  ⠹ bash: # Wait more patiently for apt to finish
+… ⏱ 23s (5 lines)[K  ⠸ bash: # Wait more patiently for apt to finish
+… ⏱ 23s (5 lines)[K  ⠼ bash: # Wait more patiently for apt to finish
+… ⏱ 24s (5 lines)[K  ⠴ bash: # Wait more patiently for apt to finish
+… ⏱ 24s (5 lines)[K  ⠦ bash: # Wait more patiently for apt to finish
+… ⏱ 25s (6 lines)[K  ⠧ bash: # Wait more patiently for apt to finish
+… ⏱ 25s (6 lines)[K  ⠇ bash: # Wait more patiently for apt to finish
+… ⏱ 26s (6 lines)[K  ⠏ bash: # Wait more patiently for apt to finish
+… ⏱ 26s (6 lines)[K  ⠋ bash: # Wait more patiently for apt to finish
+… ⏱ 27s (6 lines)[K  ⠙ bash: # Wait more patiently for apt to finish
+… ⏱ 27s (6 lines)[K  ⠹ bash: # Wait more patiently for apt to finish
+… ⏱ 28s (6 lines)[K  ⠸ bash: # Wait more patiently for apt to finish
+… ⏱ 28s (6 lines)[K  ⠼ bash: # Wait more patiently for apt to finish
+… ⏱ 29s (6 lines)[K  ⠴ bash: # Wait more patiently for apt to finish
+… ⏱ 29s (6 lines)[K  ⠦ bash: # Wait more patiently for apt to finish
+… ⏱ 30s (7 lines)[K  ⠧ bash: # Wait more patiently for apt to finish
+… ⏱ 30s (7 lines)[K  ⠇ bash: # Wait more patiently for apt to finish
+… ⏱ 31s (7 lines)[K  ⠏ bash: # Wait more patiently for apt to finish
+… ⏱ 31s (7 lines)[K  ⠋ bash: # Wait more patiently for apt to finish
+… ⏱ 32s (7 lines)[K  ⠙ bash: # Wait more patiently for apt to finish
+… ⏱ 32s (7 lines)[K  ⠹ bash: # Wait more patiently for apt to finish
+… ⏱ 33s (7 lines)[K  ⠸ bash: # Wait more patiently for apt to finish
+… ⏱ 33s (7 lines)[K  ⠼ bash: # Wait more patiently for apt to finish
+… ⏱ 34s (7 lines)[K  ⠴ bash: # Wait more patiently for apt to finish
+… ⏱ 34s (7 lines)[K  ⠦ bash: # Wait more patiently for apt to finish
+… ⏱ 35s (8 lines)[K  ⠧ bash: # Wait more patiently for apt to finish
+… ⏱ 35s (8 lines)[K  ⠇ bash: # Wait more patiently for apt to finish
+… ⏱ 36s (8 lines)[K  ⠏ bash: # Wait more patiently for apt to finish
+… ⏱ 36s (8 lines)[K  ⠋ bash: # Wait more patiently for apt to finish
+… ⏱ 37s (8 lines)[K  ⠙ bash: # Wait more patiently for apt to finish
+… ⏱ 37s (8 lines)[K  ⠹ bash: # Wait more patiently for apt to finish
+… ⏱ 38s (8 lines)[K  ⠸ bash: # Wait more patiently for apt to finish
+… ⏱ 38s (8 lines)[K  ⠼ bash: # Wait more patiently for apt to finish
+… ⏱ 39s (8 lines)[K  ⠴ bash: # Wait more patiently for apt to finish
+… ⏱ 39s (8 lines)[K  ⠦ bash: # Wait more patiently for apt to finish
+… ⏱ 40s (9 lines)[K  ⠧ bash: # Wait more patiently for apt to finish
+… ⏱ 40s (9 lines)[K  ⠇ bash: # Wait more patiently for apt to finish
+… ⏱ 41s (9 lines)[K  ⠏ bash: # Wait more patiently for apt to finish
+… ⏱ 41s (9 lines)[K  ⠋ bash: # Wait more patiently for apt to finish
+… ⏱ 42s (9 lines)[K  ⠙ bash: # Wait more patiently for apt to finish
+… ⏱ 42s (9 lines)[K  ⠹ bash: # Wait more patiently for apt to finish
+… ⏱ 43s (9 lines)[K  ⠸ bash: # Wait more patiently for apt to finish
+… ⏱ 43s (9 lines)[K  ⠼ bash: # Wait more patiently for apt to finish
+… ⏱ 44s (9 lines)[K  ⠴ bash: # Wait more patiently for apt to finish
+… ⏱ 44s (9 lines)[K  ⠦ bash: # Wait more patiently for apt to finish
+… ⏱ 45s (10 lines)[K  ⠧ bash: # Wait more patiently for apt to finish
+… ⏱ 45s (10 lines)[K  ⠇ bash: # Wait more patiently for apt to finish
+… ⏱ 46s (10 lines)[K  ⠏ bash: # Wait more patiently for apt to finish
+… ⏱ 46s (10 lines)[K  ⠋ bash: # Wait more patiently for apt to finish
+… ⏱ 47s (10 lines)[K  ⠙ bash: # Wait more patiently for apt to finish
+… ⏱ 47s (10 lines)[K  ⠹ bash: # Wait more patiently for apt to finish
+… ⏱ 48s (10 lines)[K  ⠸ bash: # Wait more patiently for apt to finish
+… ⏱ 48s (10 lines)[K  ⠼ bash: # Wait more patiently for apt to finish
+… ⏱ 49s (10 lines)[K  ⠴ bash: # Wait more patiently for apt to finish
+… ⏱ 49s (10 lines)[K  ⠦ bash: # Wait more patiently for apt to finish
+… ⏱ 50s (11 lines)[K  ⠧ bash: # Wait more patiently for apt to finish
+… ⏱ 50s (11 lines)[K  ⠇ bash: # Wait more patiently for apt to finish
+… ⏱ 51s (11 lines)[K  ⠏ bash: # Wait more patiently for apt to finish
+… ⏱ 51s (11 lines)[K  ⠋ bash: # Wait more patiently for apt to finish
+… ⏱ 52s (11 lines)[K  ⠙ bash: # Wait more patiently for apt to finish
+… ⏱ 52s (11 lines)[K  ⠹ bash: # Wait more patiently for apt to finish
+… ⏱ 53s (11 lines)[K  ⠸ bash: # Wait more patiently for apt to finish
+… ⏱ 53s (11 lines)[K  ⠼ bash: # Wait more patiently for apt to finish
+… ⏱ 54s (11 lines)[K  ⠴ bash: # Wait more patiently for apt to finish
+… ⏱ 54s (11 lines)[K  ⠦ bash: # Wait more patiently for apt to finish
+… ⏱ 55s (12 lines)[K  ⠧ bash: # Wait more patiently for apt to finish
+… ⏱ 55s (12 lines)[K  ⠇ bash: # Wait more patiently for apt to finish
+… ⏱ 56s (12 lines)[K  ⠏ bash: # Wait more patiently for apt to finish
+… ⏱ 56s (12 lines)[K  ⠋ bash: # Wait more patiently for apt to finish
+… ⏱ 57s (12 lines)[K  ⠙ bash: # Wait more patiently for apt to finish
+… ⏱ 57s (12 lines)[K  ⠹ bash: # Wait more patiently for apt to finish
+… ⏱ 58s (12 lines)[K  ⠸ bash: # Wait more patiently for apt to finish
+… ⏱ 58s (12 lines)[K  ⠼ bash: # Wait more patiently for apt to finish
+… ⏱ 59s (12 lines)[K  ⠴ bash: # Wait more patiently for apt to finish
+… ⏱ 59s (12 lines)[K  ⠦ bash: # Wait more patiently for apt to finish
+… ⏱ 1m (13 lines)[K  ⠧ bash: # Wait more patiently for apt to finish
+… ⏱ 1m (13 lines)[K  ⠇ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 1s (13 lines)[K  ⠏ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 1s (13 lines)[K  ⠋ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 2s (13 lines)[K  ⠙ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 2s (13 lines)[K  ⠹ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 3s (13 lines)[K  ⠸ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 3s (13 lines)[K  ⠼ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 4s (13 lines)[K  ⠴ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 4s (13 lines)[K  ⠦ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 5s (14 lines)[K  ⠧ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 5s (14 lines)[K  ⠇ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 6s (14 lines)[K  ⠏ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 6s (14 lines)[K  ⠋ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 7s (14 lines)[K  ⠙ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 7s (14 lines)[K  ⠹ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 8s (14 lines)[K  ⠸ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 8s (14 lines)[K  ⠼ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 9s (14 lines)[K  ⠴ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 9s (14 lines)[K  ⠦ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 10s (15 lines)[K  ⠧ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 10s (15 lines)[K  ⠇ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 11s (15 lines)[K  ⠏ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 11s (15 lines)[K  ⠋ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 12s (15 lines)[K  ⠙ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 12s (15 lines)[K  ⠹ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 13s (15 lines)[K  ⠸ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 13s (15 lines)[K  ⠼ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 14s (15 lines)[K  ⠴ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 14s (15 lines)[K  ⠦ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 15s (16 lines)[K  ⠧ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 15s (16 lines)[K  ⠇ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 16s (16 lines)[K  ⠏ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 16s (16 lines)[K  ⠋ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 17s (16 lines)[K  ⠙ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 17s (16 lines)[K  ⠹ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 18s (16 lines)[K  ⠸ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 18s (16 lines)[K  ⠼ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 19s (16 lines)[K  ⠴ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 19s (16 lines)[K  ⠦ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 20s (17 lines)[K  ⠧ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 20s (17 lines)[K  ⠇ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 21s (17 lines)[K  ⠏ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 21s (17 lines)[K  ⠋ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 22s (17 lines)[K  ⠙ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 22s (17 lines)[K  ⠹ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 23s (17 lines)[K  ⠸ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 23s (17 lines)[K  ⠼ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 24s (17 lines)[K  ⠴ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 24s (17 lines)[K  ⠦ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 25s (18 lines)[K  ⠧ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 25s (18 lines)[K  ⠇ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 26s (18 lines)[K  ⠏ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 26s (18 lines)[K  ⠋ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 27s (18 lines)[K  ⠙ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 27s (18 lines)[K  ⠹ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 28s (18 lines)[K  ⠸ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 28s (18 lines)[K  ⠼ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 29s (18 lines)[K  ⠴ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 29s (18 lines)[K  ⠦ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 30s (19 lines)[K  ⠧ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 30s (19 lines)[K  ⠇ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 31s (19 lines)[K  ⠏ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 31s (19 lines)[K  ⠋ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 32s (19 lines)[K  ⠙ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 32s (19 lines)[K  ⠹ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 33s (19 lines)[K  ⠸ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 33s (19 lines)[K  ⠼ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 34s (19 lines)[K  ⠴ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 34s (19 lines)[K  ⠦ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 35s (20 lines)[K  ⠧ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 35s (20 lines)[K  ⠇ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 36s (20 lines)[K  ⠏ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 36s (20 lines)[K  ⠋ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 37s (20 lines)[K  ⠙ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 37s (20 lines)[K  ⠹ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 38s (20 lines)[K  ⠸ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 38s (20 lines)[K  ⠼ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 39s (20 lines)[K  ⠴ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 39s (20 lines)[K  ⠦ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 40s (21 lines)[K  ⠧ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 40s (21 lines)[K  ⠇ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 41s (21 lines)[K  ⠏ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 41s (21 lines)[K  ⠋ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 42s (21 lines)[K  ⠙ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 42s (21 lines)[K  ⠹ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 43s (21 lines)[K  ⠸ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 43s (21 lines)[K  ⠼ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 44s (21 lines)[K  ⠴ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 44s (21 lines)[K  ⠦ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 45s (22 lines)[K  ⠧ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 45s (22 lines)[K  ⠇ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 46s (22 lines)[K  ⠏ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 46s (22 lines)[K  ⠋ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 47s (22 lines)[K  ⠙ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 47s (22 lines)[K  ⠹ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 48s (22 lines)[K  ⠸ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 48s (22 lines)[K  ⠼ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 49s (22 lines)[K  ⠴ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 49s (22 lines)[K  ⠦ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 50s (23 lines)[K  ⠧ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 50s (23 lines)[K  ⠇ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 51s (23 lines)[K  ⠏ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 51s (23 lines)[K  ⠋ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 52s (23 lines)[K  ⠙ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 52s (23 lines)[K  ⠹ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 53s (23 lines)[K  ⠸ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 53s (23 lines)[K  ⠼ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 54s (23 lines)[K  ⠴ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 54s (23 lines)[K  ⠦ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 55s (24 lines)[K  ⠧ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 55s (24 lines)[K  ⠇ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 56s (24 lines)[K  ⠏ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 56s (24 lines)[K  ⠋ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 57s (24 lines)[K  ⠙ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 57s (24 lines)[K  ⠹ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 58s (24 lines)[K  ⠸ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 58s (24 lines)[K  ⠼ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 59s (24 lines)[K  ⠴ bash: # Wait more patiently for apt to finish
+… ⏱ 1m 59s (24 lines)[K  ⠦ bash: # Wait more patiently for apt to finish
+… ⏱ 2m (25 lines)[K  ⠧ bash: # Wait more patiently for apt to finish
+… ⏱ 2m (25 lines)[K  ⠇ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 1s (25 lines)[K  ⠏ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 1s (25 lines)[K  ⠋ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 2s (25 lines)[K  ⠙ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 2s (25 lines)[K  ⠹ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 3s (25 lines)[K  ⠸ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 3s (25 lines)[K  ⠼ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 4s (25 lines)[K  ⠴ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 4s (25 lines)[K  ⠦ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 5s (26 lines)[K  ⠧ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 5s (26 lines)[K  ⠇ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 6s (26 lines)[K  ⠏ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 6s (26 lines)[K  ⠋ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 7s (26 lines)[K  ⠙ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 7s (26 lines)[K  ⠹ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 8s (26 lines)[K  ⠸ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 8s (26 lines)[K  ⠼ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 9s (26 lines)[K  ⠴ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 9s (26 lines)[K  ⠦ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 10s (27 lines)[K  ⠧ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 10s (27 lines)[K  ⠇ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 11s (27 lines)[K  ⠏ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 11s (27 lines)[K  ⠋ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 12s (27 lines)[K  ⠙ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 12s (27 lines)[K  ⠹ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 13s (27 lines)[K  ⠸ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 13s (27 lines)[K  ⠼ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 14s (27 lines)[K  ⠴ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 14s (27 lines)[K  ⠦ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 15s (28 lines)[K  ⠧ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 15s (28 lines)[K  ⠇ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 16s (28 lines)[K  ⠏ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 16s (28 lines)[K  ⠋ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 17s (28 lines)[K  ⠙ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 17s (28 lines)[K  ⠹ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 18s (28 lines)[K  ⠸ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 18s (28 lines)[K  ⠼ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 19s (28 lines)[K  ⠴ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 19s (28 lines)[K  ⠦ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 20s (29 lines)[K  ⠧ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 20s (29 lines)[K  ⠇ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 21s (29 lines)[K  ⠏ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 21s (29 lines)[K  ⠋ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 22s (29 lines)[K  ⠙ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 22s (29 lines)[K  ⠹ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 23s (29 lines)[K  ⠸ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 23s (29 lines)[K  ⠼ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 24s (29 lines)[K  ⠴ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 24s (29 lines)[K  ⠦ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 25s (30 lines)[K  ⠧ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 25s (30 lines)[K  ⠇ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 26s (30 lines)[K  ⠏ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 26s (30 lines)[K  ⠋ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 27s (30 lines)[K  ⠙ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 27s (30 lines)[K  ⠹ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 28s (30 lines)[K  ⠸ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 28s (30 lines)[K  ⠼ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 29s (30 lines)[K  ⠴ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 29s (30 lines)[K  ⠦ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 30s (31 lines)[K  ⠧ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 30s (31 lines)[K  ⠇ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 31s (31 lines)[K  ⠏ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 31s (31 lines)[K  ⠋ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 32s (31 lines)[K  ⠙ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 32s (31 lines)[K  ⠹ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 33s (31 lines)[K  ⠸ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 33s (31 lines)[K  ⠼ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 34s (31 lines)[K  ⠴ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 34s (31 lines)[K  ⠦ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 35s (32 lines)[K  ⠧ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 35s (32 lines)[K  ⠇ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 36s (32 lines)[K  ⠏ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 36s (32 lines)[K  ⠋ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 37s (32 lines)[K  ⠙ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 37s (32 lines)[K  ⠹ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 38s (32 lines)[K  ⠸ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 38s (32 lines)[K  ⠼ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 39s (32 lines)[K  ⠴ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 39s (32 lines)[K  ⠦ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 40s (33 lines)[K  ⠧ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 40s (33 lines)[K  ⠇ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 41s (33 lines)[K  ⠏ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 41s (33 lines)[K  ⠋ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 42s (33 lines)[K  ⠙ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 42s (33 lines)[K  ⠹ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 43s (33 lines)[K  ⠸ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 43s (33 lines)[K  ⠼ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 44s (33 lines)[K  ⠴ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 44s (33 lines)[K  ⠦ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 45s (34 lines)[K  ⠧ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 45s (34 lines)[K  ⠇ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 46s (34 lines)[K  ⠏ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 46s (34 lines)[K  ⠋ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 47s (34 lines)[K  ⠙ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 47s (34 lines)[K  ⠹ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 48s (34 lines)[K  ⠸ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 48s (34 lines)[K  ⠼ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 49s (34 lines)[K  ⠴ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 49s (34 lines)[K  ⠦ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 50s (35 lines)[K  ⠧ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 50s (35 lines)[K  ⠇ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 51s (35 lines)[K  ⠏ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 51s (35 lines)[K  ⠋ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 52s (35 lines)[K  ⠙ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 52s (35 lines)[K  ⠹ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 53s (35 lines)[K  ⠸ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 53s (35 lines)[K  ⠼ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 54s (35 lines)[K  ⠴ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 54s (35 lines)[K  ⠦ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 55s (36 lines)[K  ⠧ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 55s (36 lines)[K  ⠇ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 56s (36 lines)[K  ⠏ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 56s (36 lines)[K  ⠋ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 57s (36 lines)[K  ⠙ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 57s (36 lines)[K  ⠹ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 58s (36 lines)[K  ⠸ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 58s (36 lines)[K  ⠼ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 59s (36 lines)[K  ⠴ bash: # Wait more patiently for apt to finish
+… ⏱ 2m 59s (36 lines)[K  ⠦ bash: # Wait more patiently for apt to finish
+… ⏱ 3m (37 lines)[K  ⠧ bash: # Wait more patiently for apt to finish
+… ⏱ 3m (37 lines)[K  ⠇ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 1s (37 lines)[K  ⠏ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 1s (37 lines)[K  ⠋ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 2s (37 lines)[K  ⠙ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 2s (37 lines)[K  ⠹ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 3s (37 lines)[K  ⠸ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 3s (37 lines)[K  ⠼ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 4s (37 lines)[K  ⠴ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 4s (37 lines)[K  ⠦ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 5s (38 lines)[K  ⠧ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 5s (38 lines)[K  ⠇ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 6s (38 lines)[K  ⠏ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 6s (38 lines)[K  ⠋ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 7s (38 lines)[K  ⠙ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 7s (38 lines)[K  ⠹ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 8s (38 lines)[K  ⠸ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 8s (38 lines)[K  ⠼ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 9s (38 lines)[K  ⠴ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 9s (38 lines)[K  ⠦ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 10s (39 lines)[K  ⠧ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 10s (39 lines)[K  ⠇ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 11s (39 lines)[K  ⠏ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 11s (39 lines)[K  ⠋ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 12s (39 lines)[K  ⠙ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 12s (39 lines)[K  ⠹ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 13s (39 lines)[K  ⠸ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 13s (39 lines)[K  ⠼ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 14s (39 lines)[K  ⠴ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 14s (39 lines)[K  ⠦ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 15s (40 lines)[K  ⠧ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 15s (40 lines)[K  ⠇ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 16s (40 lines)[K  ⠏ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 16s (40 lines)[K  ⠋ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 17s (40 lines)[K  ⠙ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 17s (40 lines)[K  ⠹ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 18s (40 lines)[K  ⠸ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 18s (40 lines)[K  ⠼ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 19s (40 lines)[K  ⠴ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 19s (40 lines)[K  ⠦ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 20s (41 lines)[K  ⠧ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 20s (41 lines)[K  ⠇ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 21s (41 lines)[K  ⠏ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 21s (41 lines)[K  ⠋ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 22s (41 lines)[K  ⠙ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 22s (41 lines)[K  ⠹ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 23s (41 lines)[K  ⠸ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 23s (41 lines)[K  ⠼ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 24s (41 lines)[K  ⠴ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 24s (41 lines)[K  ⠦ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 25s (42 lines)[K  ⠧ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 25s (42 lines)[K  ⠇ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 26s (42 lines)[K  ⠏ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 26s (42 lines)[K  ⠋ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 27s (42 lines)[K  ⠙ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 27s (42 lines)[K  ⠹ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 28s (42 lines)[K  ⠸ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 28s (42 lines)[K  ⠼ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 29s (42 lines)[K  ⠴ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 29s (42 lines)[K  ⠦ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 30s (43 lines)[K  ⠧ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 30s (43 lines)[K  ⠇ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 31s (43 lines)[K  ⠏ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 31s (43 lines)[K  ⠋ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 32s (43 lines)[K  ⠙ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 32s (43 lines)[K  ⠹ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 33s (43 lines)[K  ⠸ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 33s (43 lines)[K  ⠼ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 34s (43 lines)[K  ⠴ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 34s (43 lines)[K  ⠦ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 35s (44 lines)[K  ⠧ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 35s (44 lines)[K  ⠇ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 36s (44 lines)[K  ⠏ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 36s (44 lines)[K  ⠋ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 37s (44 lines)[K  ⠙ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 37s (44 lines)[K  ⠹ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 38s (44 lines)[K  ⠸ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 38s (44 lines)[K  ⠼ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 39s (44 lines)[K  ⠴ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 39s (44 lines)[K  ⠦ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 40s (45 lines)[K  ⠧ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 40s (45 lines)[K  ⠇ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 41s (45 lines)[K  ⠏ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 42s (45 lines)[K  ⠋ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 42s (45 lines)[K  ⠙ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 43s (45 lines)[K  ⠹ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 43s (45 lines)[K  ⠸ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 44s (45 lines)[K  ⠼ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 44s (45 lines)[K  ⠴ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 45s (45 lines)[K  ⠦ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 45s (46 lines)[K  ⠧ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 46s (46 lines)[K  ⠇ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 46s (46 lines)[K  ⠏ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 47s (46 lines)[K  ⠋ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 47s (46 lines)[K  ⠙ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 48s (46 lines)[K  ⠹ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 48s (46 lines)[K  ⠸ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 49s (46 lines)[K  ⠼ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 49s (46 lines)[K  ⠴ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 50s (46 lines)[K  ⠦ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 50s (47 lines)[K  ⠧ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 51s (47 lines)[K  ⠇ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 51s (47 lines)[K  ⠏ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 52s (47 lines)[K  ⠋ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 52s (47 lines)[K  ⠙ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 53s (47 lines)[K  ⠹ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 53s (47 lines)[K  ⠸ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 54s (47 lines)[K  ⠼ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 54s (47 lines)[K  ⠴ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 55s (47 lines)[K  ⠦ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 55s (48 lines)[K  ⠧ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 56s (48 lines)[K  ⠇ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 56s (48 lines)[K  ⠏ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 57s (48 lines)[K  ⠋ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 57s (48 lines)[K  ⠙ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 58s (48 lines)[K  ⠹ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 58s (48 lines)[K  ⠸ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 59s (48 lines)[K  ⠼ bash: # Wait more patiently for apt to finish
+… ⏱ 3m 59s (48 lines)[K  ⠴ bash: # Wait more patiently for apt to finish
+… ⏱ 4m (48 lines)[K  ⠦ bash: # Wait more patiently for apt to finish
+… ⏱ 4m (49 lines)[K  ⠧ bash: # Wait more patiently for apt to finish
+… ⏱ 4m 1s (49 lines)[K  ⠇ bash: # Wait more patiently for apt to finish
+… ⏱ 4m 1s (49 lines)[K  ⠏ bash: # Wait more patiently for apt to finish
+… ⏱ 4m 2s (49 lines)[K  ⠋ bash: # Wait more patiently for apt to finish
+… ⏱ 4m 2s (49 lines)[K  ⠙ bash: # Wait more patiently for apt to finish
+… ⏱ 4m 3s (49 lines)[K  ⠹ bash: # Wait more patiently for apt to finish
+… ⏱ 4m 3s (49 lines)[K  ⠸ bash: # Wait more patiently for apt to finish
+… ⏱ 4m 4s (49 lines)[K  ⠼ bash: # Wait more patiently for apt to finish
+… ⏱ 4m 4s (49 lines)[K  ⠴ bash: # Wait more patiently for apt to finish
+… ⏱ 4m 5s (49 lines)[K  ⠦ bash: # Wait more patiently for apt to finish
+… ⏱ 4m 5s (50 lines)[K  ⠧ bash: # Wait more patiently for apt to finish
+… ⏱ 4m 6s (50 lines)[K  ⠇ bash: # Wait more patiently for apt to finish
+… ⏱ 4m 6s (50 lines)[K  ⠏ bash: # Wait more patiently for apt to finish
+… ⏱ 4m 7s (50 lines)[K  ⠋ bash: # Wait more patiently for apt to finish
+… ⏱ 4m 7s (50 lines)[K  ⠙ bash: # Wait more patiently for apt to finish
+… ⏱ 4m 8s (50 lines)[K  ⠹ bash: # Wait more patiently for apt to finish
+… ⏱ 4m 8s (50 lines)[K  ⠸ bash: # Wait more patiently for apt to finish
+… ⏱ 4m 9s (50 lines)[K  ⠼ bash: # Wait more patiently for apt to finish
+… ⏱ 4m 9s (50 lines)[K  ⠴ bash: # Wait more patiently for apt to finish
+… ⏱ 4m 10s (50 lines)[K  ⠦ bash: # Wait more patiently for apt to finish
+… ⏱ 4m 10s (51 lines)[K  ⠧ bash: # Wait more patiently for apt to finish
+… ⏱ 4m 11s (51 lines)[K  ⠇ bash: # Wait more patiently for apt to finish
+… ⏱ 4m 11s (51 lines)[K  ⠏ bash: # Wait more patiently for apt to finish
+… ⏱ 4m 12s (51 lines)[K  ⠋ bash: # Wait more patiently for apt to finish
+… ⏱ 4m 12s (51 lines)[K  ⠙ bash: # Wait more patiently for apt to finish
+… ⏱ 4m 13s (51 lines)[K  ⠹ bash: # Wait more patiently for apt to finish
+… ⏱ 4m 13s (51 lines)[K  ⠸ bash: # Wait more patiently for apt to finish
+… ⏱ 4m 14s (51 lines)[K  ⠼ bash: # Wait more patiently for apt to finish
+… ⏱ 4m 14s (51 lines)[K  ⠴ bash: # Wait more patiently for apt to finish
+… ⏱ 4m 15s (51 lines)[K  ⠦ bash: # Wait more patiently for apt to finish
+… ⏱ 4m 15s (52 lines)[K  ⠧ bash: # Wait more patiently for apt to finish
+… ⏱ 4m 16s (52 lines)[K  ⠇ bash: # Wait more patiently for apt to finish
+… ⏱ 4m 16s (52 lines)[K  ⠏ bash: # Wait more patiently for apt to finish
+… ⏱ 4m 17s (52 lines)[K  ⠋ bash: # Wait more patiently for apt to finish
+… ⏱ 4m 17s (52 lines)[K  ⠙ bash: # Wait more patiently for apt to finish
+… ⏱ 4m 18s (52 lines)[K  ⠹ bash: # Wait more patiently for apt to finish
+… ⏱ 4m 18s (52 lines)[K  ⠸ bash: # Wait more patiently for apt to finish
+… ⏱ 4m 19s (52 lines)[K  ⠼ bash: # Wait more patiently for apt to finish
+… ⏱ 4m 19s (52 lines)[K  ⠴ bash: # Wait more patiently for apt to finish
+… ⏱ 4m 20s (52 lines)[K  ⠦ bash: # Wait more patiently for apt to finish
+… ⏱ 4m 20s (53 lines)[K  ⠧ bash: # Wait more patiently for apt to finish
+… ⏱ 4m 21s (53 lines)[K  ⠇ bash: # Wait more patiently for apt to finish
+… ⏱ 4m 21s (53 lines)[K  ⠏ bash: # Wait more patiently for apt to finish
+… ⏱ 4m 22s (53 lines)[K  ⠋ bash: # Wait more patiently for apt to finish
+… ⏱ 4m 22s (53 lines)[K  ⠙ bash: # Wait more patiently for apt to finish
+… ⏱ 4m 23s (53 lines)[K  ⠹ bash: # Wait more patiently for apt to finish
+… ⏱ 4m 23s (53 lines)[K  ⠸ bash: # Wait more patiently for apt to finish
+… ⏱ 4m 24s (53 lines)[K  ⠼ bash: # Wait more patiently for apt to finish
+… ⏱ 4m 24s (53 lines)[K  ⠴ bash: # Wait more patiently for apt to finish
+… ⏱ 4m 25s (53 lines)[K  ⠦ bash: # Wait more patiently for apt to finish
+… ⏱ 4m 25s (54 lines)[K  ⠧ bash: # Wait more patiently for apt to finish
+… ⏱ 4m 26s (54 lines)[K  ⠇ bash: # Wait more patiently for apt to finish
+… ⏱ 4m 26s (54 lines)[K  ⠏ bash: # Wait more patiently for apt to finish
+… ⏱ 4m 27s (54 lines)[K  ⠋ bash: # Wait more patiently for apt to finish
+… ⏱ 4m 27s (54 lines)[K  ⠙ bash: # Wait more patiently for apt to finish
+… ⏱ 4m 28s (54 lines)[K  ⠹ bash: # Wait more patiently for apt to finish
+… ⏱ 4m 28s (54 lines)[K  ⠸ bash: # Wait more patiently for apt to finish
+… ⏱ 4m 29s (54 lines)[K  ⠼ bash: # Wait more patiently for apt to finish
+… ⏱ 4m 29s (54 lines)[K  ⠴ bash: # Wait more patiently for apt to finish
+… ⏱ 4m 30s (54 lines)[K  ⠦ bash: # Wait more patiently for apt to finish
+… ⏱ 4m 30s (55 lines)[K  ⠧ bash: # Wait more patiently for apt to finish
+… ⏱ 4m 31s (55 lines)[K  ⠇ bash: # Wait more patiently for apt to finish
+… ⏱ 4m 31s (55 lines)[K  ⠏ bash: # Wait more patiently for apt to finish
+… ⏱ 4m 32s (55 lines)[K  ⠋ bash: # Wait more patiently for apt to finish
+… ⏱ 4m 32s (55 lines)[K  ⠙ bash: # Wait more patiently for apt to finish
+… ⏱ 4m 33s (55 lines)[K  ⠹ bash: # Wait more patiently for apt to finish
+… ⏱ 4m 33s (55 lines)[K  ⠸ bash: # Wait more patiently for apt to finish
+… ⏱ 4m 34s (55 lines)[K  ⠼ bash: # Wait more patiently for apt to finish
+… ⏱ 4m 34s (55 lines)[K  ⠴ bash: # Wait more patiently for apt to finish
+… ⏱ 4m 35s (55 lines)[K  ⠦ bash: # Wait more patiently for apt to finish
+… ⏱ 4m 35s (56 lines)[K  ⠧ bash: # Wait more patiently for apt to finish
+… ⏱ 4m 36s (56 lines)[K  ⠇ bash: # Wait more patiently for apt to finish
+… ⏱ 4m 36s (56 lines)[K  ⠏ bash: # Wait more patiently for apt to finish
+… ⏱ 4m 37s (56 lines)[K  ⠋ bash: # Wait more patiently for apt to finish
+… ⏱ 4m 37s (56 lines)[K  ⠙ bash: # Wait more patiently for apt to finish
+… ⏱ 4m 38s (56 lines)[K  ⠹ bash: # Wait more patiently for apt to finish
+… ⏱ 4m 38s (56 lines)[K  ⠸ bash: # Wait more patiently for apt to finish
+… ⏱ 4m 39s (56 lines)[K  ⠼ bash: # Wait more patiently for apt to finish
+… ⏱ 4m 39s (56 lines)[K  ⠴ bash: # Wait more patiently for apt to finish
+… ⏱ 4m 40s (56 lines)[K  ⠦ bash: # Wait more patiently for apt to finish
+… ⏱ 4m 40s (57 lines)[K  ⠧ bash: # Wait more patiently for apt to finish
+… ⏱ 4m 41s (57 lines)[K  ⠇ bash: # Wait more patiently for apt to finish
+… ⏱ 4m 41s (57 lines)[K  ⠏ bash: # Wait more patiently for apt to finish
+… ⏱ 4m 42s (57 lines)[K  ⠋ bash: # Wait more patiently for apt to finish
+… ⏱ 4m 42s (57 lines)[K  ⠙ bash: # Wait more patiently for apt to finish
+… ⏱ 4m 43s (57 lines)[K  ⠹ bash: # Wait more patiently for apt to finish
+… ⏱ 4m 43s (57 lines)[K  ⠸ bash: # Wait more patiently for apt to finish
+… ⏱ 4m 44s (57 lines)[K  ⠼ bash: # Wait more patiently for apt to finish
+… ⏱ 4m 44s (57 lines)[K  ⠴ bash: # Wait more patiently for apt to finish
+… ⏱ 4m 45s (57 lines)[K  ⠦ bash: # Wait more patiently for apt to finish
+… ⏱ 4m 45s (58 lines)[K  ⠧ bash: # Wait more patiently for apt to finish
+… ⏱ 4m 46s (58 lines)[K  ⠇ bash: # Wait more patiently for apt to finish
+… ⏱ 4m 46s (58 lines)[K  ⠏ bash: # Wait more patiently for apt to finish
+… ⏱ 4m 47s (58 lines)[K  ⠋ bash: # Wait more patiently for apt to finish
+… ⏱ 4m 47s (58 lines)[K  ⠙ bash: # Wait more patiently for apt to finish
+… ⏱ 4m 48s (58 lines)[K  ⠹ bash: # Wait more patiently for apt to finish
+… ⏱ 4m 48s (58 lines)[K  ⠸ bash: # Wait more patiently for apt to finish
+… ⏱ 4m 49s (58 lines)[K  ⠼ bash: # Wait more patiently for apt to finish
+… ⏱ 4m 49s (58 lines)[K  ⠴ bash: # Wait more patiently for apt to finish
+… ⏱ 4m 50s (58 lines)[K  ⠦ bash: # Wait more patiently for apt to finish
+… ⏱ 4m 50s (59 lines)[K  ⠧ bash: # Wait more patiently for apt to finish
+… ⏱ 4m 51s (59 lines)[K  ⠇ bash: # Wait more patiently for apt to finish
+… ⏱ 4m 51s (59 lines)[K  ⠏ bash: # Wait more patiently for apt to finish
+… ⏱ 4m 52s (59 lines)[K  ⠋ bash: # Wait more patiently for apt to finish
+… ⏱ 4m 52s (59 lines)[K  ⠙ bash: # Wait more patiently for apt to finish
+… ⏱ 4m 53s (59 lines)[K  ⠹ bash: # Wait more patiently for apt to finish
+… ⏱ 4m 53s (59 lines)[K  ⠸ bash: # Wait more patiently for apt to finish
+… ⏱ 4m 54s (59 lines)[K  ⠼ bash: # Wait more patiently for apt to finish
+… ⏱ 4m 54s (59 lines)[K  ⠴ bash: # Wait more patiently for apt to finish
+… ⏱ 4m 55s (59 lines)[K[K ✓ (5m 0s)
+  ▶ $ ps aux | grep apt | grep -v grep (3 lines)[K[K ✓ (10ms)
+  8 tools completed in 7m 20s (7 ✓, 1 ✗)
+
+The apt process seems stuck on network. Let me check if there's an alternative way to handle SSH, or if sshd is already installed under a different path:
+  ╭─ Turn 20 ────────────────────────────────────────────────────────────╮
+  ▶ $ find / -name sshd -type f 2>/dev/null | head -5 (2 lines)[K[K ✓ (221ms)
+
+  ↳ 10m 1s · 1429→2468 tokens · $0.087
+  ⬤ 1% of context window used
+
+

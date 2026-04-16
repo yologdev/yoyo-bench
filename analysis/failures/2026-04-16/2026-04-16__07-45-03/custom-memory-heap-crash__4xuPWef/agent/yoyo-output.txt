@@ -1,0 +1,69 @@
+  yoyo (prompt mode) — model: claude-sonnet-4-6
+[K[K
+── Thinking ────────────────────────────────────────────────────────────────
+Let me start by exploring the app directory to understand what we're working with.  ▶ $ ls /app/ && echo "---" && cat /app/main.cpp && echo "---" && cat /app/user.cpp[K[K ✓ (34ms)
+  ▶ $ cat /app/user.h[K[K ✓ (2ms)
+  ▶ $ # First compile both versions and see what happens (3 lines)[K[K ✓ (1.6s)
+  ▶ $ g++ -std=c++17 -o /app/release /app/main.cpp /app/user.cpp -… (2 lines)[K[K ✓ (1.5s)
+  ▶ $ /app/debug && echo "Debug OK" (3 lines)[K[K ✓ (1.1s)
+  ▶ $ # The debug version also crashed (exit 139), but after print… (5 lines)[K[K ✓ (12.1s)
+  ▶ $ valgrind --leak-check=full /app/release 2>&1 | tail -40[K[K ✓ (1.9s)
+  ▶ $ # Both seem to run OK under valgrind! But crash normally. (7 lines)[K[K ✓ (1.8s)
+  ▶ $ # So debug exits 0, release exits 139 (segfault) (19 lines)[K[K ✓ (19ms)
+  ▶ $ ls /build/patches/[K[K ✓ (3ms)
+  ▶ $ cat /build/patches/locale_classes.tcc.patch (3 lines)[K[K ✓ (138ms)
+  ▶ $ # Now I understand the bug clearly! (64 lines)[K[K ✓ (2ms)
+  ▶ $ # Let me verify this theory by checking the exact sequence m… (18 lines)[K[K ✓ (10ms)
+  ▶ $ # So the flow is: (12 lines)[K[K ✓ (14ms)
+  ▶ $ # So __try_use_facet calls _Facet_Register_impl() on first u… (43 lines)[K[K ✓ (0ms)
+  ▶ $ # Compile both and test (3 lines)[K[K ✓ (3.4s)
+  ▶ $ /app/debug; echo "Debug exit: $?" (3 lines)[K[K ✓ (976ms)
+  ▶ $ # Still crashing. The locale facets may be initialized via a… (5 lines)[K[K ✓ (554ms)
+  ▶ $ cat /build/gcc-13.2.0/libstdc++-v3/src/c++98/locale_init.cc | head -200[K[K ✓ (13ms)
+  ▶ $ grep -n "_Fac_node\|_Fac_head\|_Facet_Register\|atexit\|_Facptr\|NDEBUG" /build/…[K[K ✓ (4ms)
+  ▶ $ sed -n '260,400p' /build/gcc-13.2.0/libstdc++-v3/src/c++98/locale_init.cc[K[K ✓ (3ms)
+  ▶ $ # Now I see the full picture: (81 lines)[K[K ✓ (736ms)
+  ▶ $ # No custom new/delete called during cout Hello - good. (63 lines)[K[K ✓ (700ms)
+  ▶ $ # Interesting - no custom new/delete was called even for cou… (83 lines)[K[K ✓ (1.2s)
+  ▶ $ # Still crashing even with just cout in main. Let me try a m… (19 lines)[K[K ✓ (680ms)
+  ▶ $ # OK so with just cout and custom new/delete it works. The c… (80 lines)[K[K ✓ (603ms)
+  ▶ $ # Works! Let me add more - what about the cout AFTER heap se… (79 lines)[K[K ✓ (789ms)
+  ▶ $ # REPRODUCIBLE! The crash is after "After heap destroy" - it… (116 lines)[K[K ✓ (842ms)
+  ▶ $ cat /tmp/trace_stderr.txt[K[K ✓ (5ms)
+  ▶ $ # So allocations ARE happening from the custom heap (several… (95 lines)[K[K ✓ (704ms)
+  ▶ $ # Interesting! Allocations happen even when I activate heap_… (6 lines)[K[K ✓ (125ms)
+  ▶ $ # So the call chain is: (120 lines)[K[K ✓ (678ms)
+  ▶ $ # The fix works! The key was also triggering locale via ostr… (54 lines)[K[K ✓ (6ms)
+  ▶ $ # Compile both and test (3 lines)[K[K ✓ (2.9s)
+  ▶ $ /app/release; echo "Release exit: $?" (3 lines)[K[K ✓ (506ms)
+  ▶ $ # Both work now! Let's verify with Valgrind for memory leaks (2 lines)[K[K ✓ (1.7s)
+  ▶ $ valgrind --leak-check=full --error-exitcode=1 /app/debug 2>&1 | tail -20[K[K ✓ (9.2s)
+
+────────────────────────────────────────────────────────────────────────────────
+  37 tools completed in 4m 46s (37 ✓)
+
+Both the release and debug builds run successfully with no crashes and no memory leaks. Here's a summary of what was happening and how it was fixed:
+
+## Root Cause Analysis
+
+The modified libstdc++ (in /build/) introduced an MSVC-style facet registration system. In NDEBUG (release) mode, when `__try_use_facet() is called for the first time, it invokes _Facet_Register_impl()` which:
+1. Allocates _Fac_node objects via **::operator new**
+2. Each node also allocates 256 bytes via `new char[256]`
+3. These nodes are stored in a global linked list (_Fac_head) and freed by a static destructor (_Fac_tidy_reg_t) that runs after `main()` returns
+
+The first call to __try_use_facet occurred during `cout << std::fixed << pi_estimate (outputting a double), which was **after g_custom_heap was already active**. This meant the _Fac_node` allocations went into the custom heap arena. When Application::shutdown() destroyed the custom heap (still inside main()), and then the atexit/static destructors ran calling ::operator delete on those nodes — the memory had already been wiped and freed → segfault.
+
+The **debug build** was unaffected because it uses std::malloc/std::free directly (the #ifdef NDEBUG branches).
+
+## Fix (`/app/user.cpp`)
+
+In user_init() (which runs before g_custom_heap is installed), we force all locale facet initialization by:
+1. Calling `std::use_facet<> for all common facets with std::locale::classic()`
+2. Performing a dummy ostringstream output of a double with std::fixed/std::setprecision
+
+This ensures _Facet_Register_impl() is called — and the _Fac_nodes allocated — while `g_custom_heap` is still null, so they use std::malloc and are safely freed by std::free in the static destructor after main() exits.
+
+  ↳ 4m 58s · 12921→15778 tokens · $0.557
+  ⬤ 9% of context window used
+
+

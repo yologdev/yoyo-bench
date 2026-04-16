@@ -1,0 +1,317 @@
+  yoyo (prompt mode) — model: claude-sonnet-4-6
+[K[K
+── Thinking ────────────────────────────────────────────────────────────────
+Let me start by exploring the repository structure to understand what we're working with, then look at the HACKING.adoc file for build instructions.  ▶ $ ls /root && cat /tmp/yoyo-skills/bench/SKILL.md 2>/dev/null | head -50  ▶ $ find / -name "HACKING.adoc" 2>/dev/null | head -5[K[K ✓ (5ms)
+[K[K ✓ (143ms)
+  ▶ $ find / -name "HACKING.adoc" -not -path "*/ocaml/*" 2>/dev/null | head -5; ls /ap…  ▶ $ cat /app/ocaml/HACKING.adoc 2>/dev/null | head -100 || find /app -name "HACKING.…[K[K ✓ (4ms)
+[K[K ✓ (134ms)
+  ▶ $ cd /app/ocaml && git log --oneline -20  ▶ $ cd /app/ocaml && git diff HEAD~1 --name-only 2>/dev/null || git log --oneline -5[K[K ✓ (4ms)
+[K[K ✓ (4ms)
+  ▶ $ ls /app/ocaml/runtime/ | grep -i major  ▶ $ ls /app/ocaml/runtime/[K[K ✓ (7ms)
+[K[K ✓ (7ms)
+  ▶ $ cat /app/ocaml/runtime/major_gc.c | head -100  ▶ $ cat /app/ocaml/runtime/shared_heap.c | head -100[K[K ✓ (4ms)
+[K[K ✓ (5ms)
+  ▶ $ cat /app/ocaml/runtime/shared_heap.c | grep -n "free\|sweep\|compress\|run.lengt…  ▶ $ wc -l /app/ocaml/runtime/shared_heap.c && wc -l /app/ocaml/runtime/major_gc.c[K[K ✓ (5ms)
+[K[K ✓ (4ms)
+  ▶ $ sed -n '540,700p' /app/ocaml/runtime/shared_heap.c[K[K ✓ (2ms)
+
+────────────────────────────────────────────────────────────────────────────────
+  13 tools completed in 17.5s (13 ✓)
+
+Now let me look at the allocation from free list code to understand how the run-length compression works:
+  ╭─ Turn 8 ─────────────────────────────────────────────────────────────╮
+  ▶ $ sed -n '440,542p' /app/ocaml/runtime/shared_heap.c  ▶ $ sed -n '300,440p' /app/ocaml/runtime/shared_heap.c[K[K ✓ (2ms)
+[K[K ✓ (3ms)
+  2 tools completed in 1.7s (2 ✓)
+
+Now I see the allocation logic. Let me look more carefully at the pool_allocate function and look at `p += wh` at the end of the sweep loop:
+  ╭─ Turn 9 ─────────────────────────────────────────────────────────────╮
+  ▶ $ sed -n '560,670p' /app/ocaml/runtime/shared_heap.c[K[K ✓ (2ms)
+
+Now I see the sweep code. Let me analyze the issue carefully.
+
+In `pool_sweep`, when a block is free (POOL_BLOCK_FREE_HD), it:
+1. Optionally merges with the previous free block (updating its wosize count)
+2. p += wh * Wosize_hd(hd) - skips over following free blocks
+3. Then p += Whsize_hd(hd) - which is `p += (Wosize_hd(hd) + 1)` 
+
+Wait, Whsize_hd(hd) is the whole-word size including header. So for a free block with `wosize=N, the code skips whN + (N+1)wordsize`? That seems wrong.
+
+Let me look at the allocation code more carefully:
+  ╭─ Turn 10 ────────────────────────────────────────────────────────────╮
+  ▶ $ grep -n "Whsize_hd\|Wosize_hd\|Whsize_wosize\|Wosize_whsize" /app/ocaml/runtime/…  ▶ $ grep -n "Whsize\|Wosize_hd\|wh " /app/ocaml/runtime/caml/mlvalues.h | head -40[K[K ✓ (5ms)
+[K[K ✓ (6ms)
+  2 tools completed in 1.1s (2 ✓)
+
+OK so:
+• Whsize_hd(hd) = Wosize_hd(hd) + 1 (whole size including header word)
+• Wosize_hd(hd) = the word count stored in header (not including header word)
+
+So in the sweep loop, when we encounter a free block at position p:
+• The free block's header encodes Wosize_hd(hd) = number of following free blocks (run-length encoding)
+• `p += wh * Wosize_hd(hd) - skip Wosize_hd(hd)` additional blocks (each of size wh)
+• p += Whsize_hd(hd) = p += Wosize_hd(hd) + 1 - advance past the current free block
+
+Wait! This is the bug! When we have a run-length encoded free block with `Wosize_hd(hd) = N`:
+• The actual number of words this free block occupies is just wh (since it's a single block in the pool)
+• But Whsize_hd(hd) = N + 1 words, not wh words!
+
+So the `p += Whsize_hd(hd) at the end should actually just be p += wh` to advance past the current block.
+
+But wait, let me re-read the comment: "The wosize is used to indicate the number of contiguous free blocks that follow."
+
+So if wosize = N in the free header, this block plus N more blocks are all free. 
+
+When we sweep:
+1. p += wh * Wosize_hd(hd) - skips N following blocks (each of size wh)
+2. p += Whsize_hd(hd) = p += (N + 1) words - but that's wrong! It should be p += wh to advance past the current block!
+
+But actually, wait - `wh is wsize_sizeclass[sz], and each block in the pool is wh words. A free block with wosize = N` means there are N blocks following it that are also free. The advance past the current block should be wh (moving to the next pool slot).
+
+However, `p += wh * Wosize_hd(hd) already skips the N following blocks, then p += Whsize_hd(hd) = p += (N+1)` also tries to skip past the "current" block AND N more. This double counts!
+
+Let me look at the original non-run-length version to understand what the non-compressed behavior was:
+  ╭─ Turn 11 ────────────────────────────────────────────────────────────╮
+  ▶ $ cd /app/ocaml && git log --all --oneline 2>/dev/null || true; find . -name "*.or…  ▶ $ # Let me look at the pool_free function and the free_count l… (2 lines)[K[K ✓ (6ms)
+[K[K ✓ (21ms)
+  ▶ $ sed -n '277,310p' /app/ocaml/runtime/shared_heap.c[K[K ✓ (3ms)
+  3 tools completed in 3.9s (3 ✓)
+
+Now I see calc_pool_stats does p += wh * Wosize_hd(hd) then p += wh. That's fine for calculating stats. But in pool_sweep, for a free block:
+
+```c
+p += wh * Wosize_hd(hd);  // skip N following free blocks
+...
+p += Whsize_hd(hd);       // This should be p += wh!
+```
+
+Whsize_hd(hd) = Wosize_hd(hd) + 1 - but the current free block occupies exactly wh words in the pool. So p += Whsize_hd(hd) is wrong. It should be p += wh.
+
+But wait - let me look at how non-free blocks are handled: p += Whsize_hd(hd). For a live block of `wosize = w, this advances w + 1` words. But wait, a pool block occupies exactly wh words. So Whsize_hd(hd) = wosize + 1 should equal wh... Actually wh = wsize_sizeclass[sz] which is the "whole size" including header. So wh = whsize_sizeclass[sz]. Let me verify:
+  ╭─ Turn 13 ────────────────────────────────────────────────────────────╮
+  ▶ $ grep -n "wsize_sizeclass\|sizeclass_wsize\|wh\b" /app/ocaml/runtime/shared_heap.…  ▶ $ grep -n "wsize_sizeclass\|NUM_SIZECLASSES" /app/ocaml/runtime/caml/shared_heap.h[K[K ✓ (2ms)
+[K[K ✓ (3ms)
+  ▶ $ grep -n "wsize_sizeclass\|sizeclass_wsize\|NUM_SIZECLASSES" … (2 lines)[K[K ✓ (8ms)
+  ▶ $ cat /app/ocaml/runtime/caml/sizeclasses.h[K[K ✓ (2ms)
+  4 tools completed in 5.6s (4 ✓)
+
+So `wh = wsize_sizeclass[sz] is the "whole size" including the header word? Let me check by looking at how pool_allocate` uses it:
+
+In pool_allocate:
+```c
+next = (value*)(p + wsize_sizeclass[sz]);
+```
+So p + wh is the next block after p. This means wh is the total number of words per block in the pool (including header).
+
+Now in `pool_sweep`:
+• For a live block: p += Whsize_hd(hd) = p += wosize + 1
+• For a free block: p += wh * Wosize_hd(hd) then `p += Whsize_hd(hd) = p += wosize + 1`
+
+But Whsize_hd(hd) for a live block should = wh (since the block occupies exactly wh words). For a free block, Wosize_hd(hd) is the run-length count (number of following blocks), not the number of payload words.
+
+So for a free block with run-length N:
+• `Whsize_hd(hd) = N + 1 but the block itself occupies just wh` words!
+• We skip wh * N words for following blocks
+• Then `p += Whsize_hd(hd) = p += N + 1 — this is WRONG, should be p += wh` to skip the current block
+
+But wait, actually for a live block Whsize_hd(hd) = `wosize + 1 = wh because wsize_sizeclass[sz]` IS the whole size. So the live block advance is correct.
+
+For a free block, the run-length encoding stores the *count of following free blocks* in the wosize field. So `Wosize_hd(hd) = N means there are N more free blocks after this one. But when doing the advance, after p += wh * N (to skip the N following blocks), we need p += wh` (to skip the current block), not p += N+1 (= p += Whsize_hd(hd)).
+
+So the bug in pool_sweep is at line 645-648:
+```c
+p += wh * Wosize_hd(hd);
+} else {
+  release_to_global_pool = 0;
+}
+p += Whsize_hd(hd);  // BUG: should be p += wh
+```
+
+Wait, but let me look at calc_pool_stats which works correctly: it does p += wh * Wosize_hd(hd) then `p += wh`. 
+
+Let me also look at the pool_finalise function:
+  ╭─ Turn 16 ────────────────────────────────────────────────────────────╮
+  ▶ $ sed -n '770,840p' /app/ocaml/runtime/shared_heap.c[K[K ✓ (2ms)
+
+Good - pool_finalise uses p += wh * Wosize_hd(hd) then p += wh, which is correct.
+
+Now let me look at pool_sweep again specifically at the iteration step:
+  ╭─ Turn 17 ────────────────────────────────────────────────────────────╮
+  ▶ $ sed -n '638,660p' /app/ocaml/runtime/shared_heap.c[K[K ✓ (3ms)
+
+Now I see the issue clearly. In pool_sweep:
+
+For a free block:
+• `p += wh * Wosize_hd(hd)` — skips N following free blocks
+• p += Whsize_hd(hd) — **BUG!** This adds Wosize_hd(hd) + 1 = N + 1 words, but should add wh words to skip past the current block
+
+For a live block:
+• No p += wh * Wosize_hd(hd)
+• p += Whsize_hd(hd) — this is wosize + 1 = wh — correct
+
+So the fix is to change `p += Whsize_hd(hd)` to be conditional:
+• For free blocks: just p += wh (the `wh * Wosize_hd(hd)` already skipped the following blocks)
+• For live blocks: `p += Whsize_hd(hd) which equals p += wh` 
+
+Actually, the simplest fix is to just always use p += wh at the end of the loop, consistent with `calc_pool_stats and pool_finalise`.
+
+But wait - I need to double check. For a live block, Whsize_hd(hd) = Wosize_hd(hd) + 1. Live objects in a pool of sizeclass sz have wsize_sizeclass[sz] = wh as the block size. And Whsize_hd(hd) = wosize + 1. Since wosize < wh always (objects can be smaller than the sizeclass), `Whsize_hd(hd) <= wh. So for a live block, we should advance wh`, not Whsize_hd(hd).
+
+So the fix is: replace p += Whsize_hd(hd) with p += wh in `pool_sweep`.
+
+Let me also look at the merge condition to make sure it's correct:
+
+```c
+if( last_free_block + (1 + Wosize_hp(last_free_block)) * wh == p ) {
+```
+
+last_free_block is a header_t* (pointing to header). Wosize_hp(last_free_block) is the run-length count. So last_free_block + (1 + N) * wh = the block after the N following blocks = position after all the free run. This should equal p. This seems correct as a merge condition.
+
+When merging:
+```c
+*last_free_block = POOL_FREE_HEADER(Wosize_hp(last_free_block) + Wosize_hd(hd) + 1);
+```
+New run-length = old count + count of new free block + 1 (for the current block). This adds 1 to span the gap between them. This seems correct.
+
+Let me now also look at the pool_allocate function to check for bugs there:
+
+```c
+p = r->next_obj;
+if( Wosize_hp(p) > 0 ) {
+    next = (value*)(p + wsize_sizeclass[sz]);
+    *next = POOL_FREE_HEADER(Wosize_hp(p) - 1);
+    next[1] = p[1];
+} else {
+    next = (value*)p[1];
+}
+r->next_obj = next;
+```
+
+When allocating from a run-length free block:
+• p is the first free block
+• If Wosize_hp(p) > 0 (there are following free blocks), the next free object is at p + wh (= p + wsize_sizeclass[sz])
+• We set its free header to Wosize_hp(p) - 1 (one less following block)
+• Copy the next pointer
+
+This looks correct.
+
+Now let me look at the pool_sweep to see whether there's anything broken in the merge logic. Let me also trace the expected behavior:
+
+Say we have a pool with sizeclass sz where wh = 2 (2 words per block):
+• Block A at position 0: free (garbage turned free), `wosize = 0` initially
+• Block B at position 2: free (was already free), wosize = 0
+
+After processing A:
+• a->next_obj = (value*)p_A
+• `last_free_block = p_A`
+• p += wh * 0 = p += 0
+• `p += Whsize_hd(hd) = p += 1` ← BUG: should advance 2 (=wh), not 1
+
+This is clearly wrong. The fix is p += wh.
+
+Let me also check the compaction code for similar issues:
+  ╭─ Turn 18 ────────────────────────────────────────────────────────────╮
+  ▶ $ sed -n '1270,1310p' /app/ocaml/runtime/shared_heap.c  ▶ $ sed -n '1350,1445p' /app/ocaml/runtime/shared_heap.c[K[K ✓ (4ms)
+[K[K ✓ (2ms)
+  2 tools completed in 1.5s (2 ✓)
+
+Good. These sections use p += wh * wosize then p += wh which is correct.
+
+Now let me check the pool_sweep loop condition after my proposed fix. Looking at the loop:
+
+```c
+do {
+  ...
+  if (POOL_BLOCK_FREE_HD(hd)) {
+    ...
+    p += wh * Wosize_hd(hd);  // skip following free blocks
+  } else {
+    release_to_global_pool = 0;
+  }
+  p += Whsize_hd(hd);  // BUG: should be p += wh
+} while (p + wh <= end);
+CAMLassert(p == end);
+```
+
+If we change p += Whsize_hd(hd) to p += wh:
+• For free blocks: p += wh * N + wh = p += wh * (N+1), which skips the current block AND all N following ones. ✓
+• For live blocks: p += wh, advances past the current block. ✓
+
+And p == end at the end should work out correctly.
+
+But wait, there's a subtle issue with the loop condition. The loop starts with `p = POOL_FIRST_BLOCK(a, sz) and should terminate when p == end. Let me check if using do...while` with p + wh <= end could cause issues...
+
+Actually the assertion p == end after the loop is what we really want to check. Let me trace through a simple example with the fix:
+
+Pool of 4 blocks, sizeclass wh=2:
+• All free: p = 0, block has wosize = 3 (3 following free blocks)
+• After p += wh * 3 = 6: p = 6
+• After p += wh = 2: p = 8 = end ✓
+
+Now let me check the current buggy behavior:
+• p += wh * 3 = 6: p = 6
+• p += Whsize_hd(hd) = 4: p = 10 ≠ end ✗
+
+The fix is clear. Let me also make sure the last_free_block[1] = 0 at the end is set correctly. After the loop, `last_free_block` should be set. Let me trace again:
+
+Pool of 3 blocks [free, live, free]:
+1. p=0: free, wosize=0; a->next_obj = p; last_free_block = p; p += wh*0 = 0; p += wh = 2
+2. p=2: live; release_to_global_pool = 0; p += wh = 4
+3. p=4: free, wosize=0; merge check: `last_free_block(=0) + (1+0)*2 = 2 ≠ 4`; so last_free_block[1] = (value*)4; last_free_block = 4; p += wh*0 = 0; p += wh = 6 = end
+4. After loop: `last_free_block[1] = 0` ✓
+
+Looks correct. Now let me also verify the merge case:
+
+Pool of 2 adjacent free blocks [free, free]:
+Initial state: p=0 (free, wosize=0), p=2 (free, wosize=0)
+
+1. p=0: free; a->next_obj = 0; last_free_block = 0; p += wh*0; `p += wh = 2`
+2. p=2: free; last_free_block = 0, check: `0 + (1+0)*2 = 2 == p. Merge! *last_free_block = POOL_FREE_HEADER(0 + 0 + 1) = POOL_FREE_HEADER(1). p += wh*0 = 0; p += wh = 4 = end`
+3. After loop: last_free_block[1] = 0 ✓
+
+So after merge, block at 0 has `wosize=1 (one following free block), and next[1] = 0`. Correct!
+
+Now let me also check the last_free_block[1] = 0 assignment at end. What if `all_used = 1? Then last_free_block` is NULL and we don't need to set it. The code guards this with if (!all_used). ✓
+
+What if all_used = 0 but last_free_block = NULL? That can't happen: if any block is free, `last_free_block` gets set.
+
+Now let me try to build the compiler and fix the bug:
+  ╭─ Turn 19 ────────────────────────────────────────────────────────────╮
+  ▶ $ ls /app/ocaml/ && ls /app/ocaml/Makefile 2>/dev/null && head -30 /app/ocaml/INST…[K[K ✓ (4ms)
+  ▶ $ ls /app/ocaml/boot/ && ls /app/ocaml/Makefile.config 2>/dev/null || echo "no Mak…[K[K ✓ (4ms)
+  ▶ $ cd /app/ocaml && ./configure 2>&1 | tail -20[K[K ✓ (8.5s)
+  3 tools completed in 13.5s (3 ✓)
+
+Good. Now let me apply the fix first, then build:
+  ╭─ Turn 22 ────────────────────────────────────────────────────────────╮
+  ▶ $ grep -n "p += Whsize_hd(hd)" /app/ocaml/runtime/shared_heap.c[K[K ✓ (2ms)
+  ▶ $ sed -n '643,655p' /app/ocaml/runtime/shared_heap.c[K[K ✓ (3ms)
+  ▶ edit /app/ocaml/runtime/shared_heap.c (8 → 8 lines)
+  -         /* add the free blocks following this block, skipping over them */
+  -         p += wh * Wosize_hd(hd);
+  -       } else {
+  -         /* there's still a live block, the pool can't be released to the global
+  -             freelist */
+  -         release_to_global_pool = 0;
+  -       }
+  -       p += Whsize_hd(hd);
+  +         /* add the free blocks following this block, skipping over them */
+  +         p += wh * Wosize_hd(hd);
+  +       } else {
+  +         /* there's still a live block, the pool can't be released to the global
+  +             freelist */
+  +         release_to_global_pool = 0;
+  +       }
+  +       p += wh;
+ ✓ (1ms)
+  3 tools completed in 9.8s (3 ✓)
+
+Now let's build the compiler:
+  ╭─ Turn 25 ────────────────────────────────────────────────────────────╮
+  ▶ $ cd /app/ocaml && make -j$(nproc) 2>&1 | tail -30 ✗ (10m 0s)
+    │ Command timed out after 600s
+
+  ↳ 12m 22s · 13248→7387 tokens · $0.406
+  ⬤ 8% of context window used
+
+
