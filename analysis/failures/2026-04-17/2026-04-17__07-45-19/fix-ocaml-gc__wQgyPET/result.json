@@ -1,0 +1,92 @@
+{
+    "id": "b5f9fef4-d419-4297-bc35-2c3411476a79",
+    "task_name": "terminal-bench/fix-ocaml-gc",
+    "trial_name": "fix-ocaml-gc__wQgyPET",
+    "trial_uri": "file:///tmp/bench-results/2026-04-17__07-45-19/fix-ocaml-gc__wQgyPET",
+    "task_id": {
+        "org": "terminal-bench",
+        "name": "fix-ocaml-gc",
+        "ref": "sha256:23621755f7f4ea84bfc67a18ac20f8e9ae05a057212a1dec1a1da6ffa7586e6a"
+    },
+    "source": "terminal-bench/terminal-bench-2",
+    "task_checksum": "199aace6c2963a958b2bd8c14ef4325e64c01d8500387fa7c6fa561329627c7e",
+    "config": {
+        "task": {
+            "path": null,
+            "git_url": null,
+            "git_commit_id": null,
+            "name": "terminal-bench/fix-ocaml-gc",
+            "ref": "sha256:23621755f7f4ea84bfc67a18ac20f8e9ae05a057212a1dec1a1da6ffa7586e6a",
+            "overwrite": false,
+            "download_dir": null,
+            "source": "terminal-bench/terminal-bench-2"
+        },
+        "trial_name": "fix-ocaml-gc__wQgyPET",
+        "trials_dir": "/tmp/bench-results/2026-04-17__07-45-19",
+        "timeout_multiplier": 1.0,
+        "agent_timeout_multiplier": null,
+        "verifier_timeout_multiplier": null,
+        "agent_setup_timeout_multiplier": null,
+        "environment_build_timeout_multiplier": null,
+        "agent": {
+            "name": null,
+            "import_path": "agents.yoyo_agent:Yoyo",
+            "model_name": "anthropic/claude-sonnet-4-6",
+            "override_timeout_sec": null,
+            "override_setup_timeout_sec": null,
+            "max_timeout_sec": null,
+            "kwargs": {},
+            "env": {}
+        },
+        "environment": {
+            "type": "docker",
+            "import_path": null,
+            "force_build": false,
+            "delete": true,
+            "override_cpus": null,
+            "override_memory_mb": null,
+            "override_storage_mb": null,
+            "override_gpus": null,
+            "suppress_override_warnings": false,
+            "mounts_json": null,
+            "env": {},
+            "kwargs": {}
+        },
+        "verifier": {
+            "override_timeout_sec": null,
+            "max_timeout_sec": null,
+            "env": {},
+            "disable": false
+        },
+        "artifacts": [],
+        "job_id": "d63410d8-af91-4e8a-a2ff-ce14825f7e28"
+    },
+    "agent_info": {
+        "name": "yoyo",
+        "version": "unknown",
+        "model_info": {
+            "name": "claude-sonnet-4-6",
+            "provider": "anthropic"
+        }
+    },
+    "agent_result": null,
+    "verifier_result": null,
+    "exception_info": {
+        "exception_type": "NonZeroAgentExitCodeError",
+        "exception_message": "Command failed (exit 100): if command -v apk &> /dev/null; then  apk add --no-cache curl bash git; elif command -v apt-get &> /dev/null; then  apt-get update && apt-get install -y curl git; elif command -v yum &> /dev/null; then  yum install -y curl git; else  echo \"Warning: No known package manager found\" >&2; fi\nstdout: Get:1 http://security.ubuntu.com/ubuntu noble-security InRelease [126 kB]\nHit:2 http://archive.ubuntu.com/ubuntu noble InRelease\nGet:3 http://archive.ubuntu.com/ubuntu noble-updates InRelease [126 kB]\nGet:4 http://security.ubuntu.com/ubuntu noble-security/universe amd64 Packages [1507 kB]\nGet:5 http://archive.ubuntu.com/ubuntu noble-backports InRelease [126 kB]\nGet:6 http://security.ubuntu.com/ubuntu noble-security/restricted amd64 Packages [3581 kB]\nGet:7 http://archive.ubuntu.com/ubuntu noble-updates/multiverse amd64 Packages [38.4 kB]\nGet:8 http://archive.ubuntu.com/ubuntu noble-updates/restricted amd64 Packages [3752 kB]\nGet:9 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 Packages [2402 kB]\nIgn:10 http://archive.ubuntu.com/ubuntu noble-updates/universe amd64 Packages\nGet:11 http://archive.ubuntu.com/ubuntu noble-backports/main amd64 Packages [49.5 kB]\nIgn:12 http://security.ubuntu.com/ubuntu noble-security/multiverse amd64 Packages\nGet:13 http://security.ubuntu.com/ubun ... [truncated]\nstderr: None",
+        "exception_traceback": "Traceback (most recent call last):\n  File \"/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/harbor/trial/trial.py\", line 542, in run\n    await self._setup_agent()\n  File \"/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/harbor/trial/trial.py\", line 266, in _setup_agent\n    await asyncio.wait_for(\n  File \"/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/asyncio/tasks.py\", line 520, in wait_for\n    return await fut\n           ^^^^^^^^^\n  File \"/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/harbor/agents/installed/base.py\", line 405, in setup\n    await self.install(environment)\n  File \"/home/runner/work/yoyo-bench/yoyo-bench/agents/yoyo_agent.py\", line 90, in install\n    await self.exec_as_root(\n  File \"/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/harbor/agents/installed/base.py\", line 366, in exec_as_root\n    return await self._exec(\n           ^^^^^^^^^^^^^^^^^\n  File \"/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/harbor/agents/installed/base.py\", line 342, in _exec\n    raise NonZeroAgentExitCodeError(\nharbor.agents.installed.base.NonZeroAgentExitCodeError: Command failed (exit 100): if command -v apk &> /dev/null; then  apk add --no-cache curl bash git; elif command -v apt-get &> /dev/null; then  apt-get update && apt-get install -y curl git; elif command -v yum &> /dev/null; then  yum install -y curl git; else  echo \"Warning: No known package manager found\" >&2; fi\nstdout: Get:1 http://security.ubuntu.com/ubuntu noble-security InRelease [126 kB]\nHit:2 http://archive.ubuntu.com/ubuntu noble InRelease\nGet:3 http://archive.ubuntu.com/ubuntu noble-updates InRelease [126 kB]\nGet:4 http://security.ubuntu.com/ubuntu noble-security/universe amd64 Packages [1507 kB]\nGet:5 http://archive.ubuntu.com/ubuntu noble-backports InRelease [126 kB]\nGet:6 http://security.ubuntu.com/ubuntu noble-security/restricted amd64 Packages [3581 kB]\nGet:7 http://archive.ubuntu.com/ubuntu noble-updates/multiverse amd64 Packages [38.4 kB]\nGet:8 http://archive.ubuntu.com/ubuntu noble-updates/restricted amd64 Packages [3752 kB]\nGet:9 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 Packages [2402 kB]\nIgn:10 http://archive.ubuntu.com/ubuntu noble-updates/universe amd64 Packages\nGet:11 http://archive.ubuntu.com/ubuntu noble-backports/main amd64 Packages [49.5 kB]\nIgn:12 http://security.ubuntu.com/ubuntu noble-security/multiverse amd64 Packages\nGet:13 http://security.ubuntu.com/ubun ... [truncated]\nstderr: None\n",
+        "occurred_at": "2026-04-17T08:19:02.542059"
+    },
+    "started_at": "2026-04-17T08:15:59.145114Z",
+    "finished_at": "2026-04-17T08:19:14.097433Z",
+    "environment_setup": {
+        "started_at": "2026-04-17T08:15:59.146508Z",
+        "finished_at": "2026-04-17T08:16:11.984075Z"
+    },
+    "agent_setup": {
+        "started_at": "2026-04-17T08:16:11.984088Z",
+        "finished_at": "2026-04-17T08:19:02.421909Z"
+    },
+    "agent_execution": null,
+    "verifier": null
+}

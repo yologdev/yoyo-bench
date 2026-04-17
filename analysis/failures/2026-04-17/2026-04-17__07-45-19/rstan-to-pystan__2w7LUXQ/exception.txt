@@ -1,0 +1,32 @@
+Traceback (most recent call last):
+  File "/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/harbor/trial/trial.py", line 542, in run
+    await self._setup_agent()
+  File "/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/harbor/trial/trial.py", line 266, in _setup_agent
+    await asyncio.wait_for(
+  File "/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/asyncio/tasks.py", line 520, in wait_for
+    return await fut
+           ^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/harbor/agents/installed/base.py", line 405, in setup
+    await self.install(environment)
+  File "/home/runner/work/yoyo-bench/yoyo-bench/agents/yoyo_agent.py", line 90, in install
+    await self.exec_as_root(
+  File "/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/harbor/agents/installed/base.py", line 366, in exec_as_root
+    return await self._exec(
+           ^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/harbor/agents/installed/base.py", line 342, in _exec
+    raise NonZeroAgentExitCodeError(
+harbor.agents.installed.base.NonZeroAgentExitCodeError: Command failed (exit 100): if command -v apk &> /dev/null; then  apk add --no-cache curl bash git; elif command -v apt-get &> /dev/null; then  apt-get update && apt-get install -y curl git; elif command -v yum &> /dev/null; then  yum install -y curl git; else  echo "Warning: No known package manager found" >&2; fi
+stdout: Get:1 http://security.ubuntu.com/ubuntu noble-security InRelease [126 kB]
+Get:2 http://security.ubuntu.com/ubuntu noble-security/multiverse amd64 Packages [34.8 kB]
+Get:3 http://security.ubuntu.com/ubuntu noble-security/universe amd64 Packages [1507 kB]
+Get:4 http://archive.ubuntu.com/ubuntu noble InRelease [256 kB]
+Get:5 http://archive.ubuntu.com/ubuntu noble-updates InRelease [126 kB]
+Get:6 http://archive.ubuntu.com/ubuntu noble-backports InRelease [126 kB]
+Get:7 http://archive.ubuntu.com/ubuntu noble/multiverse amd64 Packages [331 kB]
+Get:8 http://security.ubuntu.com/ubuntu noble-security/restricted amd64 Packages [3581 kB]
+Get:9 http://security.ubuntu.com/ubuntu noble-security/main amd64 Packages [2025 kB]
+Ign:10 http://archive.ubuntu.com/ubuntu noble/universe amd64 Packages
+Get:11 http://archive.ubuntu.com/ubuntu noble/restricted amd64 Packages [117 kB]
+Get:12 http://archive.ubuntu.com/ubuntu noble/main amd64 Packages [1808 kB]
+Get:13 http://archive.ubuntu.com/ubuntu noble-updates ... [truncated]
+stderr: None

@@ -1,0 +1,17 @@
+Running command: if command -v apk &> /dev/null; then  apk add --no-cache curl bash git; elif command -v apt-get &> /dev/null; then  apt-get update && apt-get install -y curl git; elif command -v yum &> /dev/null; then  yum install -y curl git; else  echo "Warning: No known package manager found" >&2; fi
+Command failed
+Trial fix-ocaml-gc__wQgyPET failed: Command failed (exit 100): if command -v apk &> /dev/null; then  apk add --no-cache curl bash git; elif command -v apt-get &> /dev/null; then  apt-get update && apt-get install -y curl git; elif command -v yum &> /dev/null; then  yum install -y curl git; else  echo "Warning: No known package manager found" >&2; fi
+stdout: Get:1 http://security.ubuntu.com/ubuntu noble-security InRelease [126 kB]
+Hit:2 http://archive.ubuntu.com/ubuntu noble InRelease
+Get:3 http://archive.ubuntu.com/ubuntu noble-updates InRelease [126 kB]
+Get:4 http://security.ubuntu.com/ubuntu noble-security/universe amd64 Packages [1507 kB]
+Get:5 http://archive.ubuntu.com/ubuntu noble-backports InRelease [126 kB]
+Get:6 http://security.ubuntu.com/ubuntu noble-security/restricted amd64 Packages [3581 kB]
+Get:7 http://archive.ubuntu.com/ubuntu noble-updates/multiverse amd64 Packages [38.4 kB]
+Get:8 http://archive.ubuntu.com/ubuntu noble-updates/restricted amd64 Packages [3752 kB]
+Get:9 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 Packages [2402 kB]
+Ign:10 http://archive.ubuntu.com/ubuntu noble-updates/universe amd64 Packages
+Get:11 http://archive.ubuntu.com/ubuntu noble-backports/main amd64 Packages [49.5 kB]
+Ign:12 http://security.ubuntu.com/ubuntu noble-security/multiverse amd64 Packages
+Get:13 http://security.ubuntu.com/ubun ... [truncated]
+stderr: None

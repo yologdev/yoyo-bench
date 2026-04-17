@@ -1,0 +1,17 @@
+Running command: if command -v apk &> /dev/null; then  apk add --no-cache curl bash git; elif command -v apt-get &> /dev/null; then  apt-get update && apt-get install -y curl git; elif command -v yum &> /dev/null; then  yum install -y curl git; else  echo "Warning: No known package manager found" >&2; fi
+Command failed
+Trial constraints-scheduling__ka8F7A5 failed: Command failed (exit 100): if command -v apk &> /dev/null; then  apk add --no-cache curl bash git; elif command -v apt-get &> /dev/null; then  apt-get update && apt-get install -y curl git; elif command -v yum &> /dev/null; then  yum install -y curl git; else  echo "Warning: No known package manager found" >&2; fi
+stdout: Get:1 http://security.ubuntu.com/ubuntu noble-security InRelease [126 kB]
+Get:2 http://security.ubuntu.com/ubuntu noble-security/universe amd64 Packages [1507 kB]
+Get:3 http://security.ubuntu.com/ubuntu noble-security/restricted amd64 Packages [3581 kB]
+Get:4 http://archive.ubuntu.com/ubuntu noble InRelease [256 kB]
+Get:5 http://archive.ubuntu.com/ubuntu noble-updates InRelease [126 kB]
+Get:6 http://security.ubuntu.com/ubuntu noble-security/multiverse amd64 Packages [34.8 kB]
+Get:7 http://security.ubuntu.com/ubuntu noble-security/main amd64 Packages [2025 kB]
+Ign:5 http://archive.ubuntu.com/ubuntu noble-updates InRelease
+Get:8 http://archive.ubuntu.com/ubuntu noble-backports InRelease [126 kB]
+Get:9 http://archive.ubuntu.com/ubuntu noble/multiverse amd64 Packages [331 kB]
+Get:10 http://archive.ubuntu.com/ubuntu noble/main amd64 Packages [1808 kB]
+Get:11 http://archive.ubuntu.com/ubuntu noble/restricted amd64 Packages [117 kB]
+Get:12 http://archive.ubuntu.com/ubuntu noble/universe amd64 ... [truncated]
+stderr: None

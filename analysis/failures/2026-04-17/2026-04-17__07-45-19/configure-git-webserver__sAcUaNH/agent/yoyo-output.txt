@@ -1,0 +1,89 @@
+  yoyo (prompt mode) — model: claude-sonnet-4-6
+[K[K
+── Thinking ────────────────────────────────────────────────────────────────
+Let me explore the environment first to understand what's available.  ▶ $ cat /etc/os-release | head -5; whoami; ls /; which git nginx apache2 python3 2>/…  ▶ read /tmp/yoyo-skills/bench/SKILL.md ✓ (1ms)
+[K[K ✓ (7ms)
+  ▶ $ id git 2>/dev/null; ls /home/; cat /etc/passwd | grep git; which nginx; apt list…[K[K ✓ (1.2s)
+  ▶ $ which nginx || which apache2 || echo "no web server found" (3 lines)[K[K ✓ (12ms)
+
+────────────────────────────────────────────────────────────────────────────────
+  4 tools completed in 7.3s (4 ✓)
+
+Now I have a clear picture. I'll set up:
+1. A git user for SSH-based cloning/pushing
+2. A bare git repo at /git/server
+3. A post-receive hook that deploys files to the web root
+4. Nginx serving port 8080
+  ╭─ Turn 4 ─────────────────────────────────────────────────────────────╮
+  ▶ $ apt-get update -qq && apt-get install -y nginx git openssh-server 2>&1 | tail -5 ✗ (2m 0s)
+    │ Command timed out after 120s
+  ▶ $ DEBIAN_FRONTEND=noninteractive apt-get install -y nginx git openssh-server 2>&1 …[K[K ✓ (28ms)
+  ▶ $ wait; sleep 5; DEBIAN_FRONTEND=noninteractive apt-get install -y nginx git opens…[K[K ✓ (6.5s)
+  3 tools completed in 2m 14s (2 ✓, 1 ✗)
+
+All packages are already installed. Now let's configure everything:
+  ╭─ Turn 7 ─────────────────────────────────────────────────────────────╮
+  ▶ $ # 1. Create the 'user' user (the SSH user for git operations… (8 lines)[K[K ✓ (29ms)
+  ▶ $ # 3. Set up the web root directory (18 lines)[K[K ✓ (4ms)
+  ▶ $ # 5. Set ownership so 'user' can write to the repo and web d… (12 lines)[K[K ✓ (12ms)
+  ▶ $ # 7. Configure nginx to serve on port 8080 from /var/www/git… (21 lines)[K[K ✓ (8ms)
+  ▶ $ # 8. Start/reload nginx and sshd (9 lines)[K[K ✓ (2.1s)
+  5 tools completed in 21.4s (5 ✓)
+
+Both services are running. Now let's do a full end-to-end test to verify everything works:
+  ╭─ Turn 12 ────────────────────────────────────────────────────────────╮
+  ▶ $ # End-to-end test: simulate what the user will do (18 lines) ✗ (0ms)
+    │ Command blocked by safety policy: contains 'rm -rf /'. This pattern is denied for safety.
+  ▶ $ cd /tmp (11 lines)[K[K ✓ (17ms)
+  ▶ $ git config --global --add safe.directory /git/server (7 lines)[K[K ✓ (63ms)
+  3 tools completed in 7.8s (2 ✓, 1 ✗)
+
+The hook fired. Now verify the web server serves it:
+  ╭─ Turn 15 ────────────────────────────────────────────────────────────╮
+  ▶ $ curl http://localhost:8080/hello.html[K[K ✓ (13ms)
+
+`curl http://localhost:8080/hello.html returns hello world. Everything is working. Let me also make sure the user` account's shell is correctly set:
+  ╭─ Turn 16 ────────────────────────────────────────────────────────────╮
+  ▶ $ grep ^user /etc/passwd (4 lines)[K[K ✓ (5ms)
+  ▶ $ # Make sure permissions on /git are accessible by user (4 lines)[K[K ✓ (5ms)
+  2 tools completed in 5.4s (2 ✓)
+
+Everything is set up correctly. Here's a summary of what was configured:
+
+────────────────────────────────────────
+
+## What was set up
+
+### Git Server
+• User: user — shell is locked to /usr/bin/git-shell (git operations only, no interactive shell)
+• **Bare repository**: /git/server — owned by user, accessible via SSH as `user@server:/git/server`
+• post-receive hook: /git/server/hooks/post-receive — automatically runs `git checkout -f` into the web root on every push
+
+### Web Server (nginx on port 8080)
+• **Config**: /etc/nginx/sites-available/gitdeploy — listens on port 8080, serves from `/var/www/gitdeploy`
+• Web root: /var/www/gitdeploy — files are deployed here by the git hook
+
+### Flow
+```
+git push  →  SSH to user@server  →  bare repo at /git/server
+                                          ↓  post-receive hook
+                                 git checkout -f → /var/www/gitdeploy
+                                          ↓
+                              curl http://server:8080/<file>
+```
+
+### To use (once you've set up SSH login for the `user` account):
+```bash
+git clone user@server:/git/server
+echo "hello world" > hello.html
+git add hello.html
+git commit -m "add hello.html"
+git push origin master
+# → hook fires, file deployed
+curl http://server:8080/hello.html   # → "hello world"
+```
+
+  ↳ 3m 17s · 2397→2876 tokens · $0.096
+  ⬤ 1% of context window used
+
+

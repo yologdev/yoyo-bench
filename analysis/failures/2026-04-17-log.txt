@@ -1,0 +1,88 @@
+Tip: There are many benchmarks available in Harbor's registry.
+Run `harbor datasets list` to see all available datasets.
+
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+  89/89 Mean: 0.079 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1:13:43 0:00:00
+terminal-bench/terminal-bench-2 • yoyo • claude-sonnet-4-6
+┏━━━━━━━━┳━━━━━━━━━━━━┳━━━━━━━┓
+┃ Trials ┃ Exceptions ┃  Mean ┃
+┡━━━━━━━━╇━━━━━━━━━━━━╇━━━━━━━┩
+│     58 │         76 │ 0.079 │
+└────────┴────────────┴───────┘
+
+┏━━━━━━━━┳━━━━━━━┓
+┃ Reward ┃ Count ┃
+┡━━━━━━━━╇━━━━━━━┩
+│ 0.0    │    51 │
+│ 1.0    │     7 │
+└────────┴───────┘
+
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━┓
+┃ Exception                 ┃ Count ┃
+┡━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━┩
+│ NonZeroAgentExitCodeError │    49 │
+│ AgentSetupTimeoutError    │    27 │
+└───────────────────────────┴───────┘
+
+Job Info
+Total runtime: 1h 13m 43s
+Results written to /tmp/bench-results/2026-04-17__07-45-19/result.json
+Inspect results by running `harbor view /tmp/bench-results`
+

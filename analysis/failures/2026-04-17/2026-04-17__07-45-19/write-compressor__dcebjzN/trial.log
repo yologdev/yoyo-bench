@@ -1,0 +1,2 @@
+Running command: if command -v apk &> /dev/null; then  apk add --no-cache curl bash git; elif command -v apt-get &> /dev/null; then  apt-get update && apt-get install -y curl git; elif command -v yum &> /dev/null; then  yum install -y curl git; else  echo "Warning: No known package manager found" >&2; fi
+Trial write-compressor__dcebjzN failed: Agent setup timed out after 360.0 seconds
