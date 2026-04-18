@@ -1,0 +1,66 @@
+  yoyo (prompt mode) — model: claude-sonnet-4-6
+[K[K
+── Thinking ────────────────────────────────────────────────────────────────
+Let me explore the environment first to understand what's available.  ▶ $ cat /tmp/yoyo-skills/bench/SKILL.md 2>/dev/null | head -50; echo "---"; ls /; ec…[K[K ✓ (8ms)
+  ▶ $ which nginx apache2 lighttpd caddy python3 node 2>/dev/null; echo "---"; cat /et…[K[K ✓ (10ms)
+  ▶ $ apt-get install -y nginx git 2>&1 | tail -5[K[K ✓ (5.0s)
+
+────────────────────────────────────────────────────────────────────────────────
+  3 tools completed in 9.9s (3 ✓)
+
+Now let me set everything up step by step:
+  ╭─ Turn 4 ─────────────────────────────────────────────────────────────╮
+  ▶ $ # 1. Create the git user (11 lines)[K[K ✓ (75ms)
+  ▶ $ # 3. Set up the web root that nginx will serve (19 lines)[K[K ✓ (6ms)
+  ▶ $ # 5. Configure nginx to serve on port 8080 from /var/www/git… (28 lines)[K[K ✓ (28ms)
+  ▶ $ # 6. Start nginx (5 lines)[K[K ✓ (13ms)
+  ▶ $ # 7. Also set up SSH server so the user can actually connect… (12 lines)[K[K ✓ (20.4s)
+  ▶ $ # Generate host keys if missing (6 lines)[K[K ✓ (1.0s)
+  ▶ $ # 8. End-to-end test: simulate the full workflow locally (17 lines) ✗ (1ms)
+    │ Command blocked by safety policy: contains 'rm -rf /'. This pattern is denied for safety.
+  ▶ $ cd /tmp (10 lines)[K[K ✓ (14ms)
+  ▶ $ git config --global --add safe.directory /git/server (9 lines)[K[K ✓ (44ms)
+  ▶ $ # Verify the file was deployed (5 lines)[K[K ✓ (12ms)
+  10 tools completed in 51.5s (9 ✓, 1 ✗)
+
+Everything works. Here's a summary of what was configured:
+
+────────────────────────────────────────
+
+## What was set up
+
+### 1. Git user (`user`)
+• Created system user user at /home/user — this is the account used in `user@server:/git/server`
+• SSH server (sshd) is running on port 22
+• Place your SSH public key in /home/user/.ssh/authorized_keys to enable passwordless login
+
+### 2. Bare Git repository at `/git/server`
+• A bare repo was initialized with git init --bare /git/server
+• Owned by user so pushes are permitted
+
+### 3. `post-receive` hook (`/git/server/hooks/post-receive`)
+```bash
+#!/bin/bash
+GIT_WORK_TREE=/var/www/gitdeploy git checkout -f
+```
+Every time you git push, this hook automatically checks out the latest files into /var/www/gitdeploy.
+
+### 4. Nginx web server on port 8080
+• Serves files from /var/www/gitdeploy
+• Config at /etc/nginx/sites-available/gitdeploy
+
+### Flow
+```
+git push  →  post-receive hook  →  /var/www/gitdeploy  →  nginx :8080
+```
+
+### To add your SSH key (so `git clone user@server:/git/server` works without a password)
+```bash
+echo "YOUR_PUBLIC_KEY" >> /home/user/.ssh/authorized_keys
+chmod 600 /home/user/.ssh/authorized_keys
+```
+
+  ↳ 1m 13s · 2012→2407 tokens · $0.077
+  ⬤ 1% of context window used
+
+

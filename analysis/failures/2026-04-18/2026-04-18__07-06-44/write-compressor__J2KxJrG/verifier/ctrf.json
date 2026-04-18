@@ -1,0 +1,50 @@
+{
+    "results": {
+        "tool": {
+            "name": "pytest",
+            "version": "8.4.1"
+        },
+        "summary": {
+            "tests": 3,
+            "passed": 2,
+            "failed": 1,
+            "skipped": 0,
+            "pending": 0,
+            "other": 0,
+            "start": 1776497928.0134766,
+            "stop": 1776497928.388715
+        },
+        "tests": [
+            {
+                "name": "test_outputs.py::test_compressed_file_exists",
+                "status": "passed",
+                "duration": 0.06221244700009265,
+                "start": 1776497928.110904,
+                "stop": 1776497928.1735117,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::test_decompression_produces_original",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 0.06255777500018667,
+                "start": 1776497928.1738148,
+                "stop": 1776497928.329686,
+                "retries": 0,
+                "file_path": "test_outputs.py",
+                "trace": "def test_decompression_produces_original():\n        \"\"\"Test that decompressing the compressed file produces the file content.\"\"\"\n        setup()\n        # Paths\n        compressed_path = Path(\"/app/data.comp\")\n        decompressor_path = Path(\"/app/decomp2\")\n        original_path = Path(\"/app/data.txt\")\n    \n        # Check that all required files exist\n        assert compressed_path.exists(), f\"Compressed file {compressed_path} does not exist\"\n        assert decompressor_path.exists(), (\n            f\"Decompressor {decompressor_path} does not exist\"\n        )\n        assert original_path.exists(), f\"Original file {original_path} does not exist\"\n    \n        # Get original content\n        original_content = original_path.read_text()\n    \n        # Run decompression and capture output\n>       result = subprocess.run(\n            f\"cat {compressed_path} | {decompressor_path}\",\n            shell=True,\n            capture_output=True,\n            text=True,\n        )\n\n/tests/test_outputs.py:44: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n/root/.local/share/uv/python/cpython-3.13.9-linux-x86_64-gnu/lib/python3.13/subprocess.py:556: in run\n    stdout, stderr = process.communicate(input, timeout=timeout)\n                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n/root/.local/share/uv/python/cpython-3.13.9-linux-x86_64-gnu/lib/python3.13/subprocess.py:1222: in communicate\n    stdout, stderr = self._communicate(input, endtime, timeout)\n                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n/root/.local/share/uv/python/cpython-3.13.9-linux-x86_64-gnu/lib/python3.13/subprocess.py:2169: in _communicate\n    stdout = self._translate_newlines(stdout,\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nself = <Popen: returncode: 0 args: 'cat /app/data.comp | /app/decomp2'>\ndata = b'In information theory, data compression, source coding,[1] or bit-rate reduction is the process of encoding informat...d decompression, but compresses stronger, especially on repeating patterns in files\\' content.[14example of  nudti\\x93'\nencoding = 'utf-8', errors = 'strict'\n\n    def _translate_newlines(self, data, encoding, errors):\n>       data = data.decode(encoding, errors)\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nE       UnicodeDecodeError: 'utf-8' codec can't decode byte 0x93 in position 4879: invalid start byte\n\n/root/.local/share/uv/python/cpython-3.13.9-linux-x86_64-gnu/lib/python3.13/subprocess.py:1099: UnicodeDecodeError",
+                "message": "The test failed in the call phase"
+            },
+            {
+                "name": "test_outputs.py::test_compression_size",
+                "status": "passed",
+                "duration": 0.05825252100066791,
+                "start": 1776497928.3299854,
+                "stop": 1776497928.3884752,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            }
+        ]
+    }
+}

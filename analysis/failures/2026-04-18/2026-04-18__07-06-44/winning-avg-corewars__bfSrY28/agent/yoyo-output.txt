@@ -1,0 +1,56 @@
+  yoyo (prompt mode) — model: claude-sonnet-4-6
+[K[K
+── Thinking ────────────────────────────────────────────────────────────────
+Let me start by exploring the environment and understanding the opponent warriors before writing my solution.  ▶ $ ls warriors/ && cat warriors/stone.red warriors/paper.red warriors/vampire.red w…  ▶ $ which pmars && pmars --help 2>&1 | head -30[K[K ✓ (7ms)
+[K[K ✓ (308ms)
+  ▶ $ # Test a quick battle to see output format (10 lines)[K[K ✓ (69ms)
+  ▶ $ # Now let me understand pMARS scoring: Results: W T L (32 lines)[K[K ✓ (1.3s)
+  ▶ $ # Paper beats vampire but loses to stone, paper, snake, g2-c… (9 lines)[K[K ✓ (269ms)
+  ▶ $ # Let me think differently. I need: (29 lines)[K[K ✓ (655ms)
+  ▶ $ # Fast stone does well vs paper and vampire but not vs stone… (43 lines)[K[K ✓ (888ms)
+  ▶ $ # Better! 68 vs paper, 70 vs vampire but still weak vs stone… (30 lines)[K[K ✓ (855ms)
+  ▶ $ # Need better approach. Let me think about what beats stone … (38 lines)[K[K ✓ (917ms)
+  ▶ $ # Still weak vs stone. The problem is stone is dropping DATs… (58 lines)[K[K ✓ (17ms)
+  ▶ $ # Boot is too slow. The djn loop copying itself takes too lo… (45 lines)[K[K ✓ (195ms)
+  ▶ $ # 58 vs stone, 91 vs paper, 67 vs vampire. Getting closer! (45 lines)[K[K ✓ (121ms)
+  ▶ $ # Hmm, the original mini.red (step=3) already gets 58. Let m… (53 lines)[K[K ✓ (86ms)
+  ▶ $ cat > /tmp/splbomb.red << 'EOF' (24 lines)[K[K ✓ (1.7s)
+  ▶ $ # SPL tree approach loses vs stone because stone kills our o… (48 lines)[K[K ✓ (426ms)
+  ▶ $ # Let me rethink. The best warriors against stone are: (41 lines)[K[K ✓ (1.2s)
+  ▶ $ # spl 1 is not working as expected - all processes just conv… (53 lines)[K[K ✓ (296ms)
+  ▶ $ # Scanner does well vs paper and vampire but not stone or g2… (53 lines)[K[K ✓ (1.2s)
+  ▶ $ # Interesting! SPL 0 gives: 40W/1T/59L vs stone (losing!), 6… (42 lines)[K[K ✓ (1.2s)
+  ▶ $ # The shared ptr is still the problem - all processes use sa… (87 lines)[K[K ✓ (431ms)
+  ▶ $ # Still losing vs stone. The problem is the code is too LONG… (92 lines)[K[K ✓ (174ms)
+  ▶ $ # EXCELLENT! Fast8 gets 83 vs stone, 100 vs paper, 95 vs vam… (5 lines)[K[K ✓ (481ms)
+  ▶ $ # Great progress! 83 vs stone, 100 vs paper, 95 vs vampire, … (75 lines)[K[K ✓ (728ms)
+  ▶ $ # Great vs g2-clear (55 wins), vampire (98), stone (82) (65 lines)[K[K ✓ (615ms)
+  ▶ $ # Good: stone 83, paper 72, vampire 94, g2-clear 31 (just un… (83 lines)[K[K ✓ (402ms)
+  ▶ $ # Very close! 83 stone, 100 paper, 94 vampire, 30 g2-clear (… (51 lines)[K[K ✓ (702ms)
+  ▶ $ # Pure silk (paper replicator) loses vs stone because stone … (69 lines)[K[K ✓ (477ms)
+  ▶ $ # 96 vs stone! But 0 vs snake. Let me check all: (4 lines)[K[K ✓ (391ms)
+  ▶ $ # Excellent: 96 stone, 96 paper, 94 vampire, 42 g2-clear, 0 … (86 lines)[K[K ✓ (1.0s)
+  ▶ $ # Interesting! g2-clear beats snake 47 times! That's more th… (63 lines)[K[K ✓ (979ms)
+  ▶ $ # Hmm, SPL bombs don't help much. (4 lines)[K[K ✓ (2ms)
+  ▶ $ # G2-clear: (118 lines)[K[K ✓ (1.1s)
+  ▶ $ # GREAT PROGRESS! 74 stone, 83 paper, 88 vampire, 39 snake, … (73 lines)[K[K ✓ (862ms)
+  ▶ $ # Paper dropped to 49! The jmp clear makes us go to clear wh… (57 lines)[K[K ✓ (1.0s)
+  ▶ $ # The g2fix2 broke things. I'm using the gate wrong. (11 lines)[K[K ✓ (1.4s)
+  ▶ $ # Almost there! 73 stone (need 75), 82 paper (ok), 80 vampir… (6 lines)[K[K ✓ (1.0s)
+  ▶ $ # Stone results are: 73, 69, 69, 69, 70 - consistently aroun… (65 lines)[K[K ✓ (638ms)
+  ▶ $ # 90 stone, 83 paper, 85 vampire - excellent! (83 lines)[K[K ✓ (643ms)
+  ▶ $ # 91 stone, 79 paper, 91 vampire, 1 snake (terrible!), 42 g2… (95 lines)[K[K ✓ (698ms)
+  ▶ $ # 78 stone, 59 paper (too low), 98 vampire, 2 snake (terribl… (16 lines)[K[K ✓ (3ms)
+  ▶ $ # The g2style has org clear-1 which is in the MIDDLE of code… (30 lines)[K[K ✓ (268ms)
+  ▶ $ # ORG 4 - starts at instruction 4 (0-indexed), which is the … (119 lines)[K[K ✓ (245ms)
+  ▶ $ # Multi-g2: 72 stone (not better), 91 paper, 89 vampire, 1 s… (90 lines)[K[K ✓ (672ms)
+  ▶ $ # Paper is 56 (need 75), snake 13 (need 33), g2-clear 17 (ne… (109 lines)[K[K ✓ (7ms)
+  ▶ $ # Let me use pmars assemble mode to see the actual addresses (2 lines)[K[K ✓ (2ms)
+  ▶ $ # Ah ha! In the assembled g2-clear: (143 lines)[K[K ✓ (755ms)
+  ▶ $ # Two g2-clear processes don't help (46 stone, 51 paper, 62 … (172 lines)[K[K ✓ (766ms)
+  47 tools completed in 10m 9s (47 ✓)
+
+  ↳ 10m 12s · 8061→35927 tokens · $1.00
+  ⬤ 15% of context window used
+
+

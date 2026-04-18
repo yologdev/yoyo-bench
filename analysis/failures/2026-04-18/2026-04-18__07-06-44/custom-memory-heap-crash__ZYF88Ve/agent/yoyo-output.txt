@@ -1,0 +1,84 @@
+  yoyo (prompt mode) — model: claude-sonnet-4-6
+[K[K
+── Thinking ────────────────────────────────────────────────────────────────
+Let me start by exploring the /app/ directory to understand the program structure and then figure out what's causing the crash in release mode.  ▶ $ cat /app/main.cpp && echo "---" && cat /app/user.cpp  ▶ $ ls /app/[K[K ✓ (2ms)
+[K[K ✓ (18ms)
+  ▶ $ cat /app/user.h  ▶ $ # Compile both versions and test (3 lines)[K[K ✓ (4ms)
+[K[K ✓ (4.5s)
+  ▶ $ /app/debug 2>&1; echo "Exit: $?" (3 lines)[K[K ✓ (1.5s)
+  ▶ $ # The release binary crashes after "=== Computation complete… (3 lines)  ▶ $ # Run release under GDB to see where it crashes (2 lines)[K[K ✓ (1.2s)
+[K[K ✓ (21.8s)
+  ▶ $ # The crash is in locale_init.cc:324 during exit handlers (7 lines)  ▶ $ # The issue: in release mode, the optimizer may reorder stat… (7 lines)[K[K ✓ (5ms)
+[K[K ✓ (484ms)
+  ▶ $ sed -n '310,340p' /build/gcc-13.2.0/libstdc++-v3/src/c++98/locale_init.cc  ▶ $ # The key insight: the custom heap is initialized during app… (29 lines)[K[K ✓ (0ms)
+[K[K ✓ (0ms)
+  ▶ $ cat /build/gcc-13.2.0/libstdc++-v3/src/c++98/locale_init.cc[K[K ✓ (4ms)
+  ▶ $ grep -n "_Fac_tidy\|_Fac_node\|_Fac_head\|operator delete\|NDEBUG\|malloc\|free"…[K[K ✓ (9ms)
+  ▶ $ sed -n '260,400p' /build/gcc-13.2.0/libstdc++-v3/src/c++98/locale_init.cc[K[K ✓ (3ms)
+
+────────────────────────────────────────────────────────────────────────────────
+  14 tools completed in 1m 2s (14 ✓)
+
+Now I understand the problem completely. The modified libstdc++ in release mode (-DNDEBUG) allocates `_Fac_node objects using ::operator new`, which routes through the custom heap manager when it's active. These nodes are then destroyed by a static destructor (_Fac_tidy_reg_t) that runs **after** main() returns — at which point the custom heap has already been destroyed by Application::shutdown().
+
+The fix: the custom heap should **not be active** (i.e., g_custom_heap must be nullptr) when `_Facet_Register_impl() is called, OR we need to ensure g_custom_heap` is still alive when the static destructors run.
+
+The cleanest fix in user.cpp is to ensure the custom heap is not active during the locale's first use — but we can't change main.cpp. Instead, we can override `operator new / operator delete at a different level in user.cpp`. But wait — the overrides are in main.cpp...
+
+The real fix: we need g_custom_heap to remain valid (or null) when the `_Fac_tidy_reg_t destructor runs. Since _Fac_tidy_reg_t` is a static with destructor registered during static init, it will run at process exit after main() returns. We need g_custom_heap to be null by then — which it already is (shutdown sets it to null). But the crash is in ::operator delete(nodeptr) which calls g_custom_heap->deallocate() — and since g_custom_heap is null at that point, it falls through to std::free(), which is WRONG because the memory was allocated with ::operator new from the custom heap (which is now freed).
+
+The issue is: _Fac_node objects are allocated from custom heap (::operator new → custom heap), but deleted after the heap is destroyed (::operator delete → `g_custom_heap==null → std::free(ptr)` on custom heap memory → crash).
+  ╭─ Turn 10 ────────────────────────────────────────────────────────────╮
+  ▶ $ # Let's think about the sequence: (19 lines)[K[K ✓ (38ms)
+  ▶ $ # Key insight: user_init() is called BEFORE g_custom_heap is… (12 lines)[K[K ✓ (0ms)
+  ▶ write /app/user.cpp (30 lines) ✓ (3ms)
+  ▶ $ g++ -std=c++17 -o /app/release /app/main.cpp /app/user.cpp -… (3 lines)[K[K ✓ (2.8s)
+  ▶ $ /app/debug 2>&1; echo "Debug exit: $?" (3 lines)[K[K ✓ (941ms)
+  ▶ $ # flush() alone might not trigger _Facet_Register_impl. Let'… (3 lines)[K[K ✓ (4ms)
+  ▶ $ grep -n "_Facet_Register_impl\|_Facet_Register" /build/gcc-13.2.0/libstdc++-v3/s…  ▶ $ find /build -name "*.cc" -o -name "*.cpp" -o -name "*.h" -o -name "*.tcc" | xarg…[K[K ✓ (11ms)
+[K[K ✓ (3.0s)
+  ▶ $ grep -n "_Facet_Register" /build/gcc-13.2.0/libstdc++-v3/include/bits/locale_cla…[K[K ✓ (5ms)
+  ▶ $ sed -n '85,115p' /build/gcc-13.2.0/libstdc++-v3/include/bits/locale_classes.tcc[K[K ✓ (5ms)
+  ▶ $ # So _Facet_Register_impl() is called from __try_use_facet w… (9 lines)[K[K ✓ (659ms)
+  ▶ $ # The crash is at line 324 which is `_Fac_head = nodeptr->_N… (59 lines)[K[K ✓ (233ms)
+  ▶ $ g++ -std=c++17 -o /app/release /app/main.cpp /app/user.cpp -O2 -DNDEBUG -L/usr/l…[K[K ✓ (2.0s)
+  ▶ $ # Still crashing. Let's check if the empty string "" actuall… (24 lines)[K[K ✓ (1.1s)
+  ▶ $ # The test program works fine without custom operator new/de… (65 lines)[K[K ✓ (1.7s)
+  ▶ $ # Great! That works! Let's verify debug also works (2 lines)[K[K ✓ (2.1s)
+  ▶ $ # Now check with valgrind for memory leaks (2 lines)  ▶ $ valgrind --leak-check=full --track-origins=yes --error-exitcode=1 /app/release 2…[K[K ✓ (4.8s)
+[K[K ✓ (19.1s)
+  18 tools completed in 1m 59s (18 ✓)
+
+Both release and debug builds pass with zero memory leaks. Here's a summary of what was wrong and how it was fixed:
+
+## Root Cause
+
+The in-house modified libstdc++ in `/build/gcc-13.2.0/libstdc++-v3/src/c++98/locale_init.cc` contains a custom facet-tracking mechanism that — under `NDEBUG` (release) only — allocates `_Fac_node objects using ::operator new when __try_use_facet()` is first called (i.e., on the first locale-aware I/O operation). A static destructor (_Fac_tidy_reg_t) then cleans up these nodes after main() exits.
+
+The crash sequence was:
+
+1. `app.init() sets up g_custom_heap, then calls std::cout << "=== Monte Carlo..."` — this is the **first** formatted I/O, which triggers _Facet_Register_impl() → ::operator new → custom heap allocates _Fac_node objects inside the custom heap's 10 MB buffer.
+2. app.~Application() → shutdown() destroys the custom heap: `memset(0xEF, ...) + std::free(). The _Fac_node` list is now dangling pointers into freed memory.
+3. After main() returns, the static _Fac_tidy_reg_t destructor runs and tries to walk _Fac_head — crash accessing already-freed (and poisoned) memory.
+
+In debug mode the same code uses std::malloc for the allocations (not ::operator new), so they live outside the custom heap and survive it.
+
+## Fix (`/app/user.cpp`)
+
+```cpp
+void user_init() {
+    // Trigger locale facet initialization (via std::locale::classic()) BEFORE
+    // the custom heap is activated. This causes _Facet_Register_impl() to run
+    // while g_custom_heap == nullptr, so _Fac_nodes are allocated with plain
+    // std::malloc. The _Fac_tidy_reg_t static destructor can then safely
+    // std::free() them after main() exits.
+    std::cout.imbue(std::locale::classic());
+}
+```
+
+user_init() is called before g_custom_heap is set, so calling std::cout.imbue(std::locale::classic()) forces locale facet registration at a point where g_custom_heap == nullptr. The _Fac_node allocations therefore use std::malloc, and the static destructor's std::free() calls succeed cleanly.
+
+  ↳ 3m 29s · 8726→7807 tokens · $0.310
+  ⬤ 6% of context window used
+
+

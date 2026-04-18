@@ -1,0 +1,56 @@
+{
+    "results": {
+        "tool": {
+            "name": "pytest",
+            "version": "8.4.1"
+        },
+        "summary": {
+            "tests": 4,
+            "passed": 4,
+            "failed": 0,
+            "skipped": 0,
+            "pending": 0,
+            "other": 0,
+            "start": 1776499743.5712285,
+            "stop": 1776499753.9705522
+        },
+        "tests": [
+            {
+                "name": "test_outputs.py::test_network_status",
+                "status": "passed",
+                "duration": 0.012944968000283552,
+                "start": 1776499743.660688,
+                "stop": 1776499743.6739366,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::test_qemu_running_with_correct_params",
+                "status": "passed",
+                "duration": 0.38220748999992793,
+                "start": 1776499743.6741643,
+                "stop": 1776499744.056598,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::test_windows_311_core_files_verification",
+                "status": "passed",
+                "duration": 7.289768286000253,
+                "start": 1776499744.0568435,
+                "stop": 1776499751.3468113,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::test_windows_keys_with_visual_feedback",
+                "status": "passed",
+                "duration": 2.6231398400000216,
+                "start": 1776499751.3470266,
+                "stop": 1776499753.9703648,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            }
+        ]
+    }
+}

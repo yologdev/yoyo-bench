@@ -1,0 +1,56 @@
+  yoyo (prompt mode) — model: claude-sonnet-4-6
+[K[K
+── Thinking ────────────────────────────────────────────────────────────────
+Let me start by exploring the task and understanding what's needed.  ▶ $ cat /tmp/yoyo-skills/bench/SKILL.md 2>/dev/null | head -50; ls; cat sequences.fa…  ▶ $ which oligotm; oligotm --help 2>&1 | head -20[K[K ✓ (7ms)
+[K[K ✓ (4ms)
+  ▶ $ which primer3_core; apt-get install -y primer3 2>/dev/null | tail -5; which olig…  ▶ $ # Find differences between input and output sequences (23 lines)[K[K ✓ (4ms)
+[K[K ✓ (4.3s)
+  ▶ $ python3 -c "print('hello')" 2>/dev/null || python -c "print('hello')" 2>/dev/nul…[K[K ✓ (9.9s)
+  ▶ $ python3 << 'EOF' (31 lines)[K[K ✓ (56ms)
+  ▶ $ python3 << 'EOF' (80 lines)[K[K ✓ (30ms)
+  ▶ $ python3 << 'EOF' (21 lines)[K[K ✓ (21ms)
+  ▶ $ python3 << 'EOF' (69 lines)[K[K ✓ (72ms)
+  ▶ $ python3 << 'EOF' (42 lines)[K[K ✓ (144ms)
+  ▶ $ python3 << 'EOF' (67 lines)[K[K ✓ (509ms)
+  ▶ $ python3 << 'EOF' (72 lines)[K[K ✓ (87ms)
+  ▶ $ python3 << 'EOF' (50 lines)[K[K ✓ (25ms)
+
+────────────────────────────────────────────────────────────────────────────────
+  13 tools completed in 9m 2s (13 ✓)
+
+The primers are verified. The simulation confirms that inserting the 39-nt sequence at position 215 produces exactly the expected output plasmid. Now let me write the final FASTA file:
+  ╭─ Turn 12 ────────────────────────────────────────────────────────────╮
+  ▶ $ cat > primers.fasta << 'EOF' (7 lines)[K[K ✓ (8ms)
+  ▶ $ # Final verification (3 lines)[K[K ✓ (6ms)
+  2 tools completed in 5.7s (2 ✓)
+
+The primers.fasta file has been created. Here is a summary of what was done and why:
+
+────────────────────────────────────────
+
+## Solution Summary
+
+### Mutation Identified
+Comparing the input and output plasmid sequences revealed a single insertion of 39 nucleotides (`TAGATTAGAAGAAGAATTAAGAAGAAGATTAACAGAAAG) at position 215 in the input sequence (between ...tacatatgag and caagggcg...`).
+
+### Primer Design (NEB Q5 SDM — Insertion)
+For a Q5 site-directed mutagenesis **insertion**, primers are designed back-to-back on the plasmid:
+• Forward primer: carries the insertion sequence as a 5' tail, with the 3' end annealing *downstream* of the insertion site
+• Reverse primer: anneals upstream of the insertion site on the complementary strand
+
+Primer Pair 1:
+
+| Primer | Sequence (5'→3') | Annealing region | Tm |
+|--------|-----------------|-------------------|-----|
+| Forward | TAGATTAGAAGAAGAATTAAGAAGAAGATTAACAGAAAGCAAGGGCGAGGAGCT | CAAGGGCGAGGAGCT (15 nt) | 59.5°C |
+| Reverse | CTCATATGTATATCTCCTTCTTAAAGTT | full sequence (28 nt) | 58.0°C |
+
+• ✅ Annealing lengths: 15 nt (fwd) and 28 nt (rev) — both within 15–45 nt
+• ✅ Melting temperatures: 59.5°C and 58.0°C — both within 58–72°C
+• ✅ ΔTm = 1.5°C ≤ 5°C
+• ✅ Only **1 primer pair** needed (single contiguous insertion)
+
+  ↳ 9m 20s · 3917→38842 tokens · $0.879
+  ⬤ 11% of context window used
+
+
