@@ -1,0 +1,78 @@
+  yoyo (prompt mode) — model: claude-sonnet-4-6
+[K[K
+── Thinking ────────────────────────────────────────────────────────────────
+Let me explore the environment first to understand what's available.  ▶ $ cat /tmp/yoyo-skills/bench/SKILL.md 2>/dev/null | head -50; echo "---"; ls /; ec…  ▶ $ which git nginx apache2 python3 python; ls /etc/nginx 2>/dev/null; ls /etc/apach…[K[K ✓ (13ms)
+[K[K ✓ (15ms)
+  ▶ $ apt-get update -qq && apt-get install -y nginx git 2>&1 | tail -5  ▶ $ hostname; cat /etc/hosts[K[K ✓ (6ms)
+[K[K ✓ (9.2s)
+  ▶ $ # Add 'server' alias to /etc/hosts so curl http://server:808… (11 lines)  ▶ $ # Set up nginx web root and config on port 8080 (13 lines)[K[K ✓ (4ms)
+[K[K ✓ (68ms)
+  ▶ $ # Create the post-receive hook to deploy files to the web ro… (12 lines)  ▶ $ # Start nginx (3 lines)[K[K ✓ (15ms)
+[K[K ✓ (24ms)
+  ▶ $ # Set up SSH server so 'git clone user@server:/git/server' w… (11 lines)[K[K ✓ (21.6s)
+  ▶ $ # End-to-end test: simulate the exact workflow described in … (19 lines)[K[K ✓ (155ms)
+  ▶ $ cd /tmp (5 lines)[K[K ✓ (240ms)
+  ▶ $ # Check SSH config - password auth may need PAM or keyboard-… (2 lines)[K[K ✓ (4ms)
+  ▶ $ # The task says "I'll setup login with the server to work" -… (15 lines)[K[K ✓ (30ms)
+  ▶ $ # Test with sshpass (3 lines)[K[K ✓ (3.6s)
+  ▶ $ cd /tmp (15 lines)[K[K ✓ (786ms)
+  ▶ $ curl http://server:8080/hello.html[K[K ✓ (18ms)
+
+────────────────────────────────────────────────────────────────────────────────
+  16 tools completed in 1m 19s (16 ✓)
+
+Everything is working perfectly. Here's a summary of what was configured:
+
+────────────────────────────────────────
+
+## What was set up
+
+### 1. Git user account (`user`)
+• Unix account user created at /home/user with SSH infrastructure (~/.ssh/authorized_keys) ready for you to drop your public key into.
+
+### 2. Bare Git repository at `/git/server`
+• Initialized with git init --bare /git/server
+• Owned by user so the account can push to it
+
+### 3. `post-receive` hook — the magic glue
+• Located at /git/server/hooks/post-receive
+• Every time you push, it automatically deploys the working tree to the nginx web root:
+  ```bash
+  GIT_WORK_TREE=/var/www/html git checkout -f
+  ```
+
+### 4. Nginx web server on port 8080
+• Serves files from /var/www/html
+• Config at `/etc/nginx/sites-available/default`
+
+### 5. OpenSSH server
+• Running on port 22, accepting connections as user@server
+
+────────────────────────────────────────
+
+## To finish setup on your machine
+
+Just add your **public SSH key** to the server:
+```bash
+ssh-copy-id user@server
+# or manually append your key to:
+# /home/user/.ssh/authorized_keys
+```
+
+Then the exact workflow from the task will work as-is:
+```bash
+git clone user@server:/git/server
+echo "hello world" > hello.html
+git add hello.html
+git commit -m "add hello.html"
+git push origin master
+# → automatically deploys to nginx
+
+curl http://server:8080/hello.html
+# → hello world
+```
+
+  ↳ 1m 28s · 1552→2533 tokens · $0.077
+  ⬤ 1% of context window used
+
+

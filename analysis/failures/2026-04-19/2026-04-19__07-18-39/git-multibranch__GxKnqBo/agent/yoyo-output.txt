@@ -1,0 +1,68 @@
+  yoyo (prompt mode) — model: claude-sonnet-4-6
+[K[K
+── Thinking ────────────────────────────────────────────────────────────────
+Let me set up a Git server with SSH access, post-receive hooks, and Nginx with HTTPS. Let me plan this out:
+
+1. Set up SSH server with password authentication
+2. Create a git user with password "password"
+3. Create a bare git repository at /git/project
+4. Set up post-receive hook to deploy branches
+5. Set up Nginx with self-signed SSL certificate
+6. Configure Nginx to serve the deployed content
+
+Let me start implementing this.  ▶ $ ls / && cat /etc/os-release | head -5 && which nginx git ssh sshd 2>/dev/null ||…  ▶ read /tmp/yoyo-skills/bench/SKILL.md ✓ (2ms)
+[K[K ✓ (10ms)
+  ▶ $  (9 lines)[K[K ✓ (9.2s)
+  ▶ $  (17 lines)[K[K ✓ (180ms)
+  ▶ $  (5 lines)[K[K ✓ (11ms)
+  ▶ $  (33 lines)[K[K ✓ (19ms)
+  ▶ $  (9 lines)[K[K ✓ (384ms)
+  ▶ $  (32 lines)[K[K ✓ (19ms)
+  ▶ $  (9 lines)[K[K ✓ (1.0s)
+  ▶ $  (4 lines)[K[K ✓ (3ms)
+  ▶ $  (19 lines)[K[K ✓ (2.0s)
+  ▶ $  (6 lines)[K  ⠋ bash: 
+mkdir -p /run/sshd
+/usr/sbin/sshd -D &
+… ⏱ 2s (1 line)[K[K ✓ (4.0s)
+  ▶ $  (17 lines)[K[K ✓ (1.1s)
+  ▶ $  (4 lines)[K[K ✓ (2.6s)
+  ▶ $  (6 lines)[K[K ✓ (301ms)
+  ▶ $  (19 lines)[K[K ✓ (320ms)
+  ▶ $  (16 lines)[K[K ✓ (271ms)
+  ▶ $  (10 lines)[K[K ✓ (275ms)
+  ▶ $  (8 lines)[K[K ✓ (23ms)
+
+────────────────────────────────────────────────────────────────────────────────
+  19 tools completed in 1m 19s (19 ✓)
+
+Both HTTPS endpoints are working correctly. Let me do a final comprehensive verification:
+  ╭─ Turn 19 ────────────────────────────────────────────────────────────╮
+  ▶ $  (38 lines)[K[K ✓ (419ms)
+
+Everything is set up and working perfectly. Here's a summary of what was configured:
+
+## Setup Summary
+
+### Git Server (SSH)
+• Git user created with password password
+• **Bare repository** at /git/project.git (accessible as /git/project via symlink)
+• SSH server running on port 22 with password authentication enabled
+• Access: git@localhost:/git/project
+
+### Post-Receive Hook (`/git/project.git/hooks/post-receive`)
+• Automatically deploys on every push
+• main branch → `/var/www/git-deploy/main/`
+• dev branch → /var/www/git-deploy/dev/
+
+### Nginx HTTPS Server
+• Self-signed certificate at /etc/nginx/ssl/
+• Listening on port 8443 with SSL
+• `https://localhost:8443/index.html` → serves from main branch deployment
+• https://localhost:8443/dev/index.html → serves from dev branch deployment
+
+### Verified Results
+• ✅ https://localhost:8443/index.html returns `main branch content`
+• ✅ https://localhost:8443/dev/index.html returns dev branch content
+• ✅ Clone via git@localhost:/git/project with password password works
+• ✅ Push triggers immediate deployment (well under 3 seconds)

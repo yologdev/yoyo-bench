@@ -1,0 +1,104 @@
+{
+    "id": "e52441be-f9ee-4220-8bf2-1eee723b319e",
+    "task_name": "terminal-bench/build-pmars",
+    "trial_name": "build-pmars__8WeRzed",
+    "trial_uri": "file:///tmp/bench-results/2026-04-19__07-18-39/build-pmars__8WeRzed",
+    "task_id": {
+        "org": "terminal-bench",
+        "name": "build-pmars",
+        "ref": "sha256:796773c1d8b991b9b936b3513308b1a4d2ea1772ae9d9b29103f58748d6e2c17"
+    },
+    "source": "terminal-bench/terminal-bench-2",
+    "task_checksum": "4d0e27f720c46456c232bf3c2aec8424ccf3cb433c108b7ddeb456dbd9fb5817",
+    "config": {
+        "task": {
+            "path": null,
+            "git_url": null,
+            "git_commit_id": null,
+            "name": "terminal-bench/build-pmars",
+            "ref": "sha256:796773c1d8b991b9b936b3513308b1a4d2ea1772ae9d9b29103f58748d6e2c17",
+            "overwrite": false,
+            "download_dir": null,
+            "source": "terminal-bench/terminal-bench-2"
+        },
+        "trial_name": "build-pmars__8WeRzed",
+        "trials_dir": "/tmp/bench-results/2026-04-19__07-18-39",
+        "timeout_multiplier": 1.0,
+        "agent_timeout_multiplier": null,
+        "verifier_timeout_multiplier": null,
+        "agent_setup_timeout_multiplier": null,
+        "environment_build_timeout_multiplier": null,
+        "agent": {
+            "name": null,
+            "import_path": "agents.yoyo_agent:Yoyo",
+            "model_name": "anthropic/claude-sonnet-4-6",
+            "override_timeout_sec": null,
+            "override_setup_timeout_sec": null,
+            "max_timeout_sec": null,
+            "kwargs": {},
+            "env": {}
+        },
+        "environment": {
+            "type": "docker",
+            "import_path": null,
+            "force_build": false,
+            "delete": true,
+            "override_cpus": null,
+            "override_memory_mb": null,
+            "override_storage_mb": null,
+            "override_gpus": null,
+            "suppress_override_warnings": false,
+            "mounts_json": null,
+            "env": {},
+            "kwargs": {}
+        },
+        "verifier": {
+            "override_timeout_sec": null,
+            "max_timeout_sec": null,
+            "env": {},
+            "disable": false
+        },
+        "artifacts": [],
+        "job_id": "8b597db1-015c-4297-9680-8bf53b3f55c7"
+    },
+    "agent_info": {
+        "name": "yoyo",
+        "version": "0.1.8",
+        "model_info": {
+            "name": "claude-sonnet-4-6",
+            "provider": "anthropic"
+        }
+    },
+    "agent_result": {
+        "n_input_tokens": null,
+        "n_cache_tokens": null,
+        "n_output_tokens": null,
+        "cost_usd": null,
+        "rollout_details": null,
+        "metadata": null
+    },
+    "verifier_result": {
+        "rewards": {
+            "reward": 1.0
+        }
+    },
+    "exception_info": null,
+    "started_at": "2026-04-19T07:45:51.700814Z",
+    "finished_at": "2026-04-19T07:47:19.639839Z",
+    "environment_setup": {
+        "started_at": "2026-04-19T07:45:51.703149Z",
+        "finished_at": "2026-04-19T07:45:57.035563Z"
+    },
+    "agent_setup": {
+        "started_at": "2026-04-19T07:45:57.035577Z",
+        "finished_at": "2026-04-19T07:46:05.318904Z"
+    },
+    "agent_execution": {
+        "started_at": "2026-04-19T07:46:05.318962Z",
+        "finished_at": "2026-04-19T07:47:04.113597Z"
+    },
+    "verifier": {
+        "started_at": "2026-04-19T07:47:04.242565Z",
+        "finished_at": "2026-04-19T07:47:08.551674Z"
+    }
+}
