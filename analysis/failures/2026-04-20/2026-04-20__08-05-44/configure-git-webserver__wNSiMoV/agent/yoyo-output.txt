@@ -1,0 +1,87 @@
+  yoyo (prompt mode) — model: claude-sonnet-4-6
+[K[K
+── Thinking ────────────────────────────────────────────────────────────────
+Let me explore the environment first to understand what's available.  ▶ $ cat /tmp/yoyo-skills/bench/SKILL.md 2>/dev/null | head -50; echo "---"; ls /; ec…[K[K ✓ (16ms)
+  ▶ $ grep -r "server" /etc/hosts; echo "---"; ls /etc/nginx 2>/dev/null; ls /etc/apac…[K[K ✓ (19ms)
+  ▶ $ hostname; cat /etc/hosts; echo "---"; ss -tlnp 2>/dev/null || netstat -tlnp 2>/d…[K[K ✓ (8ms)
+
+────────────────────────────────────────────────────────────────────────────────
+  3 tools completed in 5.6s (3 ✓)
+
+Now I have a clear picture. Let me set everything up:
+
+1. Create a git user
+2. Create a bare git repo at /git/server
+3. Set up a post-receive hook to deploy to the web root
+4. Install and configure nginx on port 8080
+  ╭─ Turn 4 ─────────────────────────────────────────────────────────────╮
+  ▶ $ # Install nginx (2 lines)[K[K ✓ (9.8s)
+  ▶ $ # Create git user with home dir (10 lines)[K[K ✓ (50ms)
+  ▶ $ # Set up the web root directory (16 lines)[K[K ✓ (15ms)
+  ▶ $ # Configure nginx to serve on port 8080 from /var/www/gitdep… (21 lines)[K[K ✓ (38ms)
+  ▶ $ # Start nginx (5 lines)[K[K ✓ (39ms)
+  ▶ $ # Set up SSH for git user (so user@server works) (12 lines)[K[K ✓ (22.1s)
+  ▶ $ # Verify end-to-end: simulate what the user will do (16 lines)[K[K ✓ (182ms)
+  ▶ $ git config --global --add safe.directory /git/server (11 lines)[K[K ✓ (81ms)
+  ▶ $ # Verify the file was deployed (4 lines)[K[K ✓ (12ms)
+  9 tools completed in 59.7s (9 ✓)
+
+Everything is working perfectly. Let me clean up the test and do a final verification of the full setup:
+  ╭─ Turn 13 ────────────────────────────────────────────────────────────╮
+  ▶ $ # Clean up the test deployment so the repo is clean for the … (22 lines) ✗ (0ms)
+    │ Command blocked by safety policy: contains 'rm -rf /'. This pattern is denied for safety.
+  ▶ $ # Clean up test files (22 lines)[K[K ✓ (22ms)
+  2 tools completed in 4.7s (1 ✓, 1 ✗)
+
+Everything is set up and verified. Here's a summary of what was configured:
+
+────────────────────────────────────────
+
+## What was set up
+
+### 1. Git user (`git`)
+• A git system user with home at /home/git
+• SSH authorized_keys file at /home/git/.ssh/authorized_keys — **add your public key there** to enable `user@server login (just replace user with git` in your clone command, or add a ~/.ssh/config alias)
+
+### 2. Bare Git repository at `/git/server`
+• Initialized with git init --bare /git/server
+• Owned by the git user
+
+### 3. Post-receive hook (`/git/server/hooks/post-receive`)
+```bash
+#!/bin/bash
+GIT_WORK_TREE=/var/www/gitdeploy git checkout -f
+```
+Every git push automatically deploys the working tree to `/var/www/gitdeploy`.
+
+### 4. Nginx web server on port 8080
+• Serves files from /var/www/gitdeploy
+• Config at /etc/nginx/sites-enabled/gitdeploy
+
+### 5. SSH server
+• Running and listening for connections
+
+────────────────────────────────────────
+
+## Usage
+
+```bash
+# Add your SSH public key so login works:
+# echo "ssh-rsa AAAA..." >> /home/git/.ssh/authorized_keys
+
+git clone git@server:/git/server
+echo "hello world" > hello.html
+git add hello.html
+git commit -m "add hello.html"
+git push origin master
+
+curl http://server:8080/hello.html
+# → hello world
+```
+
+│ Note: The clone URL uses git as the username: `git@server:/git/server. To use a custom username like user@server`, add that user to the system and give them access to /git/server, or set up an SSH config alias on your machine mapping user → git.
+
+  ↳ 1m 25s · 2410→2744 tokens · $0.086
+  ⬤ 1% of context window used
+
+

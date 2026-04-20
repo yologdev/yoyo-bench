@@ -1,0 +1,71 @@
+  yoyo (prompt mode) — model: claude-sonnet-4-6
+[K[K
+── Thinking ────────────────────────────────────────────────────────────────
+Let me start by downloading the video and then transcribing the text content from it.  ▶ $ which yt-dlp youtube-dl ffmpeg 2>/dev/null; pip show yt-dlp 2>/dev/null | head -…  ▶ read /tmp/yoyo-skills/bench/SKILL.md ✓ (1ms)
+[K[K ✓ (3ms)
+  ▶ $ pip install yt-dlp -q && which yt-dlp || pip install --user yt-dlp -q[K[K ✓ (2ms)
+  ▶ $ apt-get update -qq && apt-get install -y python3-pip ffmpeg 2>/dev/null | tail -…[K[K ✓ (53.8s)
+  ▶ $ pip3 install yt-dlp -q && yt-dlp --version[K[K ✓ (351ms)
+  ▶ $ pip3 install yt-dlp --break-system-packages -q && yt-dlp --version[K[K ✓ (3.6s)
+  ▶ $ mkdir -p /tmp/zork && cd /tmp/zork && yt-dlp -f "best[height<=480]" --write-auto…[K[K ✓ (1.2s)
+  ▶ $ apt-get install -y nodejs 2>/dev/null | tail -3 && node --version[K[K ✓ (4.0s)
+  ▶ $ cd /tmp/zork && yt-dlp --js-runtimes nodejs "https://www.youtube.com/watch?v=ZCb…[K[K ✓ (1.3s)
+  ▶ $ # Install deno for JS runtime support (5 lines)[K[K ✓ (259ms)
+  ▶ $ apt-get install -y unzip 2>/dev/null | tail -3 (5 lines)[K[K ✓ (3.8s)
+  ▶ $ export DENO_INSTALL="/root/.deno" (3 lines)[K[K ✓ (1.2s)
+  ▶ $ export DENO_INSTALL="/root/.deno" (8 lines)[K[K ✓ (973ms)
+  ▶ $ export DENO_INSTALL="/root/.deno" (7 lines)[K[K ✓ (1.5s)
+  ▶ $ export DENO_INSTALL="/root/.deno" (7 lines)[K[K ✓ (1.6s)
+  ▶ $ # Try using a PO token approach or different extractor (8 lines)[K[K ✓ (1.3s)
+  ▶ $ # Try a different approach - use gallery-dl or other tool, o… (4 lines)[K[K ✓ (803ms)
+  ▶ $ export DENO_INSTALL="/root/.deno" (10 lines)[K[K ✓ (1.5s)
+  ▶ $ # Try using the invidious API as a proxy (4 lines)[K[K ✓ (1.4s)
+  ▶ $ # Try fetching the video via yt-dlp with a fake cookie file … (14 lines)[K[K ✓ (1.7s)
+  ▶ $ # Let's try piping through a proxy or using the invidious fr… (11 lines)[K[K ✓ (2.6s)
+  ▶ $ export DENO_INSTALL="/root/.deno" (11 lines)[K[K ✓ (4.9s)
+  ▶ $ export DENO_INSTALL="/root/.deno" (24 lines)[K[K ✓ (728ms)
+  ▶ $ # Try using the innertube API directly to get captions (41 lines)[K[K ✓ (1.0s)
+  ▶ $ # Try a completely different approach - use the InnerTube AP… (52 lines)[K[K ✓ (210ms)
+  ▶ $ cat > /tmp/zork/innertube2.py << 'EOF' (55 lines)[K[K ✓ (163ms)
+  ▶ $ cat > /tmp/zork/innertube3.py << 'EOF' (61 lines)[K[K ✓ (173ms)
+  ▶ $ cat > /tmp/zork/innertube4.py << 'EOF' (58 lines)[K[K ✓ (259ms)
+  ▶ $ # This video is a Zork I speedrun (2:53). Let me try to find… (10 lines)[K[K ✓ (177ms)
+  ▶ $ export DENO_INSTALL="/root/.deno" (13 lines)[K[K ✓ (3.3s)
+  ▶ $ export DENO_INSTALL="/root/.deno" (12 lines)[K[K ✓ (2.5s)
+  ▶ $ export DENO_INSTALL="/root/.deno" (7 lines)[K[K ✓ (856ms)
+  ▶ $ export DENO_INSTALL="/root/.deno" (24 lines)[K[K ✓ (189ms)
+  ▶ $ # Try multiple piped instances (19 lines)[K[K ✓ (1.5s)
+  ▶ $ # Try a completely different approach - use a headless brows… (4 lines)[K[K ✓ (7.5s)
+  ▶ $ export DENO_INSTALL="/root/.deno" (7 lines)[K[K ✓ (617ms)
+  ▶ $ pip3 install selenium --break-system-packages -q (4 lines)[K  ⠋ bash: pip3 install selenium --break-system-pac… ⏱ 2s (2 lines)[K[K ✓ (8.7s)
+  ▶ $ ls /usr/bin/chromium* /usr/bin/google* 2>/dev/null (5 lines)[K[K ✓ (5.0s)
+  ▶ $ # Let's use selenium with chromium to visit YouTube and get … (51 lines)[K[K ✓ (7.5s)
+  ▶ $ apt-get install -y chromium-chromedriver 2>/dev/null | tail … (3 lines)[K[K ✓ (2.2s)
+  ▶ $ chromedriver --version (2 lines)[K[K ✓ (7ms)
+  ▶ $ # Snap isn't available likely. Let's try a different approac… (7 lines)[K[K ✓ (25.2s)
+  ▶ $ cat > /tmp/zork/get_yt_playwright.py << 'EOF' (42 lines)[K[K ✓ (885ms)
+  ▶ $ apt-get install -y libnspr4 libnss3 libatk1.0-0 libatk-bridge2.0-0 libcups2 libx…[K[K ✓ (1.6s)
+  ▶ $ python3 /tmp/zork/get_yt_playwright.py[K[K ✓ (1.2s)
+  ▶ $ ldconfig && ldconfig -p | grep nspr (2 lines)[K[K ✓ (475ms)
+  ▶ $ apt-get install -y libnspr4 libnss3 2>/dev/null | grep -E "(… (2 lines)[K[K ✓ (3.4s)
+  ▶ $ python3 /tmp/zork/get_yt_playwright.py[K[K ✓ (6.0s)
+  ▶ $ export DENO_INSTALL="/root/.deno" (7 lines)[K[K ✓ (3.8s)
+  ▶ $ # The cookies need to include proper session cookies - let's… (97 lines)[K[K ✓ (13.1s)
+  ▶ $ cat /tmp/zork/video_url.txt (3 lines)[K[K ✓ (215ms)
+
+────────────────────────────────────────────────────────────────────────────────
+  51 tools completed in 8m 43s (51 ✓)
+
+We have a direct video URL! Let's download it and extract frames for OCR.
+  ╭─ Turn 51 ────────────────────────────────────────────────────────────╮
+  ▶ $ cd /tmp/zork && curl -s -L -o "zork.mp4" "$(cat video_url.tx… (4 lines)[K[K ✓ (5.0s)
+  ▶ $ cd /tmp/zork (9 lines)[K[K ✓ (10.0s)
+  ▶ $ apt-get install -y wget 2>/dev/null | tail -2 (6 lines)[K[K ✓ (9.1s)
+  ▶ $ # The URL expires quickly. We need to intercept and download… (77 lines)[K[K ✓ (12.8s)
+  ▶ $ cat > /tmp/zork/download_via_playwright2.py << 'EOF' (90 lines)[K[K ✓ (21.5s)
+  5 tools completed in 1m 41s (5 ✓)
+
+  ↳ 10m 31s · 12875→16379 tokens · $0.629
+  ⬤ 9% of context window used
+
+
