@@ -1,0 +1,104 @@
+{
+    "id": "f4f775c9-489a-4131-b88b-126a3281d9d4",
+    "task_name": "terminal-bench/password-recovery",
+    "trial_name": "password-recovery__Fv6uj6b",
+    "trial_uri": "file:///tmp/bench-results/2026-04-21__07-48-53/password-recovery__Fv6uj6b",
+    "task_id": {
+        "org": "terminal-bench",
+        "name": "password-recovery",
+        "ref": "sha256:ee9fe20f22d6f2bcf67b52571ea9ce7a8048bc49dc4f5bb3a78ff40149b0c02c"
+    },
+    "source": "terminal-bench/terminal-bench-2",
+    "task_checksum": "778f4c1780170dad8432a3f78f9252c6626118db1babc9fc4e8f68cf0409026a",
+    "config": {
+        "task": {
+            "path": null,
+            "git_url": null,
+            "git_commit_id": null,
+            "name": "terminal-bench/password-recovery",
+            "ref": "sha256:ee9fe20f22d6f2bcf67b52571ea9ce7a8048bc49dc4f5bb3a78ff40149b0c02c",
+            "overwrite": false,
+            "download_dir": null,
+            "source": "terminal-bench/terminal-bench-2"
+        },
+        "trial_name": "password-recovery__Fv6uj6b",
+        "trials_dir": "/tmp/bench-results/2026-04-21__07-48-53",
+        "timeout_multiplier": 1.0,
+        "agent_timeout_multiplier": null,
+        "verifier_timeout_multiplier": null,
+        "agent_setup_timeout_multiplier": null,
+        "environment_build_timeout_multiplier": null,
+        "agent": {
+            "name": null,
+            "import_path": "agents.yoyo_agent:Yoyo",
+            "model_name": "anthropic/claude-sonnet-4-6",
+            "override_timeout_sec": null,
+            "override_setup_timeout_sec": null,
+            "max_timeout_sec": null,
+            "kwargs": {},
+            "env": {}
+        },
+        "environment": {
+            "type": "docker",
+            "import_path": null,
+            "force_build": false,
+            "delete": true,
+            "override_cpus": null,
+            "override_memory_mb": null,
+            "override_storage_mb": null,
+            "override_gpus": null,
+            "suppress_override_warnings": false,
+            "mounts_json": null,
+            "env": {},
+            "kwargs": {}
+        },
+        "verifier": {
+            "override_timeout_sec": null,
+            "max_timeout_sec": null,
+            "env": {},
+            "disable": false
+        },
+        "artifacts": [],
+        "job_id": "8dd0fb6a-9fbf-4360-9d36-47f4022a9b30"
+    },
+    "agent_info": {
+        "name": "yoyo",
+        "version": "0.1.9",
+        "model_info": {
+            "name": "claude-sonnet-4-6",
+            "provider": "anthropic"
+        }
+    },
+    "agent_result": {
+        "n_input_tokens": null,
+        "n_cache_tokens": null,
+        "n_output_tokens": null,
+        "cost_usd": null,
+        "rollout_details": null,
+        "metadata": null
+    },
+    "verifier_result": {
+        "rewards": {
+            "reward": 1.0
+        }
+    },
+    "exception_info": null,
+    "started_at": "2026-04-21T08:31:30.141986Z",
+    "finished_at": "2026-04-21T08:37:20.593065Z",
+    "environment_setup": {
+        "started_at": "2026-04-21T08:31:30.144206Z",
+        "finished_at": "2026-04-21T08:31:35.807157Z"
+    },
+    "agent_setup": {
+        "started_at": "2026-04-21T08:31:35.807173Z",
+        "finished_at": "2026-04-21T08:31:51.327059Z"
+    },
+    "agent_execution": {
+        "started_at": "2026-04-21T08:31:51.327127Z",
+        "finished_at": "2026-04-21T08:36:55.702439Z"
+    },
+    "verifier": {
+        "started_at": "2026-04-21T08:36:55.918862Z",
+        "finished_at": "2026-04-21T08:37:07.851266Z"
+    }
+}

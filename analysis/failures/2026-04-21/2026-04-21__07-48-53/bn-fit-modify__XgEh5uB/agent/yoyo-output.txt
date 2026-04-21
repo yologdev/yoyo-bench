@@ -1,0 +1,59 @@
+  yoyo (prompt mode) — model: claude-sonnet-4-6
+[K[K
+── Thinking ────────────────────────────────────────────────────────────────
+Let me start by exploring the data and understanding what we're working with.  ▶ $ head -5 /app/bn_sample_10k.csv && echo "---" && wc -l /app/bn_sample_10k.csv && …[K[K ✓ (47ms)
+  ▶ $ pip install pandas numpy pgmpy scipy statsmodels -q[K[K ✓ (597ms)
+  ▶ $ pip install pandas numpy pgmpy scipy statsmodels --break-system-packages -q[K[K ✓ (47.1s)
+  ▶ $ python3 -c " (11 lines)[K[K ✓ (751ms)
+  ▶ $ python3 -c " (26 lines)[K[K ✓ (682ms)
+  ▶ $ python3 -c " (30 lines)[K[K ✓ (762ms)
+  ▶ $ python3 -c " (32 lines)[K[K ✓ (574ms)
+
+────────────────────────────────────────────────────────────────────────────────
+  7 tools completed in 1m 25s (7 ✓)
+
+Good, the DAG structure is clear. Now let me save the edges and build the Bayesian Network:
+  ╭─ Turn 8 ─────────────────────────────────────────────────────────────╮
+  ▶ write /app/learned_dag.csv (7 lines) ✓ (2ms)
+  ▶ $ python3 << 'EOF' (51 lines)[K[K ✓ (469ms)
+  ▶ $ python3 << 'EOF' (72 lines)[K[K ✓ (683ms)
+  ▶ $ echo "=== learned_dag.csv ===" && cat /app/learned_dag.csv && echo "=== interven…[K[K ✓ (8ms)
+  ▶ $ ls -la /app/*.csv[K[K ✓ (6ms)
+  ▶ $ ls -la /app/[K[K ✓ (5ms)
+  ▶ $ find /app -name "*.csv" -ls[K[K ✓ (4ms)
+  7 tools completed in 40.6s (7 ✓)
+
+All files are created. Let me provide a summary of what was done:
+
+## Summary
+
+### Step 1: DAG Recovery
+Using partial correlations (precision matrix method) on the 5 variables (U, Y, R, D, M), I identified which pairs have direct edges (non-zero partial correlation) vs. conditional independence (near-zero partial correlation):
+
+6 edges found:
+• U→Y, U→R, U→D, U→M (U has no parents, as given)
+• Y→D (D comes before Y alphabetically → D is child of Y)
+• R→M (M comes before R alphabetically → M is child of R)
+
+Saved to /app/learned_dag.csv
+
+### Step 2: Linear Gaussian BN Parameters Learned
+Estimated via OLS regression for each node given its parents:
+• `Y = 12.43 + 0.751·U + ε_Y` (σ=10.63)
+• R = -3.20 + 0.983·U + ε_R (σ=10.58)
+• `D = -12.30 + 0.550·U + 0.449·Y + ε_D` (σ=14.09)
+• `M = -11.36 + 0.768·U + 0.303·R + ε_M` (σ=12.48)
+
+### Step 3: Causal Intervention do(Y=0)
+The intervention **cuts all incoming edges to Y** (removes U→Y) and fixes Y=0. Downstream nodes (D, M) still receive influence through remaining paths.
+
+### Step 4: Intervened DAG
+Saved to `/app/intervened_dag.csv` — same as original minus the U→Y edge.
+
+### Step 5: 10k Sample from Intervened BN
+Saved to /app/final_bn_sample.csv. With Y fixed at 0, D's mean drops from ~38 to ~15 (reflecting removal of Y's positive contribution), while U, R, M remain centered near their original distributions.
+
+  ↳ 2m 23s · 3507→4292 tokens · $0.129
+  ⬤ 2% of context window used
+
+

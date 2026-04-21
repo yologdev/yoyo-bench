@@ -1,0 +1,127 @@
+  yoyo (prompt mode) — model: claude-sonnet-4-6
+[K[K
+── Thinking ────────────────────────────────────────────────────────────────
+Let me start by exploring the Turtle file to understand the ontology and data structure.  ▶ $ head -200 /app/university_graph.ttl[K[K ✓ (200ms)
+  ▶ $ sed -n '200,500p' /app/university_graph.ttl[K[K ✓ (6ms)
+  ▶ $ sed -n '500,700p' /app/university_graph.ttl[K[K ✓ (6ms)
+  ▶ $ wc -l /app/university_graph.ttl && tail -50 /app/university_graph.ttl[K[K ✓ (5ms)
+
+────────────────────────────────────────────────────────────────────────────────
+  4 tools completed in 12.1s (4 ✓)
+
+Now I have a clear picture of the data. Let me analyze the key details:
+  ╭─ Turn 5 ─────────────────────────────────────────────────────────────╮
+  ▶ $ grep -n "role\|worksIn\|teaches\|Graduation\|Enrollment" /app/university_graph.t…[K[K ✓ (9ms)
+
+Now I have all the information I need. Let me analyze the data carefully before writing the query:
+
+Key observations:
+1. Full professors = role starts with "Professor of" (not "Assistant Professor")
+2. **EU countries** (ISO codes as of 2025): AT, BE, BG, CY, CZ, DE, DK, EE, ES, FI, FR, GR, HR, HU, IE, IT, LT, LU, LV, MT, NL, PL, PT, RO, SE, SI, SK
+3. "Currently enrolled" = student has isEnrolledIn a course AND either has no hasGraduationDate OR `hasGraduationDate > 2025-08-16`
+4. The student count per department considers students enrolled in courses taught in that department
+5. Need to count distinct students currently enrolled in any course taught in a given department
+
+Let me verify which students are still "currently enrolled" at Math201 (Sorbonne FR):
+• Students 13-16: no graduation date → still enrolled ✓ (4 students)
+• Student17: graduation 2026-06-12 > today ✓ (still enrolled)
+• Student18: graduation 2025-07-12 < today ✗ (graduated)
+• Student19: graduation 2025-06-12 < today ✗
+• Student20: graduation 2025-06-15 < today ✗
+• Student21: graduation 2025-06-12 < today ✗
+• Student22: graduation 2025-06-12 < today ✗
+• Student23: graduation 2025-06-11 < today ✗
+• Student24: graduation 2026-06-12 > today ✓
+• Student25: graduation 2025-06-12 < today ✗
+• Student26: graduation 2025-06-02 < today ✗
+
+So for Math201/Sorbonne: students 13,14,15,16,17,24 = 6 students → does NOT exceed 10.
+  ╭─ Turn 6 ─────────────────────────────────────────────────────────────╮
+  ▶ $ # Count currently enrolled students in CS101 (ComputerScienc… (9 lines)[K[K ✓ (2ms)
+  ▶ $ # Install Jena for query testing (4 lines)[K[K ✓ (4.9s)
+  ▶ $ pip3 install rdflib -q && python3 -c "import rdflib; print('rdflib ok')"[K[K ✓ (5ms)
+  ▶ $ which python3 && python3 -m pip install rdflib -q && python3 -c "import rdflib; …[K[K ✓ (8ms)
+  ▶ $ ls /usr/bin/python* /usr/local/bin/python* 2>/dev/null; which java; ls /app/[K[K ✓ (14ms)
+  ▶ $ find / -name "arq" -o -name "sparql" 2>/dev/null | head -5 (3 lines)[K[K ✓ (534ms)
+  ▶ $ apt-get update -qq && apt-get install -y python3 python3-pip 2>&1 | tail -5[K[K ✓ (46.0s)
+  ▶ $ python3 -m pip install rdflib -q && python3 -c "import rdflib; print('rdflib ok'…[K[K ✓ (580ms)
+  ▶ $ apt-get install -y python3-rdflib 2>&1 | tail -3 && python3 -c "import rdflib; p…[K[K ✓ (7.4s)
+  9 tools completed in 1m 30s (9 ✓)
+
+Now I can write and test the SPARQL query:
+  ╭─ Turn 15 ────────────────────────────────────────────────────────────╮
+  ▶ $ python3 << 'EOF' (16 lines)[K[K ✓ (342ms)
+  ▶ $ python3 << 'EOF' (12 lines)[K[K ✓ (593ms)
+  2 tools completed in 6.5s (2 ✓)
+
+Now I understand the structure. Let me reason through the query logic carefully:
+
+Full Professor = role starts with "Professor of" (not "Assistant Professor")
+
+**EU countries** (27 member states as of 2025-08-16): AT, BE, BG, CY, CZ, DE, DK, EE, ES, FI, FR, GR, HR, HU, IE, IT, LT, LU, LV, MT, NL, PL, PT, RO, SE, SI, SK
+
+**Currently enrolled student**: hasEnrollmentDate ≤ today AND (no hasGraduationDate OR hasGraduationDate > today)
+
+**Department student count**: count distinct currently-enrolled students enrolled in any course taught in that department > 10
+
+Let me now build and test the query:
+  ╭─ Turn 17 ────────────────────────────────────────────────────────────╮
+  ▶ $ python3 << 'EOF' (24 lines)[K[K ✓ (954ms)
+  ▶ $ python3 << 'EOF' (23 lines)[K[K ✓ (733ms)
+  2 tools completed in 7.7s (2 ✓)
+
+So departments with > 10 enrolled students:
+• ComputerScience_NTUA (GR - EU ✓) → 12 students
+• HistoryAndPhilosophy_NKUA (GR - EU ✓) → 12 students  
+• Engineering_Berkeley (US - not EU ✗) → 11 students
+
+Now let me check which professors work in EU departments with > 10 students AND are full professors:
+  ╭─ Turn 19 ────────────────────────────────────────────────────────────╮
+  ▶ $ python3 << 'EOF' (23 lines)[K[K ✓ (758ms)
+  ▶ $ python3 << 'EOF' (49 lines)[K[K ✓ (798ms)
+  2 tools completed in 13.3s (2 ✓)
+
+The results look correct. Let me verify manually:
+
+• Orfeas Menis: Full professor ✓, works in `ComputerScience_NTUA (GR-EU ✓) and Sloan_MIT` (US-not EU). CS_NTUA has 12 enrolled students > 10 ✓. Countries: GR ✓
+• Pepe Attanasio: Full professor ✓, works in ComputerScience_NTUA (GR-EU, 12 students ✓) and Mathematics_IST (PT-EU). Countries: GR, PT ✓
+• Aristotle Tympas: Full professor ✓, works in `HistoryAndPhilosophy_NKUA` (GR-EU, 12 students ✓). Countries: GR ✓
+• Marie Dubois: Full professor ✓, works in Mathematics_Sorbonne (FR-EU) but only 6 enrolled students → does NOT meet criterion 3 ✗
+
+Now let me write the clean final SPARQL query:
+  ╭─ Turn 21 ────────────────────────────────────────────────────────────╮
+  ▶ write /app/solution.sparql (38 lines) ✓ (4ms)
+  ▶ $ python3 << 'EOF' (14 lines)[K[K ✓ (896ms)
+  2 tools completed in 7.8s (2 ✓)
+
+The query produces the correct results. Let me verify the final file:
+  ╭─ Turn 23 ────────────────────────────────────────────────────────────╮
+  ▶ $ cat /app/solution.sparql[K[K ✓ (2ms)
+
+The SPARQL query has been saved to /app/solution.sparql. Here's a summary of what it does and why:
+
+## Query Logic
+
+### Criterion 1 — Full Professors
+FILTER(STRSTARTS(?role, "Professor of")) — matches roles like "Professor of Computer Science" but excludes "Assistant Professor of ...".
+
+### Criterion 2 — Works in an EU department
+The query joins worksIn → belongsTo → locatedInCountry and filters using the 27 official EU member state ISO 3166-1 alpha-2 codes as of 2025-08-16 (AT, BE, BG, CY, CZ, DE, DK, EE, ES, FI, FR, GR, HR, HU, IE, IT, LT, LU, LV, MT, NL, PL, PT, RO, SE, SI, SK). The ?country variable captured here is used in the `GROUP_CONCAT to produce the ?countries` output.
+
+### Criterion 3 — At least one EU department with > 10 currently enrolled students
+A subquery groups students per (professor, department) in EU universities, counting only students who are currently enrolled: `hasEnrollmentDate ≤ 2025-08-16 AND (no hasGraduationDate OR hasGraduationDate > 2025-08-16). The HAVING` clause keeps only departments with > 10 such students.
+
+### Results
+| Professor | Countries |
+|-----------|-----------|
+| Orfeas Menis | GR |
+| Pepe Attanasio | GR, PT |
+| Aristotle Tympas | GR |
+
+• Marie Dubois (FR/Sorbonne) is excluded because Mathematics_Sorbonne only has 6 currently enrolled students (several graduated before 2025-08-16).
+• Orfeas Menis shows only GR despite also working in Sloan_MIT (US) because `?countries` only lists EU countries where the professor works.
+
+  ↳ 3m 9s · 10573→5984 tokens · $0.262
+  ⬤ 5% of context window used
+
+
