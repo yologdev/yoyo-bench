@@ -1,0 +1,81 @@
+  yoyo (prompt mode) — model: claude-sonnet-4-6
+[K[K
+── Thinking ────────────────────────────────────────────────────────────────
+Let me start by downloading the YouTube video and then transcribing the text content from it to extract the Zork moves.  ▶ $ which yt-dlp youtube-dl ffmpeg 2>/dev/null; pip show yt-dlp 2>/dev/null | head -…  ▶ read /tmp/yoyo-skills/bench/SKILL.md ✓ (10ms)
+[K[K ✓ (63ms)
+  ▶ $ pip install yt-dlp -q && which yt-dlp[K[K ✓ (3ms)
+  ▶ $ pip3 install yt-dlp -q 2>&1 | tail -3 && which yt-dlp || python3 -m yt_dlp --ver…[K[K ✓ (2ms)
+  ▶ $ python --version; pip --version; apt-get update -qq && apt-get install -y python…[K[K ✓ (50.0s)
+  ▶ $ python3 --version && pip3 install yt-dlp 2>&1 | tail -3[K[K ✓ (295ms)
+  ▶ $ pip3 install yt-dlp --break-system-packages 2>&1 | tail -3[K[K ✓ (2.8s)
+  ▶ $ yt-dlp --version[K[K ✓ (190ms)
+  ▶ $ mkdir -p /tmp/zork && cd /tmp/zork && yt-dlp "https://www.youtube.com/watch?v=ZC…[K[K ✓ (1.2s)
+  ▶ $ apt-get install -y deno 2>&1 | tail -3 || curl -fsSL https://deno.land/x/install…[K[K ✓ (1.3s)
+  ▶ $ curl -fsSL https://deno.land/x/install/install.sh | sh 2>&1 | tail -5[K[K ✓ (122ms)
+  ▶ $ apt-get install -y unzip 2>&1 | tail -3 && curl -fsSL https://deno.land/x/instal…[K  ⠋ bash: apt-get install -y unzip 2>&1 | tail -3 … ⏱ 2s ─ 1 line captured[K[K ✓ (5.0s)
+  ▶ $ export PATH="$PATH:/root/.deno/bin" && deno --version && cd /tmp/zork && yt-dlp …[K[K ✓ (946ms)
+  ▶ $ export PATH="$PATH:/root/.deno/bin" (4 lines)[K[K ✓ (948ms)
+  ▶ $ export PATH="$PATH:/root/.deno/bin" (4 lines)[K[K ✓ (1.0s)
+  ▶ $ export PATH="$PATH:/root/.deno/bin" (4 lines)[K[K ✓ (1.0s)
+  ▶ $ export PATH="$PATH:/root/.deno/bin" (5 lines)[K[K ✓ (1.3s)
+  ▶ $ # Try using youtube transcript API instead (2 lines)[K[K ✓ (1.2s)
+  ▶ $ python3 -c " (9 lines)[K[K ✓ (186ms)
+  ▶ $ python3 -c " (11 lines)[K[K ✓ (844ms)
+  ▶ $ # Try downloading video using different approach - cookies t… (9 lines)[K[K ✓ (5.6s)
+  ▶ $ # Try using a PO token approach or alternative YouTube front… (3 lines)[K[K ✓ (500ms)
+  ▶ $ # The video has no captions. We need to download the video a… (11 lines)[K[K ✓ (384ms)
+  ▶ $ curl -s "https://inv.nadeko.net/api/v1/videos/ZCbvyPbhRfA" 2… (2 lines)[K[K ✓ (731ms)
+  ▶ $ # Try multiple invidious instances (17 lines)[K[K ✓ (1.4s)
+  ▶ $ # Let's try to use yt-dlp with PO token generation   (10 lines)[K[K ✓ (1.1s)
+  ▶ $ # Try using yt-dlp with the --age-limit option and different… (3 lines)[K[K ✓ (525ms)
+  ▶ $ export PATH="$PATH:/root/.deno/bin" (10 lines)[K[K ✓ (4.2s)
+  ▶ $ export PATH="$PATH:/root/.deno/bin" (5 lines)[K[K ✓ (28.1s)
+  ▶ $ node --version && npm --version (5 lines)[K[K ✓ (2.3s)
+  ▶ $ # Try the bgutil-ytdlp-pot-provider with node (7 lines)[K[K ✓ (961ms)
+  ▶ $ # Try cobalt API (11 lines)[K[K ✓ (571ms)
+  ▶ $ # Try using yt-dlp with a PO token from the bgutil script di… (13 lines)[K[K ✓ (1.1s)
+  ▶ $ # The video title is "Zork gameplay" - let me check what thi… (9 lines)[K[K ✓ (857ms)
+  ▶ $ # Great! It's "Zork I: The Great Underground Empire speedrun… (12 lines)[K[K ✓ (176ms)
+  ▶ $ # This is "Zork I speedrun in 2:53" by swordsmankirby - a ve… (11 lines)[K[K ✓ (3.0s)
+  ▶ $ # Let me try the yt-dlp po_token generation approach with th… (11 lines)[K[K ✓ (675ms)
+  ▶ $ cat /usr/local/lib/python3.12/dist-packages/yt_dlp_plugins/extractor/getpot_bgut…[K[K ✓ (2ms)
+  ▶ $ # We need to set up the bgutil server. Let's clone it from G… (4 lines)[K[K ✓ (396ms)
+  ▶ $ export PATH="$PATH:/root/.deno/bin" (3 lines)[K[K ✓ (142ms)
+  ▶ $ # Try using git protocol or download zip (3 lines)[K[K ✓ (97ms)
+  ▶ $ cat /tmp/bgutil.zip[K[K ✓ (2ms)
+  ▶ $ # GitHub is not accessible. Let me try a different strategy. (7 lines)[K[K ✓ (515ms)
+  ▶ $ # We have internet access! Let me try fetching the YouTube p… (7 lines)[K[K ✓ (720ms)
+  ▶ $ # Good - I can see the innertube API key and context from th… (29 lines)[K[K ✓ (103ms)
+  ▶ $ # Try with iOS client (26 lines)[K[K ✓ (92ms)
+  ▶ $ curl -s -X POST "https://www.youtube.com/youtubei/v1/player?… (15 lines)[K[K ✓ (93ms)
+  ▶ $ # Try TVHTML5 client which sometimes bypasses restrictions (26 lines)[K[K ✓ (97ms)
+  ▶ $ # Try TVHTML5_SIMPLY_EMBEDDED_PLAYER which is sometimes used… (28 lines)[K[K ✓ (84ms)
+  ▶ $ # Try WEB_EMBEDDED_PLAYER with proper context from the page … (30 lines)[K[K ✓ (116ms)
+  ▶ $ # This video "Zork I speedrun 2:53" by swordsmankirby might … (7 lines)[K[K ✓ (1.3s)
+  ▶ $ # Let me try downloading from Wayback Machine / Internet Arc… (7 lines)[K[K ✓ (15.8s)
+  ▶ $ export PATH="$PATH:/root/.deno/bin" (2 lines)[K[K ✓ (1.1s)
+  ▶ $ export PATH="$PATH:/root/.deno/bin" (6 lines)[K  ⠋ bash: export PATH="$PATH:/root/.deno/bin"
+# Tr… ⏱ 2s ─ 1 line captured[K  ⠙ bash: export PATH="$PATH:/root/.deno/bin"
+# Tr… ⏱ 2s ─ 1 line captured[K  ⠹ bash: export PATH="$PATH:/root/.deno/bin"
+# Tr… ⏱ 3s ─ 1 line captured[K  ⠸ bash: export PATH="$PATH:/root/.deno/bin"
+# Tr… ⏱ 3s ─ 1 line captured[K  ⠼ bash: export PATH="$PATH:/root/.deno/bin"
+# Tr… ⏱ 4s ─ 1 line captured[K[K ✗ (30.0s)
+    │ Command timed out after 30s
+  ▶ $ # Let me try a completely different approach - use the selen… (14 lines)[K[K ✓ (215ms)
+  ▶ $ curl -s --max-time 15 "https://archive.org/advancedsearch.ph… (9 lines)[K[K ✓ (536ms)
+  ▶ $ # The video is "Zork I speedrun in 2:53" which is a well-kno… (18 lines)[K[K ✓ (11.5s)
+  ▶ $ which chromium-browser (2 lines)[K[K ✓ (6ms)
+  ▶ $ pip3 install playwright --break-system-packages 2>&1 | tail … (2 lines)[K  ⠋ bash: pip3 install playwright --break-system-p… ⏱ 2s ─ 1 line captured[K  ⠙ bash: pip3 install playwright --break-system-p… ⏱ 2s ─ 1 line captured[K  ⠹ bash: pip3 install playwright --break-system-p… ⏱ 3s ─ 1 line captured[K  ⠸ bash: pip3 install playwright --break-system-p… ⏱ 3s ─ 1 line captured[K  ⠼ bash: pip3 install playwright --break-system-p… ⏱ 4s ─ 1 line captured[K  ⠴ bash: pip3 install playwright --break-system-p… ⏱ 4s ─ 1 line captured[K  ⠦ bash: pip3 install playwright --break-system-p… ⏱ 5s ─ 1 line captured[K  ⠧ bash: pip3 install playwright --break-system-p… ⏱ 5s ─ 1 line captured[K  ⠇ bash: pip3 install playwright --break-system-p… ⏱ 6s ─ 1 line captured[K  ⠏ bash: pip3 install playwright --break-system-p… ⏱ 6s ─ 1 line captured[K  ⠋ bash: pip3 install playwright --break-system-p… ⏱ 7s ─ 1 line captured[K  ⠙ bash: pip3 install playwright --break-system-p… ⏱ 7s ─ 1 line captured[K  ⠹ bash: pip3 install playwright --break-system-p… ⏱ 8s ─ 1 line captured[K  ⠸ bash: pip3 install playwright --break-system-p… ⏱ 8s ─ 1 line captured[K  ⠼ bash: pip3 install playwright --break-system-p… ⏱ 9s ─ 1 line captured[K  ⠴ bash: pip3 install playwright --break-system-p… ⏱ 9s ─ 1 line captured[K  ⠦ bash: pip3 install playwright --break-system-p… ⏱ 10s ─ 1 line captured[K  ⠧ bash: pip3 install playwright --break-system-p… ⏱ 10s ─ 1 line captured[K  ⠇ bash: pip3 install playwright --break-system-p… ⏱ 11s ─ 1 line captured[K  ⠏ bash: pip3 install playwright --break-system-p… ⏱ 11s ─ 1 line captured[K  ⠋ bash: pip3 install playwright --break-system-p… ⏱ 12s ─ 1 line captured[K[K ✓ (16.1s)
+  ▶ $ cat > /tmp/get_yt_url.py << 'EOF' (47 lines)[K[K ✓ (965ms)
+  ▶ $ apt-get install -y libnspr4 libnss3 libatk1.0-0 libatk-bridg… (2 lines)[K[K ✓ (3.6s)
+  ▶ $ apt-get install -y libnspr4 2>&1 | tail -3 (3 lines)[K[K ✓ (2.6s)
+  ▶ $ apt-get install -y libnss3 2>&1 | tail -3 (2 lines)[K[K ✓ (2.6s)
+  ▶ $ python3 /tmp/get_yt_url.py 2>&1[K[K ✓ (14.0s)
+  ▶ $ cat > /tmp/get_yt_url2.py << 'EOF' (57 lines)[K[K ✓ (12.9s)
+  ▶ $ cat > /tmp/get_yt_url3.py << 'EOF' (41 lines)[K[K ✓ (14.1s)
+  66 tools completed in 9m 55s (65 ✓, 1 ✗)
+
+  ↳ 10m 0s · 81251→13616 tokens · $1.48
+  ⬤ 25% of context window used
+
+

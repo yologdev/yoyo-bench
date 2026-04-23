@@ -1,0 +1,65 @@
+{
+    "results": {
+        "tool": {
+            "name": "pytest",
+            "version": "8.4.1"
+        },
+        "summary": {
+            "tests": 4,
+            "passed": 1,
+            "failed": 3,
+            "skipped": 0,
+            "pending": 0,
+            "other": 0,
+            "start": 1776932335.1782236,
+            "stop": 1776932335.634234
+        },
+        "tests": [
+            {
+                "name": "test_outputs.py::test_model_ref_unchanged",
+                "status": "passed",
+                "duration": 0.0005512619995897694,
+                "start": 1776932335.6107538,
+                "stop": 1776932335.611551,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::test_tuned_model_exists",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 0.0004954070000167121,
+                "start": 1776932335.6117415,
+                "stop": 1776932335.6272538,
+                "retries": 0,
+                "file_path": "test_outputs.py",
+                "trace": "def test_tuned_model_exists():\n        \"\"\"Test that the tuned model exists\"\"\"\n        model_path = app_dir / \"model.xml\"\n>       assert model_path.exists(), \"Tuned model file does not exist\"\nE       AssertionError: Tuned model file does not exist\nE       assert False\nE        +  where False = exists()\nE        +    where exists = PosixPath('/app/model.xml').exists\n\n/tests/test_outputs.py:28: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_outputs.py::test_correctness",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 0.0006055999999716732,
+                "start": 1776932335.627459,
+                "stop": 1776932335.6306775,
+                "retries": 0,
+                "file_path": "test_outputs.py",
+                "trace": "def test_correctness():\n        \"\"\"Compare final states of models with potentially different timesteps\"\"\"\n        model_path = app_dir / \"model.xml\"\n        model_ref_path = app_dir / \"model_ref.xml\"\n    \n>       model = mujoco.MjModel.from_xml_path(str(model_path))\n                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nE       ValueError: ParseXML: Error opening file '/app/model.xml': No such file or directory\n\n/tests/test_outputs.py:56: ValueError",
+                "message": "The test failed in the call phase"
+            },
+            {
+                "name": "test_outputs.py::test_model_speed",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 0.0005420469999535271,
+                "start": 1776932335.6308582,
+                "stop": 1776932335.6340723,
+                "retries": 0,
+                "file_path": "test_outputs.py",
+                "trace": "def test_model_speed():\n        \"\"\"Test that new model is faster than the reference model\"\"\"\n        model_path = app_dir / \"model.xml\"\n        model_ref_path = app_dir / \"model_ref.xml\"\n    \n>       model = mujoco.MjModel.from_xml_path(str(model_path))\n                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nE       ValueError: ParseXML: Error opening file '/app/model.xml': No such file or directory\n\n/tests/test_outputs.py:96: ValueError",
+                "message": "The test failed in the call phase"
+            }
+        ]
+    }
+}
