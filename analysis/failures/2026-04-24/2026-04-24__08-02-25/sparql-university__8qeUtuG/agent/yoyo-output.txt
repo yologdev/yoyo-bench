@@ -1,0 +1,103 @@
+  yoyo (prompt mode) — model: claude-sonnet-4-6
+[K[K
+── Thinking ────────────────────────────────────────────────────────────────
+Let me start by exploring the Turtle file to understand the structure of the knowledge graph.  ▶ $ head -200 /app/university_graph.ttl[K[K ✓ (269ms)
+  ▶ $ sed -n '200,500p' /app/university_graph.ttl[K[K ✓ (2ms)
+  ▶ $ sed -n '500,700p' /app/university_graph.ttl[K[K ✓ (7ms)
+  ▶ $ wc -l /app/university_graph.ttl && tail -50 /app/university_graph.ttl[K[K ✓ (9ms)
+
+────────────────────────────────────────────────────────────────────────────────
+  4 tools completed in 8.9s (4 ✓)
+
+Now I have a thorough understanding of the data. Let me analyze it carefully before writing the SPARQL query:
+  ╭─ Turn 5 ─────────────────────────────────────────────────────────────╮
+  ▶ $ grep -i "professor\|role\|worksIn\|teaches" /app/university_graph.ttl | head -60[K[K ✓ (222ms)
+  ▶ $ which sparql apache-jena-sparql riot || apt list --installed 2>/dev/null | grep …[K[K ✓ (2.1s)
+  ▶ $ python3 -c "import rdflib; print(rdflib.__version__)" 2>/dev/null || pip install…[K[K ✓ (7ms)
+  ▶ $ which python3 python pip3 pip java node 2>/dev/null; ls /usr/bin/python* /usr/bi…[K[K ✓ (5ms)
+  ▶ $ ls /usr/local/bin/ && which ruby perl node npm[K[K ✓ (5ms)
+  ▶ $ ls /app/ && cat /app/*.md 2>/dev/null || true; ls /usr/share/ | head -20[K[K ✓ (5ms)
+  ▶ $ apt-get update -qq && apt-get install -y python3 python3-pip -qq && pip3 install…[K  ⠋ bash: apt-get update -qq && apt-get install -y… ⏱ 2s ─ 16 lines captured[K  ⠙ bash: apt-get update -qq && apt-get install -y… ⏱ 2s ─ 23 lines captured[K  ⠹ bash: apt-get update -qq && apt-get install -y… ⏱ 3s ─ 23 lines captured[K  ⠸ bash: apt-get update -qq && apt-get install -y… ⏱ 3s ─ 23 lines captured[K  ⠼ bash: apt-get update -qq && apt-get install -y… ⏱ 4s ─ 23 lines captured[K  ⠴ bash: apt-get update -qq && apt-get install -y… ⏱ 4s ─ 23 lines captured[K  ⠦ bash: apt-get update -qq && apt-get install -y… ⏱ 5s ─ 23 lines captured[K  ⠧ bash: apt-get update -qq && apt-get install -y… ⏱ 5s ─ 23 lines captured[K  ⠇ bash: apt-get update -qq && apt-get install -y… ⏱ 6s ─ 30 lines captured[K  ⠏ bash: apt-get update -qq && apt-get install -y… ⏱ 6s ─ 30 lines captured[K  ⠋ bash: apt-get update -qq && apt-get install -y… ⏱ 7s ─ 30 lines captured[K  ⠙ bash: apt-get update -qq && apt-get install -y… ⏱ 7s ─ 30 lines captured[K  ⠹ bash: apt-get update -qq && apt-get install -y… ⏱ 8s ─ 33 lines captured[K  ⠸ bash: apt-get update -qq && apt-get install -y… ⏱ 8s ─ 41 lines captured[K  ⠼ bash: apt-get update -qq && apt-get install -y… ⏱ 9s ─ 41 lines captured[K  ⠴ bash: apt-get update -qq && apt-get install -y… ⏱ 9s ─ 41 lines captured[K  ⠦ bash: apt-get update -qq && apt-get install -y… ⏱ 10s ─ 41 lines captured[K  ⠧ bash: apt-get update -qq && apt-get install -y… ⏱ 10s ─ 41 lines captured[K  ⠇ bash: apt-get update -qq && apt-get install -y… ⏱ 11s ─ 46 lines captured[K  ⠏ bash: apt-get update -qq && apt-get install -y… ⏱ 11s ─ 56 lines captured[K  ⠋ bash: apt-get update -qq && apt-get install -y… ⏱ 12s ─ 72 lines captured[K  ⠙ bash: apt-get update -qq && apt-get install -y… ⏱ 12s ─ 79 lines captured[K  ⠹ bash: apt-get update -qq && apt-get install -y… ⏱ 13s ─ 96 lines captured[K  ⠸ bash: apt-get update -qq && apt-get install -y… ⏱ 13s ─ 116 lines captured[K  ⠼ bash: apt-get update -qq && apt-get install -y… ⏱ 14s ─ 132 lines captured[K  ⠴ bash: apt-get update -qq && apt-get install -y… ⏱ 14s ─ 152 lines captured[K  ⠦ bash: apt-get update -qq && apt-get install -y… ⏱ 15s ─ 152 lines captured[K  ⠧ bash: apt-get update -qq && apt-get install -y… ⏱ 15s ─ 156 lines captured[K  ⠇ bash: apt-get update -qq && apt-get install -y… ⏱ 16s ─ 176 lines captured[K  ⠏ bash: apt-get update -qq && apt-get install -y… ⏱ 16s ─ 192 lines captured[K  ⠋ bash: apt-get update -qq && apt-get install -y… ⏱ 17s ─ 201 lines captured[K  ⠙ bash: apt-get update -qq && apt-get install -y… ⏱ 17s ─ 201 lines captured[K  ⠹ bash: apt-get update -qq && apt-get install -y… ⏱ 18s ─ 201 lines captured[K  ⠸ bash: apt-get update -qq && apt-get install -y… ⏱ 18s ─ 213 lines captured[K  ⠼ bash: apt-get update -qq && apt-get install -y… ⏱ 19s ─ 213 lines captured[K  ⠴ bash: apt-get update -qq && apt-get install -y… ⏱ 19s ─ 213 lines captured[K  ⠦ bash: apt-get update -qq && apt-get install -y… ⏱ 20s ─ 216 lines captured[K  ⠧ bash: apt-get update -qq && apt-get install -y… ⏱ 20s ─ 225 lines captured[K  ⠇ bash: apt-get update -qq && apt-get install -y… ⏱ 21s ─ 265 lines captured[K  ⠏ bash: apt-get update -qq && apt-get install -y… ⏱ 21s ─ 265 lines captured[K  ⠋ bash: apt-get update -qq && apt-get install -y… ⏱ 22s ─ 290 lines captured[K  ⠙ bash: apt-get update -qq && apt-get install -y… ⏱ 22s ─ 310 lines captured[K  ⠹ bash: apt-get update -qq && apt-get install -y… ⏱ 23s ─ 330 lines captured[K  ⠸ bash: apt-get update -qq && apt-get install -y… ⏱ 23s ─ 350 lines captured[K  ⠼ bash: apt-get update -qq && apt-get install -y… ⏱ 24s ─ 370 lines captured[K  ⠴ bash: apt-get update -qq && apt-get install -y… ⏱ 24s ─ 384 lines captured[K  ⠦ bash: apt-get update -qq && apt-get install -y… ⏱ 25s ─ 393 lines captured[K  ⠧ bash: apt-get update -qq && apt-get install -y… ⏱ 25s ─ 408 lines captured[K  ⠇ bash: apt-get update -qq && apt-get install -y… ⏱ 26s ─ 488 lines captured[K  ⠏ bash: apt-get update -qq && apt-get install -y… ⏱ 26s ─ 508 lines captured[K  ⠋ bash: apt-get update -qq && apt-get install -y… ⏱ 27s ─ 518 lines captured[K  ⠙ bash: apt-get update -qq && apt-get install -y… ⏱ 27s ─ 518 lines captured[K  ⠹ bash: apt-get update -qq && apt-get install -y… ⏱ 28s ─ 518 lines captured[K  ⠸ bash: apt-get update -qq && apt-get install -y… ⏱ 28s ─ 532 lines captured[K  ⠼ bash: apt-get update -qq && apt-get install -y… ⏱ 29s ─ 532 lines captured[K  ⠴ bash: apt-get update -qq && apt-get install -y… ⏱ 29s ─ 532 lines captured[K  ⠦ bash: apt-get update -qq && apt-get install -y… ⏱ 30s ─ 532 lines captured[K  ⠧ bash: apt-get update -qq && apt-get install -y… ⏱ 30s ─ 532 lines captured[K  ⠇ bash: apt-get update -qq && apt-get install -y… ⏱ 31s ─ 536 lines captured[K  ⠏ bash: apt-get update -qq && apt-get install -y… ⏱ 31s ─ 546 lines captured[K  ⠋ bash: apt-get update -qq && apt-get install -y… ⏱ 32s ─ 559 lines captured[K  ⠙ bash: apt-get update -qq && apt-get install -y… ⏱ 32s ─ 559 lines captured[K  ⠹ bash: apt-get update -qq && apt-get install -y… ⏱ 33s ─ 559 lines captured[K  ⠸ bash: apt-get update -qq && apt-get install -y… ⏱ 33s ─ 563 lines captured[K  ⠼ bash: apt-get update -qq && apt-get install -y… ⏱ 34s ─ 563 lines captured[K  ⠴ bash: apt-get update -qq && apt-get install -y… ⏱ 34s ─ 563 lines captured[K  ⠦ bash: apt-get update -qq && apt-get install -y… ⏱ 35s ─ 563 lines captured[K  ⠧ bash: apt-get update -qq && apt-get install -y… ⏱ 35s ─ 563 lines captured[K  ⠇ bash: apt-get update -qq && apt-get install -y… ⏱ 36s ─ 563 lines captured[K  ⠏ bash: apt-get update -qq && apt-get install -y… ⏱ 36s ─ 563 lines captured[K  ⠋ bash: apt-get update -qq && apt-get install -y… ⏱ 37s ─ 563 lines captured[K  ⠙ bash: apt-get update -qq && apt-get install -y… ⏱ 37s ─ 565 lines captured[K  ⠹ bash: apt-get update -qq && apt-get install -y… ⏱ 38s ─ 565 lines captured[K[K ✓ (53.4s)
+  ▶ $ pip3 install rdflib -q --break-system-packages && python3 -c "import rdflib; pri…[K[K ✓ (2.3s)
+  8 tools completed in 1m 17s (8 ✓)
+
+Good, rdflib is installed. Now let me carefully analyze the data to understand the logic:
+  ╭─ Turn 13 ────────────────────────────────────────────────────────────╮
+  ▶ $ cat << 'EOF' > /tmp/analyze.py (26 lines)[K[K ✓ (223ms)
+  ▶ $ cat << 'EOF' > /tmp/analyze2.py (80 lines)[K[K ✓ (200ms)
+  2 tools completed in 14.5s (2 ✓)
+
+Now I have all the information I need. Let me verify the counts in detail:
+
+• **Orfeas Menis**: Works in ComputerScience_NTUA (GR, EU). CS101/AI101 → 12 students currently enrolled. ✅ Qualifies
+• Pepe Attanasio: Works in Mathematics_IST (PT, EU) and ComputerScience_NTUA (GR, EU). ComputerScience_NTUA has 12 students. ✅ Qualifies
+• Marie Dubois: Works in Mathematics_Sorbonne (FR, EU). Math201 → 6 students currently enrolled. ❌ Not > 10
+• Aristotle Tympas: Works in HistoryAndPhilosophy_NKUA (GR, EU). STS101 → 12 students. ✅ Qualifies
+• John Smith: Works in Biology_MIT (US). No EU departments. ❌ Doesn't qualify
+
+Now let me also check what "currently works in" means for the `?countries` output - it says all countries where the professor **currently works in**. Since there's no employment date filtering in the data, I'll include all their departments' countries.
+  ╭─ Turn 15 ────────────────────────────────────────────────────────────╮
+  ▶ $ cat << 'EOF' > /tmp/analyze3.py (47 lines)[K[K ✓ (213ms)
+  ▶ $ # Count STS101 students in detail (10 lines)[K[K ✓ (175ms)
+  2 tools completed in 9.4s (2 ✓)
+
+Wait, Student21 graduated on 2025-06-12 which is before 2025-08-16, and Student24 graduates 2026-06-12 which is after. So 12 students but Student21 graduated. Let me recount...
+
+Actually looking at it: 12 students in the STS101 list, but Student21 has grad date 2025-06-12 (before today 2025-08-16), so they graduated. That would be 11, not 12. Let me rerun the proper count:
+  ╭─ Turn 17 ────────────────────────────────────────────────────────────╮
+  ▶ $ cat << 'EOF' > /tmp/analyze4.py (30 lines)[K[K ✓ (134ms)
+
+Good, 12 students in STS101 (Student21 graduated but Student24 compensates, giving exactly 12). So Aristotle Tympas does qualify. Now let me also check the ?countries for the output - what all countries does each qualifying professor work in (all their departments, not just EU ones):
+  ╭─ Turn 18 ────────────────────────────────────────────────────────────╮
+  ▶ $ cat << 'EOF' > /tmp/analyze5.py (32 lines)[K[K ✓ (420ms)
+
+Now I have the expected output. The ?countries field lists all countries where the professor currently works in (all departments, not just EU ones). Now let me write the SPARQL query:
+  ╭─ Turn 19 ────────────────────────────────────────────────────────────╮
+  ▶ write /app/solution.sparql (45 lines) ✓ (140ms)
+
+Now let me test the query with rdflib:
+  ╭─ Turn 20 ────────────────────────────────────────────────────────────╮
+  ▶ $ cat << 'EOF' > /tmp/test_query.py (15 lines)[K[K ✓ (589ms)
+
+The query returns the correct results:
+• Aristotle Tympas — GR (HistoryAndPhilosophy_NKUA has 12 students in STS101)
+• Orfeas Menis — GR, US (ComputerScience_NTUA has 12 students in CS101/AI101)
+• Pepe Attanasio — GR, PT (ComputerScience_NTUA has 12 students; works in both IST and NTUA)
+
+Marie Dubois is correctly excluded (Math201 only has 6 currently enrolled students — many graduated before 2025-08-16). John Smith is correctly excluded (works in MIT, US — not EU).
+
+Let me verify the file exists and is correct:
+  ╭─ Turn 21 ────────────────────────────────────────────────────────────╮
+  ▶ $ ls -la /app/solution.sparql && cat /app/solution.sparql[K[K ✓ (13ms)
+
+The SPARQL query has been saved to /app/solution.sparql. Here's a summary of how it works and what it returns:
+
+## Query Logic
+
+1. Full professors: Filters persons whose uni:role starts with "Professor of" (excludes "Assistant Professor of ...")
+
+2. EU department check: The professor must uni:worksIn a department belonging to a university in one of the 27 EU member states (ISO alpha-2 codes as of 2025-08-16)
+
+3. >10 currently enrolled students: Uses a subquery to find departments where more than 10 distinct students are currently enrolled in courses taught there. "Currently enrolled" means:
+   • `enrollmentDate ≤ 2025-08-16`, AND
+   • Either no graduationDate, or `graduationDate > 2025-08-16`
+
+4. `?countries`: All countries (not just EU) of all departments the professor works in
+
+## Results
+
+| professorName | countries |
+|---|---|
+| Aristotle Tympas | GR |
+| Orfeas Menis | GR, US |
+| Pepe Attanasio | GR, PT |
+
+Excluded:
+• Marie Dubois — Math201 only has 6 currently enrolled students (many graduated before 2025-08-16)
+• John Smith — works only at MIT (US), not in the EU
+• *Athanasios Voulodimos & Stefan Mueller* — Assistant Professors, not full professors
+
+  ↳ 2m 58s · 13966→6117 tokens · $0.287
+  ⬤ 6% of context window used
+
+

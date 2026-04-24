@@ -1,0 +1,47 @@
+{
+    "results": {
+        "tool": {
+            "name": "pytest",
+            "version": "8.4.1"
+        },
+        "summary": {
+            "tests": 3,
+            "passed": 3,
+            "failed": 0,
+            "skipped": 0,
+            "pending": 0,
+            "other": 0,
+            "start": 1777019636.6282003,
+            "stop": 1777019636.7213545
+        },
+        "tests": [
+            {
+                "name": "test_outputs.py::test_sqlite_compiled",
+                "status": "passed",
+                "duration": 0.004229118999774073,
+                "start": 1777019636.7059014,
+                "stop": 1777019636.7103539,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::test_sqlite_in_path",
+                "status": "passed",
+                "duration": 0.003722050999840576,
+                "start": 1777019636.710531,
+                "stop": 1777019636.7143896,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::test_gcov_enabled",
+                "status": "passed",
+                "duration": 0.006435697000142682,
+                "start": 1777019636.7145464,
+                "stop": 1777019636.721162,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            }
+        ]
+    }
+}

@@ -1,0 +1,44 @@
+  yoyo (prompt mode) — model: claude-sonnet-4-6
+[K[K
+── Thinking ────────────────────────────────────────────────────────────────
+Let me explore the /app/ directory to understand what's there.  ▶ $ ls -la /app/ && file /app/*[K[K ✓ (6ms)
+  ▶ $ cd /app && xxd main.db | head -20[K[K ✓ (5ms)
+  ▶ $ cd /app && xxd main.db-wal | head -40[K[K ✓ (4ms)
+  ▶ $ cd /app && xxd main.db-wal | wc -l && wc -c main.db-wal[K[K ✓ (10ms)
+  ▶ $ # A valid WAL file header should start with magic number 0x3… (17 lines)[K[K ✓ (32ms)
+
+────────────────────────────────────────────────────────────────────────────────
+  5 tools completed in 13.5s (5 ✓)
+
+The WAL file is XOR-encoded with 0x42. Let me decode it and verify the data:
+  ╭─ Turn 6 ─────────────────────────────────────────────────────────────╮
+  ▶ $ python3 -c " (15 lines)[K[K ✓ (32ms)
+  ▶ $ # Now copy the fixed WAL file to replace the original and te… (7 lines)[K[K ✓ (17ms)
+  ▶ $ sqlite3 /app/main.db ".tables" (2 lines)[K[K ✓ (8ms)
+  ▶ $ sqlite3 /app/main.db "SELECT count(*) FROM items;" (2 lines)[K[K ✓ (9ms)
+  4 tools completed in 8.2s (4 ✓)
+
+All 11 records are recovered. Now let me generate the JSON:
+  ╭─ Turn 10 ────────────────────────────────────────────────────────────╮
+  ▶ $ python3 -c " (14 lines)[K[K ✓ (44ms)
+
+All done. Here's what I found and fixed:
+
+## Summary
+
+**Root Cause:** The main.db-wal file was XOR-encoded with the byte 0x42 (ASCII 'B'). This was evident because the file was filled with 0x42 bytes in areas that should have been null-padded, and XOR-ing the first 4 bytes (`75 3d 44 c0) with 0x42 produced the valid WAL magic number 0x377f0682`.
+
+Fix:
+1. Decoded the WAL file by XOR-ing every byte with 0x42
+2. Replaced /app/main.db-wal with the decoded version
+3. SQLite could then read all 4 WAL frames containing the 6 additional records (ids 6–11)
+
+**Result:** /app/recovered.json contains all 11 records sorted by id:
+```json
+[{"id": 1, "name": "apple", "value": 150}, {"id": 2, "name": "banana", "value": 250}, ..., {"id": 11, "name": "mango", "value": 1100}]
+```
+
+  ↳ 37.0s · 3574→1734 tokens · $0.076
+  ⬤ 1% of context window used
+
+

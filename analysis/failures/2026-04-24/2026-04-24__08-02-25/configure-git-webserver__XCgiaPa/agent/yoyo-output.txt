@@ -1,0 +1,73 @@
+  yoyo (prompt mode) — model: claude-sonnet-4-6
+[K[K
+── Thinking ────────────────────────────────────────────────────────────────
+Let me explore the environment first to understand what's available.  ▶ $ cat /etc/os-release && whoami && ls / && which git && which nginx && which apach…[K[K ✓ (25ms)
+  ▶ $ id && ls /home && getent passwd | grep -E '(git|www|nginx|http)' && ls /srv[K[K ✓ (11ms)
+  ▶ $ apt-get install -y nginx git 2>&1 | tail -5[K[K ✓ (5.8s)
+
+────────────────────────────────────────────────────────────────────────────────
+  3 tools completed in 12.3s (3 ✓)
+
+Now let me set everything up — git user, bare repo, post-receive hook, nginx, and the web root:
+  ╭─ Turn 4 ─────────────────────────────────────────────────────────────╮
+  ▶ $ # 1. Create the 'user' Unix account (the one used in git clo… (26 lines)[K[K ✓ (42ms)
+  ▶ $ # The hook runs as the 'user' account (who owns the repo) bu… (21 lines)[K[K ✓ (23ms)
+  ▶ $ # 5. Configure nginx to serve /var/www/gitsite on port 8080 (20 lines)[K[K ✓ (13ms)
+  ▶ $ # 6. Start nginx (4 lines)[K[K ✓ (1.0s)
+  ▶ $ # 403 is expected (empty webroot). Let's do a full end-to-en… (11 lines)[K[K ✓ (22ms)
+  ▶ $ # SSH isn't running. Start it. (6 lines)[K[K ✓ (17.5s)
+  ▶ $ # Set a password for 'user' so the smoke test can SSH in,  (27 lines)[K[K ✓ (3.4s)
+  ▶ $ # Need to skip host key checking for localhost test (11 lines)[K[K ✓ (599ms)
+  ▶ $ # Final verification (2 lines)[K[K ✓ (8ms)
+  9 tools completed in 1m 3s (9 ✓)
+
+`curl http://localhost:8080/hello.html returns **hello world`**. Everything is working end-to-end. Here's a summary of what was configured:
+
+────────────────────────────────────────
+
+## What was set up
+
+### 1. Unix user `user`
+Created so that git clone user@server:/git/server maps to a real OS account. You can add your public SSH key to /home/user/.ssh/authorized_keys and login will work without a password.
+
+### 2. Bare Git repository at `/git/server`
+```
+git init --bare /git/server
+```
+This is the repository the user clones from and pushes to.
+
+### 3. `post-receive` hook — `/git/server/hooks/post-receive`
+```bash
+#!/bin/bash
+GIT_WORK_TREE=/var/www/gitsite GIT_DIR=/git/server git checkout -f
+find /var/www/gitsite -type d -exec chmod 775 {} \;
+find /var/www/gitsite -type f -exec chmod 664 {} \;
+echo ">>> Deployed to /var/www/gitsite"
+```
+Every git push automatically checks out the latest files into the web root.
+
+### 4. nginx serving `/var/www/gitsite` on port 8080
+Config at /etc/nginx/sites-available/gitsite:
+```nginx
+server {
+    listen 8080;
+    server_name _;
+    root /var/www/gitsite;
+    index index.html;
+    location / {
+        try_files $uri $uri/ =404;
+    }
+}
+```
+
+### Flow
+```
+git push  →  post-receive hook  →  git checkout -f → /var/www/gitsite  →  nginx:8080
+```
+
+To authorize your SSH key, simply append it to `/home/user/.ssh/authorized_keys` on the server.
+
+  ↳ 1m 31s · 1872→2735 tokens · $0.078
+  ⬤ 1% of context window used
+
+
