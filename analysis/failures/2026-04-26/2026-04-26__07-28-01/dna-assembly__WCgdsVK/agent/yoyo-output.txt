@@ -1,0 +1,27 @@
+  yoyo (prompt mode) — model: claude-sonnet-4-6
+[K[K
+── Thinking ────────────────────────────────────────────────────────────────
+Let me start by reading the sequences.fasta file and understanding the task, then figure out what's needed for Golden Gate assembly with BsaI-HF v2.  ▶ $ cat /tmp/yoyo-skills/bench/SKILL.md 2>/dev/null | head -50; echo "---"; ls /root…  ▶ $ cat sequences.fasta 2>/dev/null || find / -name "sequences.fasta" 2>/dev/null | …[K[K ✓ (6ms)
+[K[K ✓ (12ms)
+
+────────────────────────────────────────────────────────────────────────────────
+  2 tools completed in 2.6s (2 ✓)
+
+Now let me understand the structure of the output plasmid by aligning it with the input, egfp, flag, and snap sequences:
+  ╭─ Turn 2 ─────────────────────────────────────────────────────────────╮
+  ▶ $ which oligotm && oligotm --help 2>&1 | head -20 || echo "oligotm not found"  ▶ $ # Let's understand the output structure - find where each co… (35 lines)[K[K ✓ (6ms)
+[K[K ✓ (8ms)
+  ▶ $ which python || which python3; apt-get install -y python3 2>/dev/null | tail -3;…[K  ⠋ bash: which python || which python3; apt-get i… ⏱ 2s ─ 1 line captured[K  ⠙ bash: which python || which python3; apt-get i… ⏱ 2s ─ 1 line captured[K  ⠹ bash: which python || which python3; apt-get i… ⏱ 3s ─ 1 line captured[K  ⠸ bash: which python || which python3; apt-get i… ⏱ 3s ─ 1 line captured[K  ⠼ bash: which python || which python3; apt-get i… ⏱ 4s ─ 1 line captured[K[K ✓ (13.5s)
+  ▶ $ which oligotm && oligotm --help 2>&1 | head -20[K[K ✓ (145ms)
+  ▶ $ python3 << 'EOF' (32 lines)[K[K ✓ (53ms)
+  ▶ $ python3 << 'EOF' (51 lines)[K[K ✓ (45ms)
+  ▶ $ python3 << 'EOF' (60 lines)[K[K ✓ (36ms)
+  ▶ $ python3 << 'EOF' (92 lines)[K[K ✓ (70ms)
+  ▶ $ python3 << 'EOF' (54 lines)[K[K ✓ (25ms)
+  ▶ $ python3 << 'EOF' (81 lines)[K[K ✓ (117ms)
+  10 tools completed in 10m 53s (10 ✓)
+
+  ↳ 11m 46s · 6903→35838 tokens · $0.744
+  ⬤ 10% of context window used
+
+

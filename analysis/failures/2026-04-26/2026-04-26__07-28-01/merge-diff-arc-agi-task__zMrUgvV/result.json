@@ -1,0 +1,105 @@
+{
+    "id": "feba70d3-3cd3-46f3-a661-862f2cd72ab4",
+    "task_name": "terminal-bench/merge-diff-arc-agi-task",
+    "trial_name": "merge-diff-arc-agi-task__zMrUgvV",
+    "trial_uri": "file:///tmp/bench-results/2026-04-26__07-28-01/merge-diff-arc-agi-task__zMrUgvV",
+    "task_id": {
+        "org": "terminal-bench",
+        "name": "merge-diff-arc-agi-task",
+        "ref": "sha256:da91e751106b20ec871117222f6ade094dc4c23e554f01534c7b205982b133f8"
+    },
+    "source": "terminal-bench/terminal-bench-2",
+    "task_checksum": "84ecdb3650d696242fde463050a964f1df2c448dc2d2ae6965fb7458bf95e6b8",
+    "config": {
+        "task": {
+            "path": null,
+            "git_url": null,
+            "git_commit_id": null,
+            "name": "terminal-bench/merge-diff-arc-agi-task",
+            "ref": "sha256:da91e751106b20ec871117222f6ade094dc4c23e554f01534c7b205982b133f8",
+            "overwrite": false,
+            "download_dir": null,
+            "source": "terminal-bench/terminal-bench-2"
+        },
+        "trial_name": "merge-diff-arc-agi-task__zMrUgvV",
+        "trials_dir": "/tmp/bench-results/2026-04-26__07-28-01",
+        "timeout_multiplier": 1.0,
+        "agent_timeout_multiplier": null,
+        "verifier_timeout_multiplier": null,
+        "agent_setup_timeout_multiplier": null,
+        "environment_build_timeout_multiplier": null,
+        "agent": {
+            "name": null,
+            "import_path": "agents.yoyo_agent:Yoyo",
+            "model_name": "anthropic/claude-sonnet-4-6",
+            "override_timeout_sec": null,
+            "override_setup_timeout_sec": null,
+            "max_timeout_sec": null,
+            "kwargs": {},
+            "env": {}
+        },
+        "environment": {
+            "type": "docker",
+            "import_path": null,
+            "force_build": false,
+            "delete": true,
+            "override_cpus": null,
+            "override_memory_mb": null,
+            "override_storage_mb": null,
+            "override_gpus": null,
+            "suppress_override_warnings": false,
+            "mounts_json": null,
+            "env": {},
+            "kwargs": {}
+        },
+        "verifier": {
+            "override_timeout_sec": null,
+            "max_timeout_sec": null,
+            "env": {},
+            "disable": false
+        },
+        "artifacts": [],
+        "job_id": "ae2f843e-4764-41e1-8f33-6fef64240845"
+    },
+    "agent_info": {
+        "name": "yoyo",
+        "version": "0.1.9",
+        "model_info": {
+            "name": "claude-sonnet-4-6",
+            "provider": "anthropic"
+        }
+    },
+    "agent_result": {
+        "n_input_tokens": null,
+        "n_cache_tokens": null,
+        "n_output_tokens": null,
+        "cost_usd": null,
+        "rollout_details": null,
+        "metadata": null
+    },
+    "verifier_result": {
+        "rewards": {
+            "reward": 1.0
+        }
+    },
+    "exception_info": null,
+    "started_at": "2026-04-26T07:50:32.039620Z",
+    "finished_at": "2026-04-26T07:52:38.901437Z",
+    "environment_setup": {
+        "started_at": "2026-04-26T07:50:32.041749Z",
+        "finished_at": "2026-04-26T07:50:33.457748Z"
+    },
+    "agent_setup": {
+        "started_at": "2026-04-26T07:50:33.457764Z",
+        "finished_at": "2026-04-26T07:50:46.347494Z"
+    },
+    "agent_execution": {
+        "started_at": "2026-04-26T07:50:46.347550Z",
+        "finished_at": "2026-04-26T07:52:19.844230Z"
+    },
+    "verifier": {
+        "started_at": "2026-04-26T07:52:20.010076Z",
+        "finished_at": "2026-04-26T07:52:27.738503Z"
+    },
+    "step_results": null
+}
