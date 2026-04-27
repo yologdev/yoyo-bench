@@ -1,0 +1,68 @@
+  yoyo (prompt mode) — model: claude-sonnet-4-6
+
+── Thinking ────────────────────────────────────────────────────────────────
+Let me implement tensor parallelism for linear layers using PyTorch. I need to create `/app/parallel_linear.py` with `ColumnParallelLinear` and `RowParallelLinear` classes.
+
+Let me think through the implementation:
+
+**ColumnParallelLinear:**
+- Weight matrix W has shape [out_features, in_features]
+- Split by columns (output dimension), so each rank gets [out_features/world_size, in_features]
+- Each rank computes Y_i = X @ W_i^T + b_i
+- Output is concatenated along last dimension (all_gather)
+- Bias is sharded: b_i has shape [out_features/world_size]
+
+
+- For **RowParallelLinear**, the weight is split along rows instead, with each rank holding [out_features, in_features/world_size], and the input is also partitioned accordingly. Each rank computes its portion and the results are summed via all_reduce, with the bias applied afterward.
+
+I'll need to implement custom autograd functions to handle the communication patterns correctly during forward and backward passes. Now I need to think through the backward passes for these collective operations—the all_gather in ColumnParallelLinear becomes a scatter during backprop, while the all_reduce in RowParallelLinear stays symmetric since the gradient broadcast is just the identity. I'll use custom autograd functions to handle these collective operations properly with torch.distributed.  ▶ $ ls /app/ 2>/dev/null && python3 --version && python3 -c "import torch; print(tor… ✓ (5ms)
+  ▶ $ which python && python --version && python -c "import torch; print(torch.__versi… ✓ (5ms)
+  ▶ $ find / -name "python*" -type f 2>/dev/null | head -20; ls /app 2>/dev/null || mk… ✓ (157ms)
+  ▶ $ apt-get update -qq && apt-get install -y python3 python3-pip 2>&1 | tail -5 ✓ (29.9s)
+  ▶ $ python3 --version && pip3 install torch --quiet 2>&1 | tail -3 ✓ (591ms)
+  ▶ $ pip3 install torch --break-system-packages --quiet 2>&1 | tail -5 ✗ (2m 0s)
+    │ Command timed out after 120s
+  ▶ $ pip3 install torch --break-system-packages --quiet 2>&1 | tail -5 ✓ (2m 20s)
+  ▶ $ python3 -c "import torch; print(torch.__version__)" ✓ (3.9s)
+
+────────────────────────────────────────────────────────────────────────────────
+  8 tools completed in 5m 12s (7 ✓, 1 ✗)
+
+Good, PyTorch is available. Now let me implement the parallel linear layers:
+  ╭─ Turn 9 ─────────────────────────────────────────────────────────────╮
+  ▶ write /app/parallel_linear.py (251 lines) ✓ (6ms)
+
+Now let me write a comprehensive test to verify correctness across world_size = 1, 2, and 4:
+  ╭─ Turn 10 ────────────────────────────────────────────────────────────╮
+  ▶ write /app/test_parallel_linear.py (174 lines) ✓ (2ms)
+  ▶ $ cd /app && python3 test_parallel_linear.py 2>&1 ✓ (20.6s)
+  2 tools completed in 24.3s (2 ✓)
+
+All tests pass for world_size 1, 2, and 4. Let me verify the final file:
+  ╭─ Turn 12 ────────────────────────────────────────────────────────────╮
+  ▶ $ ls -la /app/parallel_linear.py && echo "---" && wc -l /app/parallel_linear.py ✓ (3ms)
+  ▶ read /app/parallel_linear.py ✓ (0ms)
+  2 tools completed in 3.6s (2 ✓)
+
+The implementation is complete and all tests pass. Here's a summary of what was implemented in `/app/parallel_linear.py`:
+
+────────────────────────────────────────
+
+## Implementation Summary
+
+### `ColumnParallelLinear`
+• **Weight sharding: The `[out_features, in_features]` master weight is split along rows* (the output dimension). Rank `r` gets rows `[r  out/W : (r+1) * out/W, :], giving a local weight of shape [out_features // world_size, in_features]`.
+• Bias: Sharded the same way — each rank holds a zero-initialized bias of size out_features // world_size.
+• Forward: Each rank computes `local_out = X @ W_r^T + b_r (shape [*, out/W]`), then **all_gather* concatenates along the last dimension to produce `[, out_features]`.
+• Backward (via `_AllGather` custom autograd): The gradient is sliced — each rank only receives the gradient slice corresponding to its output shard.
+
+### `RowParallelLinear`
+• Weight sharding: The [out_features, in_features] master weight is split along columns (the input dimension). Rank r gets columns `[:, r * in/W : (r+1) * in/W], giving a local weight of shape [out_features, in_features // world_size]`.
+• Bias: Full (replicated) on every rank — zero-initialized vector of size out_features.
+• Forward: Each rank computes partial_out = X_r @ W_r^T (shape `[*, out_features]`), then all_reduce (sum) aggregates partial results, and bias is added once after reduction.
+• Backward (via _AllReduce custom autograd): The gradient passes through unchanged — every rank gets the full upstream gradient, which is mathematically correct for a sum-reduction.
+
+  ↳ 6m 48s · 5855→7004 tokens · $0.179
+  ⬤ 4% of context window used
+
+

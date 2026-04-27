@@ -1,0 +1,121 @@
+Tip: There are many benchmarks available in Harbor's registry.
+Run `harbor datasets list` to see all available datasets.
+
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+No yoyo output file found
+  89/89 Mean: 0.191 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1:09:55 0:00:00
+terminal-bench/terminal-bench-2 • yoyo • claude-sonnet-4-6
+┏━━━━━━━━┳━━━━━━━━━━━━┳━━━━━━━┓
+┃ Trials ┃ Exceptions ┃  Mean ┃
+┡━━━━━━━━╇━━━━━━━━━━━━╇━━━━━━━┩
+│     88 │         47 │ 0.191 │
+└────────┴────────────┴───────┘
+
+┏━━━━━━━━┳━━━━━━━┓
+┃ Reward ┃ Count ┃
+┡━━━━━━━━╇━━━━━━━┩
+│ 0.0    │    71 │
+│ 1.0    │    17 │
+└────────┴───────┘
+
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━┓
+┃ Exception                 ┃ Count ┃
+┡━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━┩
+│ NonZeroAgentExitCodeError │    45 │
+│ AgentTimeoutError         │     1 │
+│ VerifierTimeoutError      │     1 │
+└───────────────────────────┴───────┘
+
+Job Info
+Total runtime: 1h 9m 55s
+Results written to /tmp/bench-results/2026-04-27__08-23-00/result.json
+Inspect results by running `harbor view /tmp/bench-results`
+

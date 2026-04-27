@@ -1,0 +1,49 @@
+  yoyo (prompt mode) — model: claude-sonnet-4-6
+
+── Thinking ────────────────────────────────────────────────────────────────
+Let me start by exploring the /app/ directory to understand the program structure.  ▶ $ ls /app/ && echo "---" && cat /app/main.cpp && echo "---" && cat /app/user.cpp ✓ (8ms)
+  ▶ $ cat /app/user.h ✓ (9ms)
+  ▶ $ # First, compile and test both versions to understand the cr… (5 lines) ✓ (2.4s)
+  ▶ $ g++ -std=c++17 -o /app/release /app/main.cpp /app/user.cpp -… (4 lines) ✓ (2.0s)
+  ▶ $ # The crash happens during shutdown/destructor. Let's invest… (5 lines) ✓ (2.4s)
+  ▶ $ # Let's check with GDB to see where the crash is (5 lines) ✓ (3.4s)
+  ▶ $ # The crash is in _Fac_tidy_reg_t destructor in locale_init.… (9 lines) ✓ (1.0s)
+  ▶ $ sed -n '310,340p' /build/gcc-13.2.0/libstdc++-v3/src/c++98/locale_init.cc ✓ (12ms)
+  ▶ $ # Now I understand! In RELEASE mode (NDEBUG), the library ca… (8 lines) ✓ (4ms)
+  ▶ $ sed -n '260,390p' /build/gcc-13.2.0/libstdc++-v3/src/c++98/locale_init.cc ✓ (0ms)
+  ▶ $ # Now I fully understand the bug: (43 lines) ✓ (0ms)
+  ▶ $ # Let me verify the sequence more carefully by checking when… (2 lines) ✓ (27ms)
+  ▶ $ grep -n "_Facet_Register_impl\|_Facet_Register" /build/gcc-1… (2 lines) ✓ (520ms)
+  ▶ $ grep -n "_Facet_Register_impl\|_Facet_Register" /build/gcc-13.2.0/libstdc++-v3/i… ✓ (12ms)
+  ▶ $ sed -n '85,115p' /build/gcc-13.2.0/libstdc++-v3/include/bits/locale_classes.tcc ✓ (27ms)
+  ▶ $ # So _Facet_Register_impl() is called from __try_use_facet w… (42 lines) ✓ (21ms)
+  ▶ $ # Compile and test both versions (5 lines) ✓ (3.5s)
+  ▶ $ g++ -std=c++17 -o /app/release /app/main.cpp /app/user.cpp -… (4 lines) ✓ (2.7s)
+  ▶ $ # Now check for memory leaks with Valgrind (2 lines) ✓ (4.6s)
+  ▶ $ valgrind --leak-check=full --error-exitcode=1 /app/debug 2>&1 ✓ (11.7s)
+
+────────────────────────────────────────────────────────────────────────────────
+  20 tools completed in 1m 52s (20 ✓)
+
+Both versions work correctly with no memory leaks. Here's a summary of the root cause and fix:
+
+## Root Cause
+
+The in-house modified libstdc++ has a custom facet registration mechanism in `locale_init.cc that mimics MSVC behavior. When compiled with NDEBUG (Release mode), _Facet_Register_impl() allocates _Fac_node objects using ::operator new. These nodes are only cleaned up by the static destructor _Fac_tidy_reg_t::~_Fac_tidy_reg_t, which runs **after main()` returns**.
+
+The crash sequence was:
+1. Application::init() sets up g_custom_heap
+2. Application::run() → user_main() → eventually std::cout usage triggers __try_use_facet() → `_Facet_Register_impl() → allocates _Fac_node objects via ::operator new` → goes into custom heap memory
+3. `Application::shutdown() **destroys** g_custom_heap (sets g_custom_heap = nullptr`)
+4. After main() exits, static destructor _Fac_tidy_reg_t::~_Fac_tidy_reg_t calls ::operator delete(nodeptr) on those nodes → since g_custom_heap == nullptr, it calls std::free() on custom-heap-allocated memory → **SEGFAULT**
+
+In Debug mode this doesn't happen because the #else branches use std::malloc/std::free directly, bypassing the custom operator new/`delete`.
+
+## Fix
+
+In user_init() (which is called before g_custom_heap is created), force locale facet initialization by using std::ostringstream. This triggers _Facet_Register_impl() while g_custom_heap is still `nullptr, so the _Fac_node allocations go through std::malloc. When the static destructor later calls std::free() on them, it works correctly because g_custom_heap is again nullptr` at that point.
+
+  ↳ 2m 1s · 7184→4331 tokens · $0.181
+  ⬤ 3% of context window used
+
+
