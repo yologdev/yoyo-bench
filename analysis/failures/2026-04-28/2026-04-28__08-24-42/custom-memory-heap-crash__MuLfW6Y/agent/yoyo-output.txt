@@ -1,0 +1,71 @@
+  yoyo (prompt mode) — model: claude-sonnet-4-6
+
+── Thinking ────────────────────────────────────────────────────────────────
+Let me explore the application to understand what we're working with.  ▶ $ cat /app/main.cpp && echo "---" && cat /app/user.cpp  ▶ $ ls /app/ ✓ (4ms)
+ ✓ (13ms)
+  ▶ $ cat /app/user.h  ▶ $ # First compile both and see what happens (5 lines) ✓ (5ms)
+ ✓ (2.9s)
+  ▶ $ /app/debug 2>&1 (4 lines) ✓ (1.1s)
+  ▶ $ # Run with GDB or get backtrace using core dump (4 lines) ✓ (498ms)
+  ▶ $ # The crash happens after "Computation completed successfull… (3 lines) ✓ (19ms)
+  ▶ $ # Let's look at what's happening in the release libstdc++  (3 lines)  ▶ $ # Build a debug version with address sanitizer to get better… (4 lines) ✓ (12ms)
+ ✓ (1.4s)
+  ▶ $ # The crash is after shutdown. Let's look at the source of t… (2 lines) ✓ (23ms)
+  ▶ $ ls /build/patches/ ✓ (6ms)
+  ▶ $ cat /build/patches/locale_classes.tcc.patch (3 lines) ✓ (231ms)
+  ▶ $ # Now I understand the issue! (45 lines) ✓ (5ms)
+  ▶ $ # Let's see the full patch to understand the atexit/cleanup … (2 lines) ✓ (17ms)
+  ▶ $ cat /build/patches/locale_classes.tcc.patch ✓ (114ms)
+  ▶ $ # Let me look at the actual modified source files (3 lines) ✓ (968ms)
+  ▶ $ cat /build/gcc-13.2.0/libstdc++-v3/src/c++98/locale_init.cc | head -200 ✓ (7ms)
+  ▶ $ grep -n "_Fac_node\|_Fac_head\|_Facptr\|_Facet_Register\|atexit\|__cxa_atexit\|_… ✓ (0ms)
+  ▶ $ sed -n '260,400p' /build/gcc-13.2.0/libstdc++-v3/src/c++98/locale_init.cc ✓ (5ms)
+  ▶ $ cat /build/gcc-13.2.0/libstdc++-v3/include/bits/locale_classes.tcc | grep -A 20 … ✓ (65ms)
+
+────────────────────────────────────────────────────────────────────────────────
+  20 tools completed in 1m 3s (20 ✓)
+
+Now I fully understand the problem. Here's the chain of events in RELEASE mode:
+
+1. `app.init() calls user_init(), then creates g_custom_heap`
+2. app.run() → user_main() → uses `std::cout (locale facets) → __try_use_facet → _Facet_Register_impl() → allocates _Fac_node and _Facptr using ::operator new` (which goes to the custom heap since g_custom_heap is now active)
+3. `app.shutdown() / ~Application() → destroys g_custom_heap` (sets to nullptr)
+4. After main() returns, the static `_Fac_tidy_guard destructor runs → tries ::operator delete(nodeptr) → g_custom_heap is nullptr → calls std::free()` on a pointer that came from the custom heap buffer → CRASH
+
+The fix: ensure _Facet_Register_impl() is triggered before g_custom_heap is set up. We can do this in user_init() by forcing locale facet usage (e.g., using `std::cout), which will call __try_use_facet → _Facet_Register_impl()`. Since g_custom_heap is nullptr at that point, the allocations use std::malloc and std::free safely.
+  ╭─ Turn 18 ────────────────────────────────────────────────────────────╮
+  ▶ $ # Let's verify: _Facet_Register_impl checks _Static_init_com… (49 lines) ✓ (3ms)
+  ▶ $ # Compile both (5 lines) ✓ (5.1s)
+  ▶ $ /app/debug 2>&1 (4 lines) ✓ (711ms)
+  3 tools completed in 13.6s (3 ✓)
+
+Both compile and run successfully. Now let's check for memory leaks with Valgrind:
+  ╭─ Turn 21 ────────────────────────────────────────────────────────────╮
+  ▶ $ which valgrind && valgrind --leak-check=full --error-exitcode=1 /app/debug 2>&1 … ✓ (13.5s)
+  ▶ $ valgrind --leak-check=full --error-exitcode=1 /app/release 2>&1 | tail -30 ✓ (4.0s)
+  2 tools completed in 21.0s (2 ✓)
+
+Both debug and release pass with zero errors and zero memory leaks. Here's a summary of what was happening and how I fixed it:
+
+## Root Cause
+
+The custom in-house libstdc++ (in the /build/ patches) introduced an MSVC-style facet registration mechanism that only activates in RELEASE (-DNDEBUG) mode:
+
+1. `_Facet_Register_impl()` — called the first time __try_use_facet is invoked (e.g., when std::cout formats output) — allocates _Fac_node objects and their _Facptr buffers using `::operator new` (in NDEBUG) vs std::malloc (in DEBUG).
+2. These nodes are stored in a global linked list (`_Fac_head) and freed by a static destructor (_Fac_tidy_guard`) that runs after `main()` returns.
+3. main.cpp overrides `operator new/delete to use a custom heap (g_custom_heap`) when it's active.
+
+The crash sequence in RELEASE:
+• `app.init() calls user_init() (custom heap not yet active), then **creates** g_custom_heap`.
+• app.run() uses std::cout → triggers __try_use_facet → _Facet_Register_impl() → allocates nodes with ::operator new → goes to the custom heap.
+• app.shutdown() destroys g_custom_heap (sets it to nullptr).
+• After main() returns, _Fac_tidy_guard::~_Fac_tidy_guard() calls `::operator delete(nodeptr) → g_custom_heap is nullptr → calls std::free()` on a pointer that was **never from malloc → segfault**.
+
+## The Fix (`user.cpp`)
+
+Call std::cout.imbue(std::locale::classic()) inside user_init(), which is called before g_custom_heap is created. This forces __try_use_facet → _Facet_Register_impl() to fire while g_custom_heap is still nullptr, so all facet nodes are allocated via the system malloc/free. By the time `_Fac_tidy_guard cleans them up after main() exits, g_custom_heap is again nullptr, and std::free()` correctly frees the malloc-allocated nodes without crashing.
+
+  ↳ 2m 9s · 10413→4778 tokens · $0.242
+  ⬤ 5% of context window used
+
+

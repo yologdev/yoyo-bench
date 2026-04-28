@@ -1,0 +1,213 @@
+  yoyo (prompt mode) — model: claude-sonnet-4-6
+
+── Thinking ────────────────────────────────────────────────────────────────
+Let me start by exploring the repository structure and understanding the codebase, then read HACKING.adoc to understand how to build.  ▶ $ find /root -name "HACKING.adoc" 2>/dev/null | head -5; ls /root/  ▶ $ ls / ✓ (14ms)
+ ✓ (13ms)
+  ▶ $ ls /root/; find / -name "HACKING.adoc" 2>/dev/null | head -5  ▶ $ find / -name "*.ml" -path "*/gc*" 2>/dev/null | head -10; find / -name "major_gc… ✓ (400ms)
+ ✓ (617ms)
+  ▶ $ ls /app/ocaml/  ▶ $ cat /app/ocaml/HACKING.adoc | head -100 ✓ (3ms)
+ ✓ (5ms)
+  ▶ $ cd /app/ocaml && git log --oneline -10  ▶ $ cd /app/ocaml && git diff HEAD~1 --name-only 2>/dev/null || git log --oneline -5 ✓ (4ms)
+ ✓ (6ms)
+  ▶ $ ls /app/ocaml/runtime/ | grep -i free\|sweep\|major\|gc  ▶ $ cat /app/ocaml/runtime/major_gc.c | head -50 ✓ (5ms)
+ ✓ (5ms)
+  ▶ $ ls /app/ocaml/runtime/ ✓ (3ms)
+  ▶ $ grep -n "free\|sweep\|compress\|run.length\|rle\|freelist\|free_list\|free_block…  ▶ $ wc -l /app/ocaml/runtime/shared_heap.c; wc -l /app/ocaml/runtime/major_gc.c ✓ (6ms)
+ ✓ (7ms)
+  ▶ $ grep -n "compress\|run.length\|rle\|RLE\|wh\b\|wosize_hd\|Wosize_hd\|skip.*free\… ✓ (1ms)
+  ▶ $ grep -n "pool_sweep\|last_free_block\|Wosize_hd\|free block\|compress" /app/ocam… ✓ (4ms)
+  ▶ read /app/ocaml/runtime/shared_heap.c:540..690 ✓ (2ms)
+
+────────────────────────────────────────────────────────────────────────────────
+  16 tools completed in 29.0s (16 ✓)
+
+Now let me understand the data structure better. Let me look at the key macros and the allocation code:
+  ╭─ Turn 11 ────────────────────────────────────────────────────────────╮
+  ▶ $ grep -n "POOL_FREE_HEADER\|POOL_BLOCK_FREE\|Wosize_hp\|Wosize_hd\|next_obj\|POOL…  ▶ $ grep -n "POOL_FREE_HEADER\|POOL_BLOCK_FREE\|Wosize_hp\|next_obj\|POOL_FIRST_BLOC… ✓ (5ms)
+ ✓ (7ms)
+  2 tools completed in 1.4s (2 ✓)
+
+Now let me understand the allocation code to see how the free list is traversed:
+  ╭─ Turn 12 ────────────────────────────────────────────────────────────╮
+  ▶ read /app/ocaml/runtime/shared_heap.c:440..540 ✓ (1ms)
+
+Now I need to understand the new run-length compression scheme. The key line is at line 650:
+
+```c
+p += Whsize_hd(hd);
+```
+
+Wait, let me understand the loop structure. After handling a free block, we do:
+1. `p += wh * Wosize_hd(hd)` to skip over free blocks (line 644)
+2. Then `p += Whsize_hd(hd)` at line 650
+
+But wait, line 650 is p += Whsize_hd(hd) - but hd at that point might be from line 607 (the newly set free header with wosize=0). But if it's a free block, we already incremented p at line 644.
+
+Let me re-read the loop more carefully:
+  ╭─ Turn 13 ────────────────────────────────────────────────────────────╮
+  ▶ read /app/ocaml/runtime/shared_heap.c:562..652 ✓ (4ms)
+
+Now I see the issue! Let me trace through carefully:
+
+**When a block is free (POOL_BLOCK_FREE_HD(hd) is true):**
+• hd has wosize = some value (could be 0 for a freshly freed block, or N for a run of N+1 blocks)
+• Line 644: p += wh * Wosize_hd(hd) — skips over the N following blocks
+• Line 650: `p += Whsize_hd(hd) — but Whsize_hd(hd) = Wosize_hd(hd) + 1 = wh * (Wosize_hd(hd) + 1)` ... wait, no.
+
+Wait, Whsize_hd(hd) is the "header+wosize" = wosize+1. But here blocks are all `wh` words in size (the sizeclass). So the advance should always be wh words for a single block.
+
+But at line 650: `p += Whsize_hd(hd) — Whsize_hd(hd) = Wosize_hd(hd) + 1`. The wosize in the free header stores the number of FOLLOWING free blocks, not the actual wosize of the block.
+
+So for a free block with wosize=0 (just freed):
+• Line 644: `p += wh * 0 = 0` (no skip)
+• Line 650: `p += Whsize_hd(hd) = 0 + 1 = 1 — WRONG! Should be p += wh`
+
+For a free block with wosize=N (N following free blocks):
+• Line 644: p += wh * N (skip over N following blocks)  
+• Line 650: p += Whsize_hd(hd) = N + 1 — WRONG! Should be p += wh
+
+So the bug is clear: **line 650 should be p += wh instead of p += Whsize_hd(hd)**.
+
+Wait, but line 650 is executed regardless of free or non-free. For non-free blocks, Whsize_hd(hd) is the actual whsize of the object (which should be ≤ wh). But actually for pool blocks, the block should always be wh words in size... hmm.
+
+Actually, looking at the sizeclass system, all objects in a pool of sizeclass sz have size exactly wh = wsize_sizeclass[sz]. But `Whsize_hd(hd) = Wosize_hd(hd) + 1` which equals the actual object's whsize (header + payload). For a live block with wosize payload, `Whsize_hd` = payload + 1 ≤ wh.
+
+Actually for non-free blocks, we should advance by wh words, not Whsize_hd(hd) words. But looking at line 604: `s->pool_frag_words -= (wh - Whsize_hd(hd)) — so Whsize_hd(hd) ≤ wh`. But the actual slot is always wh words.
+
+Let me look at the original logic before the run-length compression was added. Let me check if there's a simpler version:
+  ╭─ Turn 14 ────────────────────────────────────────────────────────────╮
+  ▶ read /app/ocaml/runtime/shared_heap.c:280..340 ✓ (0ms)
+
+The `calc_pool_stats` function (lines 287-308) shows the correct pattern: after handling a free block, do p += wh * Wosize_hd(hd) to skip over following blocks, then p += wh for the current block.
+
+Now looking at pool_sweep (lines 562-676):
+• Line 644: `p += wh * Wosize_hd(hd)` — skip over N following free blocks
+• Line 650: p += Whsize_hd(hd) — advance by 1 block (for free blocks, Whsize_hd should be... but it's NOT a normal wosize!)
+
+Wait, for a free block, Wosize_hd(hd) = the number of following free blocks. And `Whsize_hd(hd) = Wosize_hd(hd) + 1. But after line 644, we've skipped Wosize_hd(hd) blocks, and we need to skip 1 more (the current block), so line 650 with Whsize_hd(hd)` = Wosize_hd(hd) + 1 words... that would only be correct if `Wosize_hd(hd) + 1 = wh`. But that's not generally true!
+
+Wait, actually for pool blocks, each block is exactly wh words. So p += wh is the right way to advance by one block. For non-free blocks, Whsize_hd(hd) ≤ wh, so using `Whsize_hd(hd)` would give wrong position.
+
+Actually wait - for live (non-free, non-garbage) blocks in the pool, Whsize_hd(hd) ≤ wh. Using Whsize_hd(hd) instead of wh could leave p inside the padding region, which is not a valid block header.
+
+But calc_pool_stats (which was presumably correct) uses p += wh unconditionally. Let me look at the original pool_sweep logic more carefully...
+
+The old pool_sweep (before run-length compression) would just do p += wh each time. With the new run-length compression:
+• For free blocks: p += wh * Wosize_hd(hd) then p += wh (total: p += wh * (Wosize_hd(hd) + 1) = wh * Whsize_hd(hd))
+
+But line 650 does p += Whsize_hd(hd) not p += wh. So **for free blocks, line 650 should be p += wh** and for non-free blocks it should also be p += wh.
+
+In other words, line 650 should be `p += wh` unconditionally.
+
+Let me also check the pool_scan and other similar functions to verify my understanding:
+  ╭─ Turn 15 ────────────────────────────────────────────────────────────╮
+  ▶ read /app/ocaml/runtime/shared_heap.c:770..830 ✓ (2ms)
+
+The pool_finalise function at line 776-789 shows the correct pattern:
+• For free blocks: `p += wh * Wosize_hd(hd) then p += wh`
+• For non-free blocks: just p += wh
+
+So in pool_sweep, line 650 should be p += wh not p += Whsize_hd(hd). 
+
+But wait, I need to double-check line 650 in context — is it inside the if (POOL_BLOCK_FREE_HD(hd)) block or outside?
+
+Looking at lines 614-650:
+```
+if (POOL_BLOCK_FREE_HD(hd)) {
+    ...
+    p += wh * Wosize_hd(hd);  // line 644
+} else {
+    ...
+}
+p += Whsize_hd(hd);  // line 650
+```
+
+Yes, line 650 is OUTSIDE the if-else, so it executes for both cases. For the else case (live block), it should advance by wh (the sizeclass word size), not Whsize_hd(hd) (which is the actual header+payload size ≤ wh). For the free block case, we need to advance by wh (not Whsize_hd(hd) which = Wosize_hd(hd)+1).
+
+Actually wait — for live blocks, `Whsize_hd(hd) might equal wh` in practice if the block perfectly fills the sizeclass slot... but that's only sometimes. For fragmented blocks (where actual wosize < sizeclass wosize), it would be wrong.
+
+Let me also check: could the original code have intentionally used Whsize_hd(hd) for some reason with live blocks? No — this is a sizeclass-based allocator where every slot is exactly wh words.
+
+**The fix is simple: change p += Whsize_hd(hd) to `p += wh` on line 650.**
+
+Let me now also check the merge logic more carefully. When merging:
+
+```c
+if( last_free_block + (1 + Wosize_hp(last_free_block)) * wh == p ) {
+```
+
+This checks if p (the current free block) is adjacent to the last free block. last_free_block points to the header, `Wosize_hp(last_free_block) is the number of following free blocks already merged, so (1 + Wosize_hp(last_free_block)) * wh` is the total size of the run starting at last_free_block. This looks correct.
+
+The merge update:
+```c
+*last_free_block = POOL_FREE_HEADER(Wosize_hp(last_free_block) + Wosize_hd(hd) + 1);
+```
+
+This merges: last_free_block had N following blocks. Now we're adding the current block `p plus its Wosize_hd(hd) following blocks. But Wosize_hd(hd)` for a freshly freed block = 0, and for a previously free block = its following count. So the new count = N + 1 + Wosize_hd(hd). Wait: `Wosize_hp(last_free_block) + Wosize_hd(hd) + 1`. Let me think:
+
+• last_free_block covered blocks: 1 (itself) + Wosize_hp(last_free_block)
+• We're adding: p itself + Wosize_hd(hd) blocks after p
+• New total = (1 + Wosize_hp(last_free_block)) + (1 + Wosize_hd(hd)) blocks
+• The new Wosize stored = total_blocks - 1 = Wosize_hp(last_free_block) + Wosize_hd(hd) + 1
+
+Yes, this is correct.
+
+Now let me also check if there's an issue with line 602-604 stats when hd is a garbage block being freed:
+
+```c
+s->pool_live_words -= Whsize_hd(hd);
+local->owner->swept_words += Whsize_hd(hd);
+s->pool_frag_words -= (wh - Whsize_hd(hd));
+```
+
+Here hd is the original live block header (before being overwritten with free header). Whsize_hd(hd) is the actual live block's whsize. This looks correct.
+
+Now, let me also look at whether there's another bug. When a garbage block is freed (line 590: *p = POOL_FREE_HEADER(0)), then at line 607: hd = POOL_FREE_HEADER(0). Then at line 644: p += wh * Wosize_hd(hd) = p += wh * 0 = 0. Then line 650: p += Whsize_hd(hd) = p += 1. So p advances by only 1 word! This is the bug.
+
+With my fix (changing to p += wh), p advances by wh words, which is correct for a single-block run.
+
+Let me now also look at the p += Whsize_hd(hd) for live blocks. For a live block with actual whsize=3 and wh=4 (sizeclass), we'd advance by 3 instead of 4 — landing in the padding of the slot. This would also be wrong.
+
+Actually hold on. Let me check if live blocks in pools might actually have Whsize_hd(hd) == wh always. Let me look at pool_frag_words usage:
+
+Looking at line 520: `s->pool_frag_words += wsize_sizeclass[sz] - whsize;` — yes, fragmentation is tracked, meaning blocks can be smaller than the sizeclass slot.
+
+So `Whsize_hd(hd) < wh is possible, and p += Whsize_hd(hd)` would be wrong for live blocks too.
+
+The fix is to change line 650 from `p += Whsize_hd(hd)` to `p += wh`.
+
+Let me now attempt the build to confirm the bug and verify the fix:
+  ╭─ Turn 16 ────────────────────────────────────────────────────────────╮
+  ▶ $ cd /app/ocaml && ls boot/  ▶ $ cd /app/ocaml && cat Makefile | grep -A5 "^world\b\|^bootstrap\b\|^all\b" | head… ✓ (7ms)
+ ✓ (4ms)
+  ▶ $ cd /app/ocaml && ls Makefile.config 2>/dev/null || echo "not configured" ✓ (3ms)
+  ▶ $ cd /app/ocaml && ./configure --prefix=/tmp/ocaml-install 2>&1 | tail -20 ✓ (27.0s)
+  4 tools completed in 32.8s (4 ✓)
+
+Now let me apply the fix before building:
+  ╭─ Turn 19 ────────────────────────────────────────────────────────────╮
+  ▶ edit /app/ocaml/runtime/shared_heap.c (8 → 8 lines)
+                freelist */
+            release_to_global_pool = 0;
+          }
+  -       p += Whsize_hd(hd);
+  +       p += wh;
+ ✓ (2ms)
+
+Now let me verify the fix:
+  ╭─ Turn 20 ────────────────────────────────────────────────────────────╮
+  ▶ $ grep -n "p += wh\|p += Whsize" /app/ocaml/runtime/shared_heap.c | head -20 ✓ (7ms)
+
+Good. Now the pattern at lines 644, 650 matches the correct pattern at lines 301, 304, 787, 789. Let me now build:
+  ╭─ Turn 21 ────────────────────────────────────────────────────────────╮
+  ▶ $ cd /app/ocaml && make -j$(nproc) world 2>&1 | tail -30 ✓ (6m 30s)
+
+The world build succeeded. Now let's try bootstrap:
+  ╭─ Turn 22 ────────────────────────────────────────────────────────────╮
+  ▶ $ cd /app/ocaml && make -j$(nproc) bootstrap 2>&1 | tail -30 ✗ (10m 0s)
+    │ Command timed out after 600s
+
+  ↳ 18m 49s · 12963→6222 tokens · $0.399
+  ⬤ 6% of context window used
+
+

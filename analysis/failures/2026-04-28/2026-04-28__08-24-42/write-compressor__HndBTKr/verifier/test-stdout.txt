@@ -1,0 +1,111 @@
+Hit:1 http://archive.ubuntu.com/ubuntu noble InRelease
+Hit:2 http://archive.ubuntu.com/ubuntu noble-updates InRelease
+Hit:3 http://archive.ubuntu.com/ubuntu noble-backports InRelease
+Hit:4 http://security.ubuntu.com/ubuntu noble-security InRelease
+Reading package lists...
+Reading package lists...
+Building dependency tree...
+Reading state information...
+curl is already the newest version (8.5.0-2ubuntu10.8).
+0 upgraded, 0 newly installed, 0 to remove and 60 not upgraded.
+downloading uv 0.9.5 x86_64-unknown-linux-gnu
+no checksums to verify
+installing to /root/.local/bin
+  uv
+  uvx
+everything's installed!
+
+To add $HOME/.local/bin to your PATH, either restart your shell or run:
+
+    source $HOME/.local/bin/env (sh, bash, zsh)
+    source $HOME/.local/bin/env.fish (fish)
+Downloading cpython-3.13.9-linux-x86_64-gnu (download) (32.0MiB)
+ Downloading cpython-3.13.9-linux-x86_64-gnu (download)
+Downloading pygments (1.2MiB)
+ Downloading pygments
+Installed 6 packages in 87ms
+============================= test session starts ==============================
+platform linux -- Python 3.13.9, pytest-8.4.1, pluggy-1.6.0
+rootdir: /tests
+plugins: json-ctrf-0.3.5
+collected 3 items
+
+../tests/test_outputs.py .FF                                             [100%]
+
+=================================== FAILURES ===================================
+_____________________ test_decompression_produces_original _____________________
+
+    def test_decompression_produces_original():
+        """Test that decompressing the compressed file produces the file content."""
+        setup()
+        # Paths
+        compressed_path = Path("/app/data.comp")
+        decompressor_path = Path("/app/decomp2")
+        original_path = Path("/app/data.txt")
+    
+        # Check that all required files exist
+        assert compressed_path.exists(), f"Compressed file {compressed_path} does not exist"
+        assert decompressor_path.exists(), (
+            f"Decompressor {decompressor_path} does not exist"
+        )
+        assert original_path.exists(), f"Original file {original_path} does not exist"
+    
+        # Get original content
+        original_content = original_path.read_text()
+    
+        # Run decompression and capture output
+>       result = subprocess.run(
+            f"cat {compressed_path} | {decompressor_path}",
+            shell=True,
+            capture_output=True,
+            text=True,
+        )
+
+/tests/test_outputs.py:44: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/root/.local/share/uv/python/cpython-3.13.9-linux-x86_64-gnu/lib/python3.13/subprocess.py:556: in run
+    stdout, stderr = process.communicate(input, timeout=timeout)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.local/share/uv/python/cpython-3.13.9-linux-x86_64-gnu/lib/python3.13/subprocess.py:1222: in communicate
+    stdout, stderr = self._communicate(input, endtime, timeout)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.local/share/uv/python/cpython-3.13.9-linux-x86_64-gnu/lib/python3.13/subprocess.py:2169: in _communicate
+    stdout = self._translate_newlines(stdout,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <Popen: returncode: 0 args: 'cat /app/data.comp | /app/decomp2'>
+data = b'In informationd8\xcfFPO1j\x92E\xa9_S\xde\x91\xb9\xef\xdc5\xe7:g\\\xed#R;\xb4\xa1E\xa9k\xe3\xec]n=W[\x18M\xecWk\xdb\x...\x99\xe2m_\xaa?e_\x0bY7_kKSn\x99\xe8\x05e]\x1aS\x05\xa3=n^)G\x83ggo\xcc_qjT\xe9\xe2neeA\xcc\xb7\xc7Qh\xaf\xb8\x99\xb1l'
+encoding = 'utf-8', errors = 'strict'
+
+    def _translate_newlines(self, data, encoding, errors):
+>       data = data.decode(encoding, errors)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       UnicodeDecodeError: 'utf-8' codec can't decode byte 0xcf in position 16: invalid continuation byte
+
+/root/.local/share/uv/python/cpython-3.13.9-linux-x86_64-gnu/lib/python3.13/subprocess.py:1099: UnicodeDecodeError
+____________________________ test_compression_size _____________________________
+
+    def test_compression_size():
+        """Test that the compressed file size meets requirements."""
+        setup()
+        max_size_bytes = 2500  # As specified in task.yaml
+    
+        compressed_path = Path("/app/data.comp")
+        assert compressed_path.exists(), f"Compressed file {compressed_path} does not exist"
+    
+        # Check file size
+        file_size = compressed_path.stat().st_size
+>       assert file_size <= max_size_bytes, (
+            f"Compressed file size ({file_size} bytes) exceeds "
+            f"maximum allowed size ({max_size_bytes} bytes)"
+        )
+E       AssertionError: Compressed file size (2963 bytes) exceeds maximum allowed size (2500 bytes)
+E       assert 2963 <= 2500
+
+/tests/test_outputs.py:70: AssertionError
+==================================== PASSES ====================================
+=========================== short test summary info ============================
+PASSED ../tests/test_outputs.py::test_compressed_file_exists
+FAILED ../tests/test_outputs.py::test_decompression_produces_original - Unico...
+FAILED ../tests/test_outputs.py::test_compression_size - AssertionError: Comp...
+========================= 2 failed, 1 passed in 1.97s ==========================

@@ -1,0 +1,32 @@
+  yoyo (prompt mode) — model: claude-sonnet-4-6
+
+── Thinking ────────────────────────────────────────────────────────────────
+Let me start by exploring the working directory and understanding the task.  ▶ $ cat /tmp/yoyo-skills/bench/SKILL.md 2>/dev/null | head -50; ls -la; cat sequence… ✓ (15ms)
+  ▶ $ which oligotm; oligotm --help 2>&1 | head -20 ✓ (20ms)
+  ▶ $ apt-get install -y primer3 2>/dev/null | tail -5; which oligotm ✓ (4.1s)
+
+────────────────────────────────────────────────────────────────────────────────
+  3 tools completed in 12.5s (3 ✓)
+
+Good, oligotm is now available. Let me analyze the sequences to find the differences between input and output.
+  ╭─ Turn 4 ─────────────────────────────────────────────────────────────╮
+
+  🐙 Delegating to sub-agent...
+  ▶ sub_agent ✓ (5m 31s)
+
+Let me handle this directly:
+  ╭─ Turn 5 ─────────────────────────────────────────────────────────────╮
+  ▶ $ python3 << 'EOF' (28 lines) ✓ (2ms)
+  ▶ $ which python; apt-get install -y python3 2>/dev/null | tail -3 ✓ (12.7s)
+  ▶ $ python3 - << 'EOF' (33 lines) ✓ (138ms)
+  ▶ $ python3 - << 'EOF' (61 lines) ✓ (91ms)
+  ▶ $ python3 - << 'EOF' (45 lines) ✓ (111ms)
+  ▶ $ python3 - << 'EOF' (30 lines) ✓ (298ms)
+  ▶ $ python3 - << 'EOF' (84 lines) ✓ (1.8s)
+  ▶ $ cat primers.fasta (8 lines) ✓ (4ms)
+  8 tools completed in 1m 10s (8 ✓)
+
+  ↳ 10m 0s · 7443→16697 tokens · $0.431
+  ⬤ 6% of context window used
+
+

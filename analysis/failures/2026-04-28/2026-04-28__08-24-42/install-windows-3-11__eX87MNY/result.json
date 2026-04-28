@@ -1,0 +1,105 @@
+{
+    "id": "002b693d-27e6-45ec-bba0-083e334feb24",
+    "task_name": "terminal-bench/install-windows-3-11",
+    "trial_name": "install-windows-3-11__eX87MNY",
+    "trial_uri": "file:///tmp/bench-results/2026-04-28__08-24-42/install-windows-3-11__eX87MNY",
+    "task_id": {
+        "org": "terminal-bench",
+        "name": "install-windows-3-11",
+        "ref": "sha256:3fccdcf345cef4dd1a828ad3829024109b163b871b3f39db1af9308a77ee4ce7"
+    },
+    "source": "terminal-bench/terminal-bench-2",
+    "task_checksum": "c0f9008bdfc3e81c3067b36a5e5e09f0ac5868d25d7ac322e04e256c86a3fadb",
+    "config": {
+        "task": {
+            "path": null,
+            "git_url": null,
+            "git_commit_id": null,
+            "name": "terminal-bench/install-windows-3-11",
+            "ref": "sha256:3fccdcf345cef4dd1a828ad3829024109b163b871b3f39db1af9308a77ee4ce7",
+            "overwrite": false,
+            "download_dir": null,
+            "source": "terminal-bench/terminal-bench-2"
+        },
+        "trial_name": "install-windows-3-11__eX87MNY",
+        "trials_dir": "/tmp/bench-results/2026-04-28__08-24-42",
+        "timeout_multiplier": 1.0,
+        "agent_timeout_multiplier": null,
+        "verifier_timeout_multiplier": null,
+        "agent_setup_timeout_multiplier": null,
+        "environment_build_timeout_multiplier": null,
+        "agent": {
+            "name": null,
+            "import_path": "agents.yoyo_agent:Yoyo",
+            "model_name": "anthropic/claude-sonnet-4-6",
+            "override_timeout_sec": null,
+            "override_setup_timeout_sec": null,
+            "max_timeout_sec": null,
+            "kwargs": {},
+            "env": {}
+        },
+        "environment": {
+            "type": "docker",
+            "import_path": null,
+            "force_build": false,
+            "delete": true,
+            "override_cpus": null,
+            "override_memory_mb": null,
+            "override_storage_mb": null,
+            "override_gpus": null,
+            "suppress_override_warnings": false,
+            "mounts_json": null,
+            "env": {},
+            "kwargs": {}
+        },
+        "verifier": {
+            "override_timeout_sec": null,
+            "max_timeout_sec": null,
+            "env": {},
+            "disable": false
+        },
+        "artifacts": [],
+        "job_id": "3608afa1-5d6e-4d5b-b07a-0b706562e60a"
+    },
+    "agent_info": {
+        "name": "yoyo",
+        "version": "0.1.9",
+        "model_info": {
+            "name": "claude-sonnet-4-6",
+            "provider": "anthropic"
+        }
+    },
+    "agent_result": {
+        "n_input_tokens": null,
+        "n_cache_tokens": null,
+        "n_output_tokens": null,
+        "cost_usd": null,
+        "rollout_details": null,
+        "metadata": null
+    },
+    "verifier_result": {
+        "rewards": {
+            "reward": 0.0
+        }
+    },
+    "exception_info": null,
+    "started_at": "2026-04-28T08:26:04.689055Z",
+    "finished_at": "2026-04-28T08:35:08.271519Z",
+    "environment_setup": {
+        "started_at": "2026-04-28T08:26:04.690798Z",
+        "finished_at": "2026-04-28T08:26:30.326504Z"
+    },
+    "agent_setup": {
+        "started_at": "2026-04-28T08:26:30.326522Z",
+        "finished_at": "2026-04-28T08:26:41.266333Z"
+    },
+    "agent_execution": {
+        "started_at": "2026-04-28T08:26:41.266407Z",
+        "finished_at": "2026-04-28T08:33:57.945556Z"
+    },
+    "verifier": {
+        "started_at": "2026-04-28T08:33:58.171696Z",
+        "finished_at": "2026-04-28T08:34:54.382132Z"
+    },
+    "step_results": null
+}

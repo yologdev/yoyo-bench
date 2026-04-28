@@ -1,0 +1,70 @@
+  yoyo (prompt mode) — model: claude-sonnet-4-6
+
+── Thinking ────────────────────────────────────────────────────────────────
+Let me explore the environment first to understand what's available.  ▶ $ cat /tmp/yoyo-skills/bench/SKILL.md 2>/dev/null | head -50; echo "---"; ls /; ec… ✓ (19ms)
+  ▶ $ id; hostname; ls /home/; cat /etc/passwd | grep -v nologin | grep -v false; whic… ✓ (30ms)
+  ▶ $ apt-get install -y git nginx 2>&1 | tail -5 ✓ (7.5s)
+
+────────────────────────────────────────────────────────────────────────────────
+  3 tools completed in 14.1s (3 ✓)
+
+Now I'll set everything up step by step:
+
+1. Create the git user and bare repo
+2. Set up the post-receive hook to deploy to the web root
+3. Configure and start nginx on port 8080
+  ╭─ Turn 4 ─────────────────────────────────────────────────────────────╮
+  ▶ $ # Create git user (10 lines) ✓ (79ms)
+  ▶ $ # Set up the web root (16 lines) ✓ (12ms)
+  ▶ $ # Make /var/www/html writable by the git user (the hook runs… (24 lines) ✓ (20ms)
+  ▶ $ # Start nginx (7 lines) ✓ (1.1s)
+  ▶ $ # nginx worker runs as www-data, so /var/www/html needs to b… (32 lines) ✓ (76ms)
+  ▶ $ git config --global --add safe.directory /git/server (10 lines) ✓ (146ms)
+  ▶ $ curl http://localhost:8080/hello.html ✓ (9ms)
+  7 tools completed in 26.2s (7 ✓)
+
+Everything works. Let me now make sure the user account has SSH set up properly for remote access (since the task says `git clone user@server:/git/server`):
+  ╭─ Turn 11 ────────────────────────────────────────────────────────────╮
+  ▶ $ # Ensure SSH is installed and the user account is ready for … (20 lines) ✓ (26.8s)
+
+Everything is running. Here's a summary of what was configured:
+
+────────────────────────────────────────
+
+## What was set up
+
+### Git Server (`user@server:/git/server`)
+• User account: user — created for SSH git access
+• Bare repository: /git/server — the git remote you clone/push to
+• SSH daemon: running on port 22, ready for key-based auth (add your public key to /home/user/.ssh/authorized_keys)
+
+### Auto-deploy Hook
+• `/git/server/hooks/post-receive`: every time you git push, this hook runs:
+  ```bash
+  GIT_WORK_TREE=/var/www/html git checkout -f
+  ```
+  It checks out the latest files into the nginx web root at /var/www/html.
+
+### Web Server (nginx on port 8080)
+• nginx serves /var/www/html on port 8080
+• Config at /etc/nginx/sites-enabled/git-deploy
+
+### The full workflow you can now run:
+```bash
+git clone user@server:/git/server
+echo "hello world" > hello.html
+git add hello.html
+git commit -m "add hello.html"
+git push origin master
+# → hook fires, deploys to /var/www/html
+
+curl http://server:8080/hello.html
+# → hello world
+```
+
+**One thing to do on your end**: copy your SSH public key into `/home/user/.ssh/authorized_keys` on the server so passwordless (or key-based) login works.
+
+  ↳ 1m 24s · 2109→2284 tokens · $0.073
+  ⬤ 1% of context window used
+
+

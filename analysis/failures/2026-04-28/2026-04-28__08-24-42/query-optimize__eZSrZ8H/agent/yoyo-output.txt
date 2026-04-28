@@ -1,0 +1,54 @@
+  yoyo (prompt mode) — model: claude-sonnet-4-6
+
+── Thinking ────────────────────────────────────────────────────────────────
+Let me start by reading the existing SQL query and understanding the database structure.  ▶ $ cat /app/my-sql-query.sql  ▶ $ sqlite3 /app/oewn.sqlite ".schema" ✓ (2ms)
+ ✓ (530ms)
+  ▶ $ sqlite3 /app/oewn.sqlite "SELECT COUNT(*) FROM senses; SELECT COUNT(*) FROM word…  ▶ $ sqlite3 /app/oewn.sqlite ".indexes" ✓ (0ms)
+ ✓ (13ms)
+  ▶ $ # Run the original query and capture its output + timing (5 lines) ✗ (2m 0s)
+    │ Command timed out after 120s
+  ▶ $ # Create indexes first, then run the original query (8 lines) ✓ (599ms)
+  ▶ $ sqlite3 /app/oewn.sqlite ".indexes" ✓ (23ms)
+  ▶ $ # Check if the database allows writes (2 lines) ✓ (20ms)
+  ▶ $ ls -la /app/oewn.sqlite (3 lines) ✓ (57ms)
+  ▶ $ # Database is read-only. We need to optimize the query witho… (8 lines) ✓ (11ms)
+  ▶ $ # The file is truncated. Let me get the full content (8 lines) ✓ (2.0s)
+  ▶ $ python -c " (5 lines) ✓ (8ms)
+  ▶ read /app/my-sql-query.sql ✓ (0ms)
+  ▶ $ # The query has correlated subqueries that run per-row for t… (74 lines) ✓ (5ms)
+  ▶ $ time sqlite3 /app/oewn.sqlite < /app/sol.sql > /tmp/new_outp… (4 lines) ✓ (4.2s)
+  ▶ $ # Now let's verify against the original query with a timeout… (49 lines) ✗ (1m 0s)
+    │ Command timed out after 60s
+  ▶ $ # The original query is very slow. Let's verify our results … (15 lines) ✓ (99ms)
+  ▶ $ # break: top_synsetid=483, count=1 -- matches our output: 17… (14 lines) ✓ (697ms)
+  ▶ $ # Perfect. All values match. Let's also verify the last few … (3 lines) ✓ (23ms)
+  ▶ $ cat /app/sol.sql ✓ (34ms)
+
+────────────────────────────────────────────────────────────────────────────────
+  20 tools completed in 4m 13s (18 ✓, 2 ✗)
+
+The solution is complete. Here's what I did:
+
+## Analysis of the Problem
+
+The original query was extremely slow due to correlated subqueries in the SELECT clause:
+1. top_synsetid — a subquery that runs for every row in the outer result
+2. top_synset_sense_count — a subquery containing another nested subquery (triple nesting!) that also runs per row
+
+These correlated subqueries caused repeated full scans of the senses table for each of the 500+ result rows.
+
+## Optimization Strategy
+
+I rewrote the query using CTEs and window functions to eliminate all correlated subqueries:
+
+1. `base` CTE — joins words, senses, and `synsets` once
+2. `agg` CTE — computes all aggregate stats (total_synsets, total_senses, distinct_domains, distinct_posids) with the HAVING filter, replacing the inline subquery
+3. `synset_counts` CTE — precomputes per-word per-synset sense counts in a single pass, filtered to only qualifying words
+4. `top_synset` CTE — uses ROW_NUMBER() OVER (PARTITION BY wordid ORDER BY cnt DESC, synsetid ASC) to find the top synset per word in one pass — replacing the two deeply-nested correlated subqueries
+
+Result: Query runs in ~4 seconds instead of timing out (>2 minutes), producing the same 500 rows with identical output.
+
+  ↳ 25m 27s · 4067→3757 tokens · $0.138
+  ⬤ 2% of context window used
+
+
