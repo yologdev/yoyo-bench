@@ -1,0 +1,59 @@
+  yoyo (prompt mode) — model: claude-sonnet-4-6
+
+── Thinking ────────────────────────────────────────────────────────────────
+Let me start by exploring the /app/ directory to understand the program structure.  ▶ $ cat /app/main.cpp && echo "---" && cat /app/user.cpp  ▶ $ ls /app/ ✓ (3ms)
+ ✓ (4ms)
+  ▶ $ cat /app/user.h  ▶ $ # Try compiling both versions (3 lines) ✓ (5ms)
+ ✓ (1.5s)
+  ▶ $ g++ -std=c++17 -o /app/debug /app/main.cpp /app/user.cpp -g … (8 lines) ✓ (3.0s)
+  ▶ $ # The release binary crashes AFTER main returns (during stat… (3 lines) ✓ (2.3s)
+  ▶ $ # ASAN doesn't crash. The issue is specific to the custom li… (3 lines) ✓ (6ms)
+  ▶ $ ls /build/patches/ ✓ (235ms)
+  ▶ $ cat /build/patches/locale_classes.tcc.patch && echo "---" && cat /build/patches/… ✓ (4ms)
+  ▶ $ # Now I understand the problem! (66 lines) ✓ (1.2s)
+  ▶ $ # Good. Now let's confirm: the crash happens after main() re… (58 lines) ✓ (2.8s)
+  ▶ $ # Great! Release no longer crashes. Let's also verify debug … (5 lines) ✓ (2.2s)
+  ▶ $ # Now check for memory leaks with Valgrind (2 lines) ✓ (3.6s)
+  ▶ $ valgrind --leak-check=full --error-exitcode=1 /app/debug 2>&1 | tail -15 ✓ (11.7s)
+
+────────────────────────────────────────────────────────────────────────────────
+  14 tools completed in 1m 29s (14 ✓)
+
+Both builds work correctly and Valgrind reports zero memory leaks. Here's what I found and fixed:
+
+## Root Cause
+
+The patched libstdc++ (found in `/build/patches/`) contains a deliberate modification that behaves differently based on NDEBUG:
+
+• DEBUG mode: Locale facet registrations use std::malloc/std::free directly
+• RELEASE mode (-DNDEBUG): Locale facet registrations use ::operator new/::operator delete
+
+The main.cpp installs a **custom heap manager** (g_custom_heap) that intercepts operator new/delete. The crash sequence was:
+
+1. Application::init() activates g_custom_heap
+2. The first std::cout << triggers locale facet initialization → those facets are allocated via ::operator new → routed into the custom heap arena
+3. Application::shutdown() destroys g_custom_heap and sets it to nullptr
+4. After `main()` returns, static destructors clean up locale facets via ::operator delete → with g_custom_heap == nullptr, this calls std::free() on a pointer that was never malloc'd (it was from the arena) → SEGFAULT
+
+## Fix (in `user.cpp`)
+
+Force locale and facet initialization before the custom heap becomes active (i.e., inside user_init(), which is called first in `Application::init()`):
+
+```cpp
+void user_init() {
+    // Force locale initialization before the custom heap manager is activated.
+    // In RELEASE mode, the patched libstdc++ allocates locale facets via
+    // ::operator new (routed through custom heap when active). Those facets
+    // are freed during static destruction after main() returns — by which
+    // point the custom heap is already destroyed, causing a crash.
+    // Triggering facet initialization here ensures they use the real malloc.
+    std::locale loc;
+    (void)std::use_facet<std::ctype<char>>(loc);
+    std::cout.sync_with_stdio(false);
+}
+```
+
+  ↳ 1m 40s · 2921→3571 tokens · $0.117
+  ⬤ 2% of context window used
+
+

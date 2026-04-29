@@ -1,0 +1,48 @@
+  yoyo (prompt mode) — model: claude-sonnet-4-6
+
+── Thinking ────────────────────────────────────────────────────────────────
+Let me explore the environment and understand what's available, then compile SQLite with gcov instrumentation.  ▶ $ ls /app/ && ls /app/vendor/ && file /app/vendor/sqlite-fossil-release.tar.gz  ▶ $ which gcc && gcc --version && which gcov && gcov --version ✓ (3ms)
+ ✓ (7ms)
+  ▶ $ ls /app/ ; echo "---" ; ls /app/vendor/  ▶ $ which gcc || apk add --no-cache gcc musl-dev make || apt-get install -y gcc make ✓ (16ms)
+ ✓ (12.1s)
+
+────────────────────────────────────────────────────────────────────────────────
+  4 tools completed in 17.8s (4 ✓)
+
+Good, gcc and make are now installed. Let me extract the SQLite source and build it with gcov instrumentation.
+  ╭─ Turn 3 ─────────────────────────────────────────────────────────────╮
+  ▶ $ mkdir -p /app/sqlite && tar -xzf /app/vendor/sqlite-fossil-r… (2 lines) ✓ (945ms)
+  ▶ $ cd /app/sqlite && ./configure --prefix=/app/sqlite/install CFLAGS="--coverage" L… ✓ (3.9s)
+  ▶ $ cd /app/sqlite && make -j$(nproc) 2>&1 | tail -20 ✓ (32.1s)
+  3 tools completed in 42.9s (3 ✓)
+
+Build succeeded. Now install it and add to PATH:
+  ╭─ Turn 6 ─────────────────────────────────────────────────────────────╮
+  ▶ $ cd /app/sqlite && make install 2>&1 | tail -10 (2 lines) ✓ (69ms)
+  ▶ $ # Add to PATH permanently via /etc/environment and profile (8 lines) ✓ (65ms)
+  ▶ $ # Verify gcov instrumentation is present (.gcno files create… (6 lines) ✓ (87ms)
+  3 tools completed in 7.9s (3 ✓)
+
+Everything is in place. Here's a summary of what was done:
+
+1. Extracted the pre-vendored SQLite snapshot from /app/vendor/sqlite-fossil-release.tar.gz into /app/sqlite.
+
+2. Configured with gcov instrumentation flags:
+   ```
+   ./configure --prefix=/app/sqlite/install CFLAGS="--coverage" LDFLAGS="--coverage"
+   ```
+   The --coverage flag enables both -fprofile-arcs and -ftest-coverage (gcov instrumentation).
+
+3. Built and installed SQLite — the compiled `sqlite3 binary, libsqlite3.a, and libsqlite3.so` all carry gcov instrumentation (confirmed by .gcno note files and embedded `GCOV_*` symbols).
+
+4. Added to PATH permanently via /etc/profile.d/sqlite.sh and /etc/environment, and set in the current session.
+
+Verification:
+• which sqlite3 → /app/sqlite/install/bin/sqlite3
+• `sqlite3 --version → 3.50.4`
+• .gcno files present (sqlite3.gcno, sqlite3-sqlite3.gcno, sqlite3-shell.gcno) confirming gcov instrumentation was compiled in. Running the binary will generate .gcda data files that gcov can then process.
+
+  ↳ 1m 19s · 8978→1332 tokens · $0.103
+  ⬤ 2% of context window used
+
+

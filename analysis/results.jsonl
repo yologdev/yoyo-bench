@@ -21,3 +21,4 @@
 {"date":"2026-04-26","score":0.2247,"total":89,"passed":20,"prompt_hash":"67dabd21","model":"anthropic/claude-sonnet-4-6"}
 {"date":"2026-04-27","score":0.191,"total":89,"passed":17,"prompt_hash":"67dabd21","model":"anthropic/claude-sonnet-4-6"}
 {"date":"2026-04-28","score":0.236,"total":89,"passed":21,"prompt_hash":"67dabd21","model":"anthropic/claude-sonnet-4-6"}
+{"date":"2026-04-29","score":0.2022,"total":89,"passed":18,"prompt_hash":"67dabd21","model":"anthropic/claude-sonnet-4-6"}

@@ -1,0 +1,83 @@
+{
+    "results": {
+        "tool": {
+            "name": "pytest",
+            "version": "8.3.4"
+        },
+        "summary": {
+            "tests": 6,
+            "passed": 3,
+            "failed": 3,
+            "skipped": 0,
+            "pending": 0,
+            "other": 0,
+            "start": 1777453707.4334,
+            "stop": 1777453712.0571575
+        },
+        "tests": [
+            {
+                "name": "test_outputs.py::test_rstan_package_installed",
+                "status": "passed",
+                "duration": 4.503513568000017,
+                "start": 1777453707.5175405,
+                "stop": 1777453712.0213525,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::test_hierarchical_model_implemented",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 0.0010328990001653438,
+                "start": 1777453712.0215867,
+                "stop": 1777453712.044368,
+                "retries": 0,
+                "file_path": "test_outputs.py",
+                "trace": "def test_hierarchical_model_implemented():\n        \"\"\"Test that hierarchical Bayesian model structure is implemented\"\"\"\n        stan_model_path = \"/app/hierarchical_model.stan\"\n>       assert os.path.exists(stan_model_path), (\n            f\"Stan model file not found at {stan_model_path}\"\n        )\nE       AssertionError: Stan model file not found at /app/hierarchical_model.stan\nE       assert False\nE        +  where False = <function exists at 0x7f45cef37240>('/app/hierarchical_model.stan')\nE        +    where <function exists at 0x7f45cef37240> = <module 'posixpath' (frozen)>.exists\nE        +      where <module 'posixpath' (frozen)> = os.path\n\ntest_outputs.py:32: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_outputs.py::test_r_script_created_and_used_rstan",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 0.0007215740001811355,
+                "start": 1777453712.0446231,
+                "stop": 1777453712.0510168,
+                "retries": 0,
+                "file_path": "test_outputs.py",
+                "trace": "def test_r_script_created_and_used_rstan():\n        \"\"\"Test that R script 'analysis.R' was created and uses RStan\"\"\"\n        r_script_path = \"/app/analysis.R\"\n>       assert os.path.exists(r_script_path), (\n            f\"R analysis script not found at {r_script_path}\"\n        )\nE       AssertionError: R analysis script not found at /app/analysis.R\nE       assert False\nE        +  where False = <function exists at 0x7f45cef37240>('/app/analysis.R')\nE        +    where <function exists at 0x7f45cef37240> = <module 'posixpath' (frozen)>.exists\nE        +      where <module 'posixpath' (frozen)> = os.path\n\ntest_outputs.py:60: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_outputs.py::test_posterior_alpha_estimation",
+                "status": "passed",
+                "duration": 0.0005028840000704804,
+                "start": 1777453712.0512393,
+                "stop": 1777453712.0519361,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::test_posterior_beta_estimation",
+                "status": "passed",
+                "duration": 0.0004941880001751997,
+                "start": 1777453712.052146,
+                "stop": 1777453712.0527854,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::test_stan_model_sampling",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 0.0005410740004663239,
+                "start": 1777453712.052992,
+                "stop": 1777453712.0569448,
+                "retries": 0,
+                "file_path": "test_outputs.py",
+                "trace": "def test_stan_model_sampling():\n        \"\"\"Test that MCMC sampling runs successfully.\"\"\"\n        # Run analysis.R and capture all output to check\n        # if the stan model sampling runs successfully\n        r_script_path = \"/app/analysis.R\"\n        if not os.path.exists(r_script_path):\n>           assert False, f\"R analysis script not found at {r_script_path}\"\nE           AssertionError: R analysis script not found at /app/analysis.R\nE           assert False\n\ntest_outputs.py:147: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            }
+        ]
+    }
+}

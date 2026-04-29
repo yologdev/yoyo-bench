@@ -1,0 +1,51 @@
+  yoyo (prompt mode) — model: claude-sonnet-4-6
+
+── Thinking ────────────────────────────────────────────────────────────────
+Let me start by exploring the data files to understand their structure.  ▶ $ ls /data/source_a/ /data/source_b/ /data/source_c/ 2>&1 && echo "---" && cat /da…  ▶ $ head -5 /data/source_b/users.csv && echo "---" && python3 -c "import pandas as p… ✓ (9ms)
+ ✓ (808ms)
+  ▶ $ cat /data/source_a/users.json && echo "===" && cat /data/source_b/users.csv && e… ✓ (500ms)
+  ▶ write /app/merge.py (178 lines) ✓ (30ms)
+  ▶ $ cd /app && python3 merge.py ✓ (591ms)
+  ▶ $ python3 -c " (13 lines) ✓ (1.0s)
+
+────────────────────────────────────────────────────────────────────────────────
+  6 tools completed in 34.2s (6 ✓)
+
+Both output files are created and correct. Here's a summary of what was done:
+
+────────────────────────────────────────
+
+### What the script does
+
+Field normalisation — all column names are lowercased then remapped via a lookup table:
+| Raw field | → Unified field |
+|---|---|
+| id, user_id, userId | user_id |
+| email, email_address | email |
+| full_name, name, userName | name |
+| registration_date, created_at, joined | created_date |
+| is_active, active | converted to "active"/"inactive" status string |
+
+Merge logic — for each unique `user_id` across all three sources, each field is resolved by priority: source_a → source_b → source_c (first non-null wins).
+
+Conflict detection — a conflict is recorded whenever the same user appears in more than one source with differing values for a field.
+
+────────────────────────────────────────
+
+### Results
+
+**`/app/merged_users.parquet`** — 4 unique users:
+
+| user_id | name | email | created_date | status |
+|---|---|---|---|---|
+| 101 | John Doe | john@a.com | 2024-01-15 | active |
+| 102 | Jane Smith | jane@a.com | 2024-02-20 | inactive |
+| 103 | Bob Wilson | bob@b.com | 2024-03-01 | active |
+| 104 | Alice Brown | alice@c.com | 2024-04-01 | active |
+
+`/app/conflicts.json` — 3 conflicts, all on user 101 (present in all three sources with differing name, email, and `created_date`). In every case the source_a value was selected.
+
+  ↳ 44.2s · 1955→2837 tokens · $0.077
+  ⬤ 1% of context window used
+
+

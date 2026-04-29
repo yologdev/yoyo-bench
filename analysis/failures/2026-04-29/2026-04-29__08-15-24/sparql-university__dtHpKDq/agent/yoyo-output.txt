@@ -1,0 +1,68 @@
+  yoyo (prompt mode) — model: claude-sonnet-4-6
+
+── Thinking ────────────────────────────────────────────────────────────────
+Let me start by exploring the Turtle file to understand the ontology and data structure.  ▶ $ cat /app/university_graph.ttl ✓ (145ms)
+  ▶ $ cat /app/university_graph.ttl | tail -100 ✓ (9ms)
+
+────────────────────────────────────────────────────────────────────────────────
+  2 tools completed in 4.4s (2 ✓)
+
+Now let me analyze the data carefully before writing the query:
+  ╭─ Turn 3 ─────────────────────────────────────────────────────────────╮
+  ▶ $  (81 lines) ✓ (10ms)
+  ▶ $ which arq rapper riot 2>/dev/null; pip show rdflib 2>/dev/null | head -3; which … ✓ (67ms)
+  ▶ $ pip install rdflib -q && python3 -c "import rdflib; print(rdflib.__version__)" ✓ (3ms)
+  ▶ $ pip3 install rdflib -q && python3 -c "import rdflib; print(rdflib.__version__)" ✓ (5ms)
+  ▶ $ python3 -c "import rdflib; print(rdflib.__version__)" 2>/dev/null || python3 --v… ✓ (24ms)
+  ▶ $ apt-get list --installed 2>/dev/null | grep -i jena; find / -name "arq" -o -name… ✓ (195ms)
+  ▶ $ which python python3 java ruby perl node 2>/dev/null; ls /usr/bin/ | head -30 ✓ (4ms)
+  ▶ $ apt-get update -qq && apt-get install -y python3 python3-pip -q 2>&1 | tail -5 ✓ (55.4s)
+  ▶ $ pip3 install rdflib -q && python3 -c "import rdflib; print(rdflib.__version__)" ✓ (778ms)
+  ▶ $ pip3 install rdflib -q --break-system-packages && python3 -c "import rdflib; pri… ✓ (4.6s)
+  10 tools completed in 1m 23s (10 ✓)
+
+Good, rdflib is available. Now let me craft and test the SPARQL query:
+  ╭─ Turn 13 ────────────────────────────────────────────────────────────╮
+  ▶ $ cat << 'EOF' > /app/test_query.py (59 lines) ✓ (1.2s)
+
+The query produces the expected results. Let me verify my analysis is correct:
+• Orfeas Menis: Full professor, works in ComputerScience_NTUA (GR ✓ EU) and Sloan_MIT (US - not EU). CS_NTUA has 12 students in CS101 → passes criterion 3. Countries listed: GR.
+• **Pepe Attanasio**: Full professor, works in Mathematics_IST (PT ✓) and ComputerScience_NTUA (GR ✓). CS_NTUA has 12 > 10 students → passes. Countries: GR, PT.
+• Aristotle Tympas: Full professor, works in `HistoryAndPhilosophy_NKUA` (GR ✓). STS101 has 12 currently enrolled students > 10 → passes.
+• Marie Dubois: Full professor, works in `Mathematics_Sorbonne` (FR ✓). But Math201 only has 6 currently enrolled students (others have graduated before 2025-08-16) → fails criterion 3. ✗
+• John Smith: Full professor, but only works in `Biology_MIT` (US - not EU) → fails criterion 2. ✗
+
+Now let me write the final solution:
+  ╭─ Turn 14 ────────────────────────────────────────────────────────────╮
+  ▶ write /app/solution.sparql (42 lines) ✓ (1ms)
+  ▶ $ cat << 'EOF' > /tmp/verify.py (15 lines) ✓ (873ms)
+  2 tools completed in 12.9s (2 ✓)
+
+The solution is saved at /app/solution.sparql. Here's a summary of the query logic and results:
+
+## Query Design
+
+The SPARQL query enforces all three criteria:
+
+1. Full professors: Filters roles that start with "Professor of" — this naturally excludes "Assistant Professor of..." entries (Athanasios Voulodimos, Stefan Mueller).
+
+2. EU country filter: Uses IN (...) with all 27 official EU member states' ISO alpha-2 codes as of 2025-08-16. This excludes "CH" (Switzerland/ETH Zurich) and "US" (USA/MIT, Berkeley).
+
+3. >10 currently enrolled students in at least one EU department: Uses a nested SELECT subquery to count distinct students per department who:
+   • Have `enrollmentDate ≤ 2025-08-16`, AND
+   • Either have no graduation date OR graduationDate > 2025-08-16
+
+## Results
+
+| Professor | Countries |
+|---|---|
+| Aristotle Tympas | GR |
+| Orfeas Menis | GR |
+| Pepe Attanasio | GR, PT |
+
+Marie Dubois (Sorbonne/FR) is excluded because Math201 only has 6 currently enrolled students — 8 students with graduation dates before 2025-08-16 are filtered out. John Smith (MIT/US) is excluded because the US is not in the EU.
+
+  ↳ 2m 34s · 7582→5135 tokens · $0.208
+  ⬤ 4% of context window used
+
+
