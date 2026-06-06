@@ -1,0 +1,291 @@
+Tip: There are many benchmarks available in Harbor's registry.
+Run `harbor datasets list` to see all available datasets.
+
+[31m╭─[0m[31m────────────────────[0m[31m [0m[1;31mTraceback [0m[1;2;31m(most recent call last)[0m[31m [0m[31m─────────────────────[0m[31m─╮[0m
+[31m│[0m [2m/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/harbor/[0m [31m│[0m
+[31m│[0m [2mcli/[0m[1mjobs.py[0m:1357 in start                                                    [31m│[0m
+[31m│[0m                                                                              [31m│[0m
+[31m│[0m   [2m1354 [0m[2m│   [0m[2m# `_run_job` itself prints the summary + invokes the upload [0m      [31m│[0m
+[31m│[0m        [2mfinalize[0m                                                              [31m│[0m
+[31m│[0m   [2m1355 [0m[2m│   [0m[2m# (when --upload is set) so everything stays on one event loop. [0m  [31m│[0m
+[31m│[0m        [2mSee[0m                                                                   [31m│[0m
+[31m│[0m   [2m1356 [0m[2m│   [0m[2m# the long comment in `HarborHubUploadPlugin.on_job_end` for why [0m [31m│[0m
+[31m│[0m        [2mthis matters.[0m                                                         [31m│[0m
+[31m│[0m [31m❱ [0m1357 [2m│   [0mjob, job_result = [1;4mrun_async(_run_job())[0m                           [31m│[0m
+[31m│[0m   [2m1358 [0m[2m│   [0m                                                                  [31m│[0m
+[31m│[0m   [2m1359 [0m[2m│   [0m[94mif[0m export_traces:                                                 [31m│[0m
+[31m│[0m   [2m1360 [0m[2m│   │   [0m[94mfrom[0m[90m [0m[4;96mharbor[0m[4;96m.[0m[4;96mutils[0m[4;96m.[0m[4;96mtraces_utils[0m[90m [0m[94mimport[0m export_traces [94mas[0m        [31m│[0m
+[31m│[0m        _export_traces                                                        [31m│[0m
+[31m│[0m                                                                              [31m│[0m
+[31m│[0m [2m/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/harbor/[0m [31m│[0m
+[31m│[0m [2mcli/[0m[1mutils.py[0m:26 in run_async                                                 [31m│[0m
+[31m│[0m                                                                              [31m│[0m
+[31m│[0m   [2m 23 [0m[2;33m│   [0m[33m"""[0m                                                                [31m│[0m
+[31m│[0m   [2m 24 [0m[2m│   [0m[94mif[0m sys.platform == [33m"[0m[33mwin32[0m[33m"[0m:                                        [31m│[0m
+[31m│[0m   [2m 25 [0m[2m│   │   [0m[94mreturn[0m asyncio.run(coro,                                       [31m│[0m
+[31m│[0m       loop_factory=asyncio.ProactorEventLoop)                                [31m│[0m
+[31m│[0m [31m❱ [0m 26 [2m│   [0m[94mreturn[0m [1;4masyncio.run(coro)[0m                                           [31m│[0m
+[31m│[0m   [2m 27 [0m                                                                       [31m│[0m
+[31m│[0m   [2m 28 [0m                                                                       [31m│[0m
+[31m│[0m   [2m 29 [0m[94mdef[0m[90m [0m[92mparse_kwargs[0m(kwargs_list: [96mlist[0m[[96mstr[0m] | [94mNone[0m) -> [96mdict[0m[[96mstr[0m, Any]:     [31m│[0m
+[31m│[0m                                                                              [31m│[0m
+[31m│[0m [2m/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/asyncio/[0m[1mrunners.py[0m:19 [31m│[0m
+[31m│[0m 5 in run                                                                     [31m│[0m
+[31m│[0m                                                                              [31m│[0m
+[31m│[0m   [2m192 [0m[2m│   │   │   [0m[33m"[0m[33masyncio.run() cannot be called from a running event [0m      [31m│[0m
+[31m│[0m       [33mloop[0m[33m"[0m)                                                                 [31m│[0m
+[31m│[0m   [2m193 [0m[2m│   [0m                                                                   [31m│[0m
+[31m│[0m   [2m194 [0m[2m│   [0m[94mwith[0m Runner(debug=debug, loop_factory=loop_factory) [94mas[0m runner:     [31m│[0m
+[31m│[0m [31m❱ [0m195 [2m│   │   [0m[94mreturn[0m [1;4mrunner.run(main)[0m                                        [31m│[0m
+[31m│[0m   [2m196 [0m                                                                       [31m│[0m
+[31m│[0m   [2m197 [0m                                                                       [31m│[0m
+[31m│[0m   [2m198 [0m[94mdef[0m[90m [0m[92m_cancel_all_tasks[0m(loop):                                           [31m│[0m
+[31m│[0m                                                                              [31m│[0m
+[31m│[0m [2m/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/asyncio/[0m[1mrunners.py[0m:11 [31m│[0m
+[31m│[0m 8 in run                                                                     [31m│[0m
+[31m│[0m                                                                              [31m│[0m
+[31m│[0m   [2m115 [0m[2m│   │   [0m                                                               [31m│[0m
+[31m│[0m   [2m116 [0m[2m│   │   [0m[96mself[0m._interrupt_count = [94m0[0m                                      [31m│[0m
+[31m│[0m   [2m117 [0m[2m│   │   [0m[94mtry[0m:                                                           [31m│[0m
+[31m│[0m [31m❱ [0m118 [2m│   │   │   [0m[94mreturn[0m [96mself[0m._loop.run_until_complete(task)                 [31m│[0m
+[31m│[0m   [2m119 [0m[2m│   │   [0m[94mexcept[0m exceptions.CancelledError:                              [31m│[0m
+[31m│[0m   [2m120 [0m[2m│   │   │   [0m[94mif[0m [96mself[0m._interrupt_count > [94m0[0m:                              [31m│[0m
+[31m│[0m   [2m121 [0m[2m│   │   │   │   [0muncancel = [96mgetattr[0m(task, [33m"[0m[33muncancel[0m[33m"[0m, [94mNone[0m)             [31m│[0m
+[31m│[0m                                                                              [31m│[0m
+[31m│[0m [2m/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/asyncio/[0m[1mbase_events.p[0m [31m│[0m
+[31m│[0m [1my[0m:691 in run_until_complete                                                  [31m│[0m
+[31m│[0m                                                                              [31m│[0m
+[31m│[0m   [2m 688 [0m[2m│   │   [0m[94mif[0m [95mnot[0m future.done():                                         [31m│[0m
+[31m│[0m   [2m 689 [0m[2m│   │   │   [0m[94mraise[0m [96mRuntimeError[0m([33m'[0m[33mEvent loop stopped before Future [0m     [31m│[0m
+[31m│[0m        [33mcompleted.[0m[33m'[0m)                                                          [31m│[0m
+[31m│[0m   [2m 690 [0m[2m│   │   [0m                                                              [31m│[0m
+[31m│[0m [31m❱ [0m 691 [2m│   │   [0m[94mreturn[0m [1;4mfuture.result()[0m                                        [31m│[0m
+[31m│[0m   [2m 692 [0m[2m│   [0m                                                                  [31m│[0m
+[31m│[0m   [2m 693 [0m[2m│   [0m[94mdef[0m[90m [0m[92mstop[0m([96mself[0m):                                                   [31m│[0m
+[31m│[0m   [2m 694 [0m[2;90m│   │   [0m[33m"""Stop running the event loop.[0m                               [31m│[0m
+[31m│[0m                                                                              [31m│[0m
+[31m│[0m [2m/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/harbor/[0m [31m│[0m
+[31m│[0m [2mcli/[0m[1mjobs.py[0m:1285 in _run_job                                                 [31m│[0m
+[31m│[0m                                                                              [31m│[0m
+[31m│[0m   [2m1282 [0m[2m│   │   │   [0m[94mif[0m upload                                                 [31m│[0m
+[31m│[0m   [2m1283 [0m[2m│   │   │   [0m[94melse[0m [94mFalse[0m                                                [31m│[0m
+[31m│[0m   [2m1284 [0m[2m│   │   [0m)                                                             [31m│[0m
+[31m│[0m [31m❱ [0m1285 [2m│   │   [0mjob = [1;4;94mawait[0m[1;4m Job.create(config)[0m                                [31m│[0m
+[31m│[0m   [2m1286 [0m[2m│   │   [0m_confirm_host_env_access(                                     [31m│[0m
+[31m│[0m   [2m1287 [0m[2m│   │   │   [0mjob,                                                      [31m│[0m
+[31m│[0m   [2m1288 [0m[2m│   │   │   [0mconsole,                                                  [31m│[0m
+[31m│[0m                                                                              [31m│[0m
+[31m│[0m [2m/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/harbor/[0m [31m│[0m
+[31m│[0m [1mjob.py[0m:125 in create                                                         [31m│[0m
+[31m│[0m                                                                              [31m│[0m
+[31m│[0m   [2m122 [0m[2m│   │   [0m                                                               [31m│[0m
+[31m│[0m       EnvironmentFactory.validate_resource_policies(config.environment)      [31m│[0m
+[31m│[0m   [2m123 [0m[2m│   │   [0mmetrics = [94mawait[0m [96mcls[0m._resolve_metrics(config, task_configs)     [31m│[0m
+[31m│[0m   [2m124 [0m[2m│   │   [0m                                                               [31m│[0m
+[31m│[0m [31m❱ [0m125 [2m│   │   [0mtask_download_results = [1;4;94mawait[0m[1;4m [0m[1;4;96mcls[0m[1;4m._cache_tasks(task_configs)[0m   [31m│[0m
+[31m│[0m   [2m126 [0m[2m│   │   [0m                                                               [31m│[0m
+[31m│[0m   [2m127 [0m[2m│   │   [0m[94mreturn[0m [96mcls[0m(                                                    [31m│[0m
+[31m│[0m   [2m128 [0m[2m│   │   │   [0mconfig,                                                    [31m│[0m
+[31m│[0m                                                                              [31m│[0m
+[31m│[0m [2m/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/harbor/[0m [31m│[0m
+[31m│[0m [1mjob.py[0m:550 in _cache_tasks                                                   [31m│[0m
+[31m│[0m                                                                              [31m│[0m
+[31m│[0m   [2m547 [0m[2m│   │   [0mclient = TaskClient()                                          [31m│[0m
+[31m│[0m   [2m548 [0m[2m│   │   [0m                                                               [31m│[0m
+[31m│[0m   [2m549 [0m[2m│   │   [0mtask_ids = [config.get_task_id() [94mfor[0m config [95min[0m remote_configs] [31m│[0m
+[31m│[0m [31m❱ [0m550 [2m│   │   [0mresult = [1;4;94mawait[0m[1;4m client.download_tasks([0m                          [31m│[0m
+[31m│[0m   [2m551 [0m[2m│   │   │   [0m[1;4mtask_ids=task_ids,[0m                                         [31m│[0m
+[31m│[0m   [2m552 [0m[2m│   │   │   [0m[1;4moverwrite=[0m[1;4;96many[0m[1;4m(overwrites),[0m                                 [31m│[0m
+[31m│[0m   [2m553 [0m[2m│   │   │   [0m[1;4moutput_dir=output_dirs.pop() [0m[1;4;94mif[0m[1;4m output_dirs [0m[1;4;94melse[0m[1;4m [0m[1;4;94mNone[0m[1;4m,[0m     [31m│[0m
+[31m│[0m                                                                              [31m│[0m
+[31m│[0m [2m/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/harbor/[0m [31m│[0m
+[31m│[0m [2mtasks/[0m[1mclient.py[0m:519 in download_tasks                                        [31m│[0m
+[31m│[0m                                                                              [31m│[0m
+[31m│[0m   [2m516 [0m[2m│   │   │   [0mon_task_download_start=on_task_download_start,             [31m│[0m
+[31m│[0m   [2m517 [0m[2m│   │   │   [0mon_task_download_complete=on_task_download_complete,       [31m│[0m
+[31m│[0m   [2m518 [0m[2m│   │   [0m)                                                              [31m│[0m
+[31m│[0m [31m❱ [0m519 [2m│   │   [0mpackage_results = [1;4;94mawait[0m[1;4m [0m[1;4;96mself[0m[1;4m._download_package_tasks([0m          [31m│[0m
+[31m│[0m   [2m520 [0m[2m│   │   │   [0m[1;4mpackage_ids,[0m                                               [31m│[0m
+[31m│[0m   [2m521 [0m[2m│   │   │   [0m[1;4moverwrite=overwrite,[0m                                       [31m│[0m
+[31m│[0m   [2m522 [0m[2m│   │   │   [0m[1;4moutput_dir=output_dir [0m[1;4;94mif[0m[1;4m explicit_output_dir [0m[1;4;94melse[0m[1;4m [0m[1;4;94mNone[0m[1;4m,[0m    [31m│[0m
+[31m│[0m                                                                              [31m│[0m
+[31m│[0m [2m/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/harbor/[0m [31m│[0m
+[31m│[0m [2mtasks/[0m[1mclient.py[0m:335 in _download_package_tasks                               [31m│[0m
+[31m│[0m                                                                              [31m│[0m
+[31m│[0m   [2m332 [0m[2m│   │   │   │   [0m[94mif[0m on_task_download_complete [95mis[0m [95mnot[0m [94mNone[0m:              [31m│[0m
+[31m│[0m   [2m333 [0m[2m│   │   │   │   │   [0mon_task_download_complete(task_id, result)         [31m│[0m
+[31m│[0m   [2m334 [0m[2m│   │   [0m                                                               [31m│[0m
+[31m│[0m [31m❱ [0m335 [2m│   │   [0m[94masync[0m [94mwith[0m [1;4masyncio.TaskGroup()[0m [94mas[0m tg:                          [31m│[0m
+[31m│[0m   [2m336 [0m[2m│   │   │   [0m[94mfor[0m task_id [95min[0m package_task_ids:                           [31m│[0m
+[31m│[0m   [2m337 [0m[2m│   │   │   │   [0mtg.create_task(_download_one(task_id))                 [31m│[0m
+[31m│[0m   [2m338 [0m                                                                       [31m│[0m
+[31m│[0m                                                                              [31m│[0m
+[31m│[0m [2m/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/asyncio/[0m[1mtaskgroups.py[0m [31m│[0m
+[31m│[0m :71 in __aexit__                                                             [31m│[0m
+[31m│[0m                                                                              [31m│[0m
+[31m│[0m   [2m 68 [0m[2m│   [0m[94masync[0m [94mdef[0m[90m [0m[92m__aexit__[0m([96mself[0m, et, exc, tb):                            [31m│[0m
+[31m│[0m   [2m 69 [0m[2m│   │   [0mtb = [94mNone[0m                                                      [31m│[0m
+[31m│[0m   [2m 70 [0m[2m│   │   [0m[94mtry[0m:                                                           [31m│[0m
+[31m│[0m [31m❱ [0m 71 [2m│   │   │   [0m[94mreturn[0m [94mawait[0m [96mself[0m._aexit(et, exc)                          [31m│[0m
+[31m│[0m   [2m 72 [0m[2m│   │   [0m[94mfinally[0m:                                                       [31m│[0m
+[31m│[0m   [2m 73 [0m[2m│   │   │   [0m[2m# Exceptions are heavy objects that can have object[0m        [31m│[0m
+[31m│[0m   [2m 74 [0m[2m│   │   │   [0m[2m# cycles (bad for GC); let's not keep a reference to[0m       [31m│[0m
+[31m│[0m                                                                              [31m│[0m
+[31m│[0m [2m/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/asyncio/[0m[1mtaskgroups.py[0m [31m│[0m
+[31m│[0m :164 in _aexit                                                               [31m│[0m
+[31m│[0m                                                                              [31m│[0m
+[31m│[0m   [2m161 [0m[2m│   │   [0m                                                               [31m│[0m
+[31m│[0m   [2m162 [0m[2m│   │   [0m[94mif[0m [96mself[0m._errors:                                               [31m│[0m
+[31m│[0m   [2m163 [0m[2m│   │   │   [0m[94mtry[0m:                                                       [31m│[0m
+[31m│[0m [31m❱ [0m164 [2m│   │   │   │   [0m[94mraise[0m BaseExceptionGroup(                              [31m│[0m
+[31m│[0m   [2m165 [0m[2m│   │   │   │   │   [0m[33m'[0m[33munhandled errors in a TaskGroup[0m[33m'[0m,                 [31m│[0m
+[31m│[0m   [2m166 [0m[2m│   │   │   │   │   [0m[96mself[0m._errors,                                      [31m│[0m
+[31m│[0m   [2m167 [0m[2m│   │   │   │   [0m) [94mfrom[0m[90m [0m[94mNone[0m                                            [31m│[0m
+[31m╰──────────────────────────────────────────────────────────────────────────────╯[0m
+[1;91mExceptionGroup: [0munhandled errors in a TaskGroup [1m([0m[1;36m1[0m sub-exception[1m)[0m
+
+[35m╭─[0m[35m─────────────────────────────[0m[35m Sub-exception #1 [0m[35m─────────────────────────────[0m[35m─╮[0m
+[35m│[0m [31m╭─[0m[31m──────────────────[0m[31m [0m[1;31mTraceback [0m[1;2;31m(most recent call last)[0m[31m [0m[31m───────────────────[0m[31m─╮[0m [35m│[0m
+[35m│[0m [31m│[0m [2m/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/har[0m [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m [2mbor/tasks/[0m[1mclient.py[0m:309 in _download_one                                 [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m                                                                          [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m   [2m306 [0m[2m│   │   │   │   [0mt0 = time.monotonic()                              [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m   [2m307 [0m[2m│   │   │   │   [0m[94mwith[0m tempfile.TemporaryDirectory() [94mas[0m tmp:         [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m   [2m308 [0m[2m│   │   │   │   │   [0marchive_file = Path(tmp) / ARCHIVE_FILENAME    [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m [31m❱ [0m309 [2m│   │   │   │   │   [0m[1;4;94mawait[0m[1;4m [0m                                         [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m       [1;4mstorage.download_file(resolved.archive_path, archive_file)[0m         [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m   [2m310 [0m[2m│   │   │   │   │   [0m                                               [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m   [2m311 [0m[2m│   │   │   │   │   [0m[94mif[0m target_dir.exists():                        [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m   [2m312 [0m[2m│   │   │   │   │   │   [0mshutil.rmtree(target_dir)                  [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m                                                                          [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m [2m/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/har[0m [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m [2mbor/storage/[0m[1msupabase.py[0m:49 in download_file                              [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m                                                                          [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m   [2m46 [0m[2m│   [0m                                                                [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m   [2m47 [0m[2m│   [0m[94masync[0m [94mdef[0m[90m [0m[92mdownload_file[0m([96mself[0m, remote_path: [96mstr[0m, file_path:      [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m      Path) -> [94mNone[0m:                                                      [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m   [2m48 [0m[2m│   │   [0mclient = [94mawait[0m create_authenticated_client()                [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m [31m❱ [0m49 [2m│   │   [0mdata = [1;4;94mawait[0m[1;4m [0m                                               [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m      [1;4mclient.storage.from_(BUCKET).download(remote_path)[0m                  [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m   [2m50 [0m[2m│   │   [0mfile_path.parent.mkdir(parents=[94mTrue[0m, exist_ok=[94mTrue[0m)         [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m   [2m51 [0m[2m│   │   [0mfile_path.write_bytes(data)                                 [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m   [2m52 [0m                                                                    [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m                                                                          [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m [2m/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/sto[0m [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m [2mrage3/_async/[0m[1mfile_api.py[0m:485 in download                                 [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m                                                                          [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m   [2m482 [0m[2m│   │   [0mtransform_options = url_options.get([33m"[0m[33mtransform[0m[33m"[0m) [95mor[0m        [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m       TransformOptions()                                                 [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m   [2m483 [0m[2m│   │   [0m                                                           [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m   [2m484 [0m[2m│   │   [0mpath_parts = relative_path_to_parts(path)                  [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m [31m❱ [0m485 [2m│   │   [0mresponse = [1;4;94mawait[0m[1;4m [0m[1;4;96mself[0m[1;4m._request([0m                            [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m   [2m486 [0m[2m│   │   │   [0m[1;4;33m"[0m[1;4;33mGET[0m[1;4;33m"[0m[1;4m,[0m                                                 [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m   [2m487 [0m[2m│   │   │   [0m[1;4m[*render_path, [0m[1;4;96mself[0m[1;4m.id, *path_parts],[0m                  [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m   [2m488 [0m[2m│   │   │   [0m[1;4mquery_params={[0m                                         [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m                                                                          [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m [2m/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/sto[0m [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m [2mrage3/_async/[0m[1mfile_api.py[0m:72 in _request                                  [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m                                                                          [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m   [2m 69 [0m[2m│   │   │   [0murl_path =                                             [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m       [96mself[0m._base_url.joinpath(*path).with_query(query_params)            [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m   [2m 70 [0m[2m│   │   │   [0mheaders = headers [95mor[0m [96mdict[0m()                            [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m   [2m 71 [0m[2m│   │   │   [0mheaders.update([96mself[0m._headers)                          [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m [31m❱ [0m 72 [2m│   │   │   [0mresponse = [94mawait[0m [96mself[0m._client.request(                 [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m   [2m 73 [0m[2m│   │   │   │   [0mmethod,                                            [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m   [2m 74 [0m[2m│   │   │   │   [0m[96mstr[0m(url_path),                                     [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m   [2m 75 [0m[2m│   │   │   │   [0mheaders=headers,                                   [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m                                                                          [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m [2m/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/htt[0m [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m [2mpx/[0m[1m_client.py[0m:1540 in request                                            [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m                                                                          [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m   [2m1537 [0m[2m│   │   │   [0mtimeout=timeout,                                      [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m   [2m1538 [0m[2m│   │   │   [0mextensions=extensions,                                [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m   [2m1539 [0m[2m│   │   [0m)                                                         [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m [31m❱ [0m1540 [2m│   │   [0m[94mreturn[0m [1;4;94mawait[0m[1;4m [0m[1;4;96mself[0m[1;4m.send(request, auth=auth, [0m               [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m        [1;4mfollow_redirects=follow_redirects)[0m                                [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m   [2m1541 [0m[2m│   [0m                                                              [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m   [2m1542 [0m[2m│   [0m[1;95m@asynccontextmanager[0m                                          [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m   [2m1543 [0m[2m│   [0m[94masync[0m [94mdef[0m[90m [0m[92mstream[0m(                                             [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m                                                                          [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m [2m/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/htt[0m [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m [2mpx/[0m[1m_client.py[0m:1629 in send                                               [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m                                                                          [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m   [2m1626 [0m[2m│   │   [0m                                                          [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m   [2m1627 [0m[2m│   │   [0mauth = [96mself[0m._build_request_auth(request, auth)            [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m   [2m1628 [0m[2m│   │   [0m                                                          [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m [31m❱ [0m1629 [2m│   │   [0mresponse = [1;4;94mawait[0m[1;4m [0m[1;4;96mself[0m[1;4m._send_handling_auth([0m                [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m   [2m1630 [0m[2m│   │   │   [0m[1;4mrequest,[0m                                              [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m   [2m1631 [0m[2m│   │   │   [0m[1;4mauth=auth,[0m                                            [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m   [2m1632 [0m[2m│   │   │   [0m[1;4mfollow_redirects=follow_redirects,[0m                    [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m                                                                          [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m [2m/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/htt[0m [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m [2mpx/[0m[1m_client.py[0m:1657 in _send_handling_auth                                [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m                                                                          [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m   [2m1654 [0m[2m│   │   │   [0mrequest = [94mawait[0m auth_flow.[92m__anext__[0m()                 [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m   [2m1655 [0m[2m│   │   │   [0m                                                      [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m   [2m1656 [0m[2m│   │   │   [0m[94mwhile[0m [94mTrue[0m:                                           [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m [31m❱ [0m1657 [2m│   │   │   │   [0mresponse = [94mawait[0m [96mself[0m._send_handling_redirects(   [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m   [2m1658 [0m[2m│   │   │   │   │   [0mrequest,                                      [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m   [2m1659 [0m[2m│   │   │   │   │   [0mfollow_redirects=follow_redirects,            [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m   [2m1660 [0m[2m│   │   │   │   │   [0mhistory=history,                              [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m                                                                          [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m [2m/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/htt[0m [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m [2mpx/[0m[1m_client.py[0m:1694 in _send_handling_redirects                           [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m                                                                          [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m   [2m1691 [0m[2m│   │   │   [0m[94mfor[0m hook [95min[0m [96mself[0m._event_hooks[[33m"[0m[33mrequest[0m[33m"[0m]:             [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m   [2m1692 [0m[2m│   │   │   │   [0m[94mawait[0m hook(request)                               [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m   [2m1693 [0m[2m│   │   │   [0m                                                      [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m [31m❱ [0m1694 [2m│   │   │   [0mresponse = [1;4;94mawait[0m[1;4m [0m[1;4;96mself[0m[1;4m._send_single_request(request)[0m   [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m   [2m1695 [0m[2m│   │   │   [0m[94mtry[0m:                                                  [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m   [2m1696 [0m[2m│   │   │   │   [0m[94mfor[0m hook [95min[0m [96mself[0m._event_hooks[[33m"[0m[33mresponse[0m[33m"[0m]:        [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m   [2m1697 [0m[2m│   │   │   │   │   [0m[94mawait[0m hook(response)                          [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m                                                                          [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m [2m/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/htt[0m [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m [2mpx/[0m[1m_client.py[0m:1730 in _send_single_request                               [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m                                                                          [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m   [2m1727 [0m[2m│   │   │   [0m)                                                     [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m   [2m1728 [0m[2m│   │   [0m                                                          [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m   [2m1729 [0m[2m│   │   [0m[94mwith[0m request_context(request=request):                    [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m [31m❱ [0m1730 [2m│   │   │   [0mresponse = [1;4;94mawait[0m[1;4m [0m                                     [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m        [1;4mtransport.handle_async_request(request)[0m                           [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m   [2m1731 [0m[2m│   │   [0m                                                          [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m   [2m1732 [0m[2m│   │   [0m[94massert[0m [96misinstance[0m(response.stream, AsyncByteStream)       [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m   [2m1733 [0m[2m│   │   [0mresponse.request = request                                [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m                                                                          [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m [2m/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/htt[0m [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m [2mpx/_transports/[0m[1mdefault.py[0m:393 in handle_async_request                    [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m                                                                          [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m   [2m390 [0m[2m│   │   │   [0mcontent=request.stream,                                [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m   [2m391 [0m[2m│   │   │   [0mextensions=request.extensions,                         [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m   [2m392 [0m[2m│   │   [0m)                                                          [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m [31m❱ [0m393 [2m│   │   [0m[94mwith[0m [1;4mmap_httpcore_exceptions()[0m:                            [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m   [2m394 [0m[2m│   │   │   [0mresp = [94mawait[0m [96mself[0m._pool.handle_async_request(req)      [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m   [2m395 [0m[2m│   │   [0m                                                           [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m   [2m396 [0m[2m│   │   [0m[94massert[0m [96misinstance[0m(resp.stream, typing.AsyncIterable)       [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m                                                                          [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m [2m/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/[0m[1mcontextlib.py[0m:158 [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m in __exit__                                                              [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m                                                                          [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m   [2m155 [0m[2m│   │   │   │   [0m[2m# tell if we get the same exception back[0m           [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m   [2m156 [0m[2m│   │   │   │   [0mvalue = typ()                                      [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m   [2m157 [0m[2m│   │   │   [0m[94mtry[0m:                                                   [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m [31m❱ [0m158 [2m│   │   │   │   [0m[96mself[0m.gen.throw(value)                              [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m   [2m159 [0m[2m│   │   │   [0m[94mexcept[0m [96mStopIteration[0m [94mas[0m exc:                           [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m   [2m160 [0m[2m│   │   │   │   [0m[2m# Suppress StopIteration *unless* it's the same [0m   [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m       [2mexception that[0m                                                     [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m   [2m161 [0m[2m│   │   │   │   [0m[2m# was passed to throw().  This prevents a [0m         [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m       [2mStopIteration[0m                                                      [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m                                                                          [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m [2m/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/htt[0m [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m [2mpx/_transports/[0m[1mdefault.py[0m:118 in map_httpcore_exceptions                 [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m                                                                          [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m   [2m115 [0m[2m│   │   │   [0m[94mraise[0m                                                  [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m   [2m116 [0m[2m│   │   [0m                                                           [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m   [2m117 [0m[2m│   │   [0mmessage = [96mstr[0m(exc)                                         [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m [31m❱ [0m118 [2m│   │   [0m[1;4;94mraise[0m[1;4m mapped_exc(message) [0m[1;4;94mfrom[0m[1;4;90m [0m[1;4;96mexc[0m                         [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m   [2m119 [0m                                                                   [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m   [2m120 [0m                                                                   [31m│[0m [35m│[0m
+[35m│[0m [31m│[0m   [2m121 [0m[94mclass[0m[90m [0m[4;92mResponseStream[0m(SyncByteStream):                              [31m│[0m [35m│[0m
+[35m│[0m [31m╰──────────────────────────────────────────────────────────────────────────╯[0m [35m│[0m
+[35m│[0m [1;91mReadTimeout[0m                                                                  [35m│[0m
+[35m╰──────────────────────────────────────────────────────────────────────────────╯[0m
